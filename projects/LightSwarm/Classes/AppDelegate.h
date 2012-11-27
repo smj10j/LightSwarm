@@ -1,7 +1,7 @@
 #ifndef  _APP_DELEGATE_H_
 #define  _APP_DELEGATE_H_
 
-#include "Constants.h"
+#include "Common.h"
 
 /**
 @brief    The cocos2d Application.

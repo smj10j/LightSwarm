@@ -63,7 +63,8 @@
 
 
 
-
+// Common includes
 #include "cocos2d.h"
+#include "AppMacros.h"
 #endif
 

@@ -27,7 +27,7 @@
 #import "EAGLView.h"
 #import "AppDelegate.h"
 #import "TestFlight.h"
-#import "Constants.h"
+#import "Common.h"
 
 #import "RootViewController.h"
 

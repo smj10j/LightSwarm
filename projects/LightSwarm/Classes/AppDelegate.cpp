@@ -1,7 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-#include "AppMacros.h"
-#include "Constants.h"
+#include "Common.h"
 
 USING_NS_CC;
 
