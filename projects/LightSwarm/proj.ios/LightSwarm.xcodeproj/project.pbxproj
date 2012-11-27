@@ -14,6 +14,9 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */; };
+		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
+		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
 		BF1373EF128A898400D9F789 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492D4B1289302400A09262 /* OpenGLES.framework */; };
 		BF1373F0128A899500D9F789 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492C21128924A800A09262 /* libxml2.dylib */; };
 		BF1373F1128A899E00D9F789 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492B6912891AC600A09262 /* libz.dylib */; };
@@ -62,6 +65,11 @@
 		781C33B11547F06B00633F88 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		781C33B31547F06B00633F88 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		781C33B51547F06B00633F88 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		AA0B1D1F1664C0EC0011F556 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		AA0B1D201664C0EC0011F556 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		AA0B1D211664C0EC0011F556 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		AA0B1D2B1664C3840011F556 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		BF137426128A8E4600D9F789 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BF23D4E3143315EB00657E08 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		BF23D4E4143315EB00657E08 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -97,6 +105,7 @@
 				BF1373F0128A899500D9F789 /* libxml2.dylib in Frameworks */,
 				BF1373F1128A899E00D9F789 /* libz.dylib in Frameworks */,
 				BF13742F128A8E6A00D9F789 /* QuartzCore.framework in Frameworks */,
+				AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,9 +176,30 @@
 			path = ../Resources;
 			sourceTree = "<group>";
 		};
+		AA0B1D1D1664C0EC0011F556 /* TestFlightSDK1.1 */ = {
+			isa = PBXGroup;
+			children = (
+				AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */,
+				AA0B1D1F1664C0EC0011F556 /* README.md */,
+				AA0B1D201664C0EC0011F556 /* release_notes.md */,
+				AA0B1D211664C0EC0011F556 /* TestFlight.h */,
+			);
+			name = TestFlightSDK1.1;
+			path = libs/TestFlightSDK1.1;
+			sourceTree = "<group>";
+		};
+		AA0B1D251664C0F70011F556 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				AA0B1D1D1664C0EC0011F556 /* TestFlightSDK1.1 */,
+			);
+			name = libs;
+			sourceTree = "<group>";
+		};
 		BF23D4E2143315EB00657E08 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				AA0B1D2B1664C3840011F556 /* Constants.h */,
 				1A1CF3661626CB6000AFC938 /* AppMacros.h */,
 				BF23D4E4143315EB00657E08 /* AppDelegate.h */,
 				BF23D4E3143315EB00657E08 /* AppDelegate.cpp */,
@@ -188,6 +218,7 @@
 				BF365AA712A103F70050DCF4 /* AppController.mm */,
 				BF4DE6AB138BB89600CF907D /* RootViewController.h */,
 				BF4DE6AC138BB89600CF907D /* RootViewController.mm */,
+				AA0B1D251664C0F70011F556 /* libs */,
 			);
 			name = ios;
 			sourceTree = "<group>";
@@ -272,6 +303,8 @@
 				D446FD7D161028F4000ADA7B /* Default-568h@2x.png in Resources */,
 				1A1CF3691626CEFF00AFC938 /* ipad in Resources */,
 				1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */,
+				AA0B1D231664C0EC0011F556 /* README.md in Resources */,
+				AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +380,10 @@
 				);
 				INFOPLIST_FILE = "LightSwarm-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/libs/TestFlightSDK1.1\"",
+				);
 				PRODUCT_NAME = LightSwarm;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -383,6 +420,10 @@
 				);
 				INFOPLIST_FILE = "LightSwarm-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/libs/TestFlightSDK1.1\"",
+				);
 				PRODUCT_NAME = LightSwarm;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

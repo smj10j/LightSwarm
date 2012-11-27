@@ -26,6 +26,8 @@
 #import "cocos2d.h"
 #import "EAGLView.h"
 #import "AppDelegate.h"
+#import "TestFlight.h"
+#import "Constants.h"
 
 #import "RootViewController.h"
 
@@ -39,6 +41,15 @@ static AppDelegate s_sharedApplication;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
+	//capture uncaught exceptions for logging
+	NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+	
+	//testflight
+	if(BETA_BUILD) {
+		[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+		[TestFlight takeOff:@"dcb57a9ef2d39552f3b77d6fa6ec3bb0_MTQxOTk2MjAxMi0xMC0xMSAwMjo1NDowMy44OTg4NTk"];
+	}
+	
     // Override point for customization after application launch.
 
     // Add the view controller's view to the window and display.
@@ -47,9 +58,9 @@ static AppDelegate s_sharedApplication;
                                         pixelFormat: kEAGLColorFormatRGBA8
                                         depthFormat: GL_DEPTH_COMPONENT16
                                  preserveBackbuffer: NO
-                                                                                 sharegroup:nil
-                                                                          multiSampling:NO
-                                                                    numberOfSamples:0];
+										 sharegroup: nil
+									  multiSampling: NO
+									numberOfSamples: 0];
     
     // Use RootViewController manage EAGLView 
     viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
@@ -127,6 +138,18 @@ static AppDelegate s_sharedApplication;
 
 - (void)dealloc {
     [super dealloc];
+}
+
+
+
+
+
+
+
+
+//handle uncaught exceptions 
+void uncaughtExceptionHandler(NSException *exception) {
+	CCLOGERROR("Uncaught exception: %@ - %@", exception.name, exception.reason);
 }
 
 

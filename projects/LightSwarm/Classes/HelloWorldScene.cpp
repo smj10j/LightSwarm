@@ -1,5 +1,6 @@
 #include "HelloWorldScene.h"
 #include "AppMacros.h"
+#include "Constants.h"
 USING_NS_CC;
 
 
@@ -73,6 +74,8 @@ bool HelloWorld::init()
 
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
+	
+	CCLOG("bubble cakes: %s", "Hello");
     
     return true;
 }
