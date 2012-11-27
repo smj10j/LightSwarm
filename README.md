@@ -12,6 +12,6 @@ Technology:
 
 * Cocos2D-X
 * NodeJS
-** NPM - package management
-** Express 3.x - routing
-** Supervisor - automatic reload for development
+	* NPM - package management
+	* Express 3.x - routing
+	* Supervisor - automatic reload for development
