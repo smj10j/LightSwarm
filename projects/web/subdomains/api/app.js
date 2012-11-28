@@ -212,8 +212,10 @@ var onMessage = function(socket, message) {
 	try {
 		if(message.action == 'identify') {			
 	
-			socket.user = message.user;
-			log(socket, "Set user: " + JSON.stringify(socket.user));
+			if(!socket.user) {
+				socket.user = message.user;
+				log(socket, "Set user: " + JSON.stringify(socket.user));
+			}
 	
 		}else if(message.action == 'setPrefs') {			
 	
@@ -232,6 +234,22 @@ var onMessage = function(socket, message) {
 				stateJoinGame(socket);
 			}
 	
+		}else if(message.action == 'command') {			
+	
+			actionCommand(socket, message);
+			
+		}else if(message.action == 'forfeit') {			
+	
+			actionForfeit(socket, message);
+			
+		}else if(message.action == 'win') {			
+	
+			actionWin(socket, message);
+			
+		}else if(message.action == 'loss') {			
+	
+			actionLoss(socket, message);
+			
 		}else {
 			console.log("Unknown request action: " + message.action);
 			response.status = 'error';
@@ -261,7 +279,7 @@ var onMessage = function(socket, message) {
 			socket.end(response);
 		}else {
 			socket.write(response);	
-		}
+		}		
 	}
 				
 };
@@ -308,14 +326,10 @@ var stateCreateGame = function(socket) {
 
 	if(socket.user.prefs.playWithFriend) {
 		waitingFriendsToGameIds[socket.user.userId] = gameId;
-
 	}else {
 		waitingRandomUserIds.push(socket.user.userId);
 	}
 	
-	//update socket state
-	userToSocketMap[socket.user.userId] = socket;
-
 };
 
 
@@ -338,7 +352,7 @@ var stateJoinGame = function(socket) {
 			game.player2Id = socket.user.userId;
 			
 			//start!
-			stateStartGame(socket);
+			stateStartGame(game);
 			
 		}else {
 			//not found - create a game!
@@ -362,7 +376,7 @@ var stateJoinGame = function(socket) {
 			game.player2Id = socket.user.userId;
 			
 			//start!
-			stateStartGame(socket);
+			stateStartGame(game);
 			
 		}else {
 			//not found - create a game!
@@ -374,27 +388,121 @@ var stateJoinGame = function(socket) {
 
 
 //initializing the game
-var stateStartGame = function(socket) {
-	log(socket, "State Start Game");
+var stateStartGame = function(game) {
+
+	log(game, "State Start Game");
+
+	var player1 = userToSocketMap[game.player1Id];	
+	var player2 = userToSocketMap[game.player2Id];	
+	
+	//choose a map size	
+	var mapSize1 = player1.user.prefs.mapSize ? player1.user.prefs.mapSize : 'small';
+	var mapSize2 = player2.user.prefs.mapSize ? player2.user.prefs.mapSize : 'small';
+
+	if(mapSize1 == mapSize2) {
+		//agreement
+		game.mapSize = 'small';
+		
+	}else {
+		if(mapSize1 == 'medium' || mapSize2 == 'medium') {
+			//one doesn't care - pick between
+			game.mapSize = Math.random()*100 < 50 ? mapSize2 : mapSize1;
+			
+		}else {
+			//disagreement
+			game.mapSize = 'medium';
+			
+		}
+	}
+
+	//choose a start time (5 seconds from now)
+	game.startTime = (new Date()).getTime() + 5000;
+
+	//notify players of the start time, and the seed
+	var response = {
+		status:'ok',
+		alert: {
+			code: 1,
+			message: "Game Init",
+			mapSize: game.mapSize,
+			seed: game.seed,
+			startTime: game.startTime
+		}
+	};
+	player1.write('-1|'+JSON.stringify(response));
+	player2.write('-1|'+JSON.stringify(response));
+	 
+	//start the command flush queue	
+	game.lastFlushTimestamp = 0;
+	game.flushCommandQueueTimer = setInterval(function() {
+		actionFlushCommandQueue(game);
+	}, FRAME_SIZE*MAX_EMPTY_FRAMES_BETWEEN_FLUSH);
 
 
+	//and we're off!
 };
 
 
-
-//the game is playing
-var stateGameLoop = function(socket) {
-	log(socket, "State Game Loop");
-
-
-
-};
 
 //flushing the command queue was requested
-var actionFlushCommandQueue = function(socket) {
+var actionFlushCommandQueue = function(game) {
+	
+	var now = (new Date()).getTime();
+	if(now - game.lastFlushTimestamp < FRAME_SIZE) {
+		return;
+	}
+	game.lastFlushTimestamp = now;
+
+	log(game, "Action Flush Command Queue");
+
+	var player1 = userToSocketMap[game.player1Id];	
+	var player2 = userToSocketMap[game.player2Id];	
+
+	//TODO: write out the command queue to both users
+};
 
 
-}
+
+
+//incoming command
+var actionCommand = function(socket, message) {
+	log(socket, "Action Command");
+
+	var game = gamesMap[socket.user.gameId];
+	var player1 = userToSocketMap[game.player1Id];	
+	var player2 = userToSocketMap[game.player2Id];	
+
+	var command = message.command;
+	command.frame = Math.floor(((new Date()).getTime() - game.startTime)/FRAME_SIZE);
+	
+	game.commandQueue.push(command);
+
+	setTimeout(function() {
+		actionFlushCommandQueue(game);	
+	}, FRAME_SIZE);
+};
+
+//incoming forfeit message
+var actionForfeit = function(socket, message) {
+	log(socket, "Action Forfeit");
+
+	actionQuitGame(socket, "Forfeit");
+};
+
+
+//incoming win message
+var actionWin = function(socket, message) {
+	log(socket, "Action Win");
+
+	actionQuitGame(socket, "Win");
+};
+
+//incoming lost message
+var actionLoss = function(socket, message) {
+	log(socket, "Action Loss");
+
+	actionQuitGame(socket, "Loss");
+};
 
 
 
@@ -455,6 +563,10 @@ var stateReconnect = function(socket) {
 //a disconnect was detected
 var eventDisconnect = function(socket) {
 	
+	if(socket.forceDisconnect) {
+		return;
+	}
+	
 	//start a timer to end the game
 	socket.disconnectTimer = setTimeout(function() {
 		actionQuitGame(socket, "Disconnect");
@@ -498,17 +610,15 @@ var eventDisconnect = function(socket) {
 
 //a quit game request was made by the game or one of the players
 var actionQuitGame = function(socket, reason) {	
-	log(socket, "Action Quit Game");
+	log(socket, "Action Quit Game - " + reason);
 	
 	var game = socket && gamesMap[socket.user.gameId];
-	var opponentSocket = game && userToSocketMap[game.player2Id];
-	if(opponentSocket && opponentSocket.user.userId == socket.user.userId) {
-		opponentSocket = userToSocketMap[game.player1Id];
-	}	
+	var opponentSocket = game && (game.player1Id == socket.user.userId ? userToSocketMap[game.player2Id] : userToSocketMap[game.player1Id]);
 
 	//cleanup
 	opponentSocket && clearTimeout(opponentSocket.disconnectTimer);
 	socket && clearTimeout(socket.disconnectTimer);
+	game && clearTimeout(game.flushCommandQueueTimer);
 
 	game && delete userToSocketMap[game.player1Id];
 	game && delete userToSocketMap[game.player2Id];
@@ -519,6 +629,11 @@ var actionQuitGame = function(socket, reason) {
 	socket && delete userToSocketMap[socket.user.userId];
 	socket && delete gamesMap[socket.user.gameId];
 	
+	//flag as manually disconnected
+	if(socket) socket.forceDisconnect = true;
+	if(opponentSocket) opponentSocket.forceDisconnect = true;
+	
+	
 	for(var i in waitingRandomUserIds) {
 		if(socket && socket.user.userId == waitingRandomUserIds[i]) {
 			waitingRandomUserIds.splice(i,1);
@@ -527,10 +642,25 @@ var actionQuitGame = function(socket, reason) {
 		}
 	}
 	
-	//TODO: notify players about win/loss
-
-	//TODO: send the message with an end() command to disconnect players	
+	//TODO: set loser/winner correctly
+	var winner = socket.user;
+	var loser = opponentSocket && opponentSocket.user
 	
+	//TODO: notify players about win/loss
+	var response = {
+		status:'ok',
+		alert: {
+			code: 800,
+			message: "Game " + reason,
+			winner: winner,
+			loser: loser
+		}
+	};
+	socket && socket.end('-1|'+JSON.stringify(response));
+	opponentSocket && opponentSocket.end('-1|'+JSON.stringify(response));
+		
+	
+	//TODO: log the information to database somewhwere
 	
 	dumpGameState();
 
@@ -554,8 +684,16 @@ var actionQuitGame = function(socket, reason) {
 
 /***************** Utilities *****************/
 
-var log = function(socket, message) {
-	console.log((new Date())+': ' + 'socket ' + socket.sessionId + ', User ' + (socket.user ? socket.user.userId : 'unknown') + ': ' + message);
+var log = function(object, message) {
+	if(object.user) {
+		//socket
+		console.log((new Date())+': socket ' + object.sessionId + ', User ' + (object.user ? object.user.userId : 'unknown') + ': ' + message);
+	}else if(object.gameId) {
+		//game
+		console.log((new Date())+': game ' + object.gameId + ': ' + message);
+	}else {
+		console.log((new Date())+': ' + message);	
+	}
 };
 
 var dumpGameState = function() {
