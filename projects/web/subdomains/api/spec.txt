@@ -1,0 +1,183 @@
+
+Use Sockets for API - express is only for server assets
+
+Verify signature (signed timestamp+playerId+messageBody with shared secret) ON EVERY MESSAGE
+
+commandQueue is repeatedly flushed for two reasons:
+	1) Acts as a PING
+	2) Lets clients know they can advance their representation of the game
+		If no commands occurred for several seconds the client would have to 
+		run several seconds of simulated game in milliseconds.. which may create
+		adverse effects
+	
+	
+
+frameSize = 50
+maxEmptyFramesBetweenFlush = 20
+
+
+
+
+ON CONNECT
+	Identify via GameCenter or username
+	Send prefs
+		Reconnect
+		Connect to friend
+		Connect with Random
+		Preferred mapSize
+	If reconnect, ON RECONNECT
+	Create player object and add to players map
+		players {
+			playerId: {
+				id: playerId,
+				score: <chess score>,
+				gameId: gameId,
+				prefs: {
+					mapSize: 'large',
+				},
+				socket: <connected socket>
+			}
+		}
+	JOIN GAME
+		
+CREATE GAME
+	Generate a new gameId
+	Add gameId to player
+	Create game and add to a map of games
+		games {
+			"gameId": {
+				id: gameId,
+				p1Id: player1Id,
+				p2Id: null,
+				seed: <random large int>,
+				startTime: null,
+				commandQueue: [],
+			}
+		}
+	If friend, add entry to map
+		waitingFriendsToGames {
+			playerId: gameId,
+		}
+	If random, add entry to back of queue
+		waitingRandomsToGames [playerId,...]
+	
+JOIN GAME
+	
+	If friend, search waitingFriendsToGames
+		If found
+			Remove entry from map and add player to game object
+			START GAME
+		If not found
+			CREATE GAME
+	If random, search through waitingRandomsToGames from front to back searching for a player who is acceptable. For now, just pick the first player
+		If found (not empty)
+			Remove entry from array and add player to game object
+			START GAME
+		If not found (empty)
+			CREATE GAME
+			
+
+START GAME
+	Determine and agreed mapSize from player prefs
+	Send a GAME INIT message to both players
+		{
+			seed: <>,
+			mapSize: <agreed map size>,
+			startTime: <now + 5 seconds>
+		}
+	Start a repeat timer to FLUSH COMMAND QUEUE in frameSize*maxEmptyFramesBetweenFlush milliseconds
+	GAME LOOP
+	
+
+	
+GAME LOOP
+	On message:
+		FORFEIT
+			QUIT GAME (FORFEIT BY playerId)
+		WIN
+			QUIT GAME (WIN BY playerId)
+		LOSS
+			QUIT GAME (WIN BY <opponent playerId>)
+		COMMAND {
+			<command details>
+		}
+			Assign a frame ((now() - startTime) / frameSize) to the command
+			Add the command to the game commandQueue
+			Start a timer to FLUSH COMMAND QUEUE in frameSize milliseconds
+	
+
+
+FLUSH COMMAND QUEUE
+	if(now() - lastFlushTimestamp < frameSize)
+		Return
+	Set lastFlushTimestamp to now()
+	Create an empty queue sendQueue
+	while commandQueue is not empty
+		remove and add front of commandQueue to sendQueue
+	Send sendQueue to both players
+	
+	
+
+ON DISCONNECT
+	Start timer to execute QUIT GAME (DISCONNECT BY playerId) in 15 seconds and add it to the disconnected player object
+	Send a message to the connected player 
+	status {
+		code: 100,
+		message: "Opponent disconnected. Waiting 15 seconds for reconnect..."
+	}
+	
+	
+ON RECONNECT
+	Check if the player object already exists
+		If yes
+			Update player socket reference
+			Clear disconnect timer
+		If no
+			Return a message to the player 
+			error {
+				code: 100,
+				message: "Game no longer exists"
+			}
+	
+	
+QUIT GAME
+	Notify both players of game over and reason
+	status {
+		code: <2xx-code>,
+		message: <message>
+	}
+	Clear any disconnect timers for both players
+	Remove players from map
+	Remove game from map
+	Disconnect both players
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
