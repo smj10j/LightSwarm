@@ -18,7 +18,7 @@ var userToSocketMap = {};
 var gamesMap = {};
 var waitingFriendsToGameIds = {};
 var waitingRandomUserIds = [];
-
+var disconnectTimers = {};
 
 /***************** HTTP Handling *****************/
 app.all('*', function(req, res, next){
@@ -458,7 +458,23 @@ var actionFlushCommandQueue = function(game) {
 	var player1 = userToSocketMap[game.player1Id];	
 	var player2 = userToSocketMap[game.player2Id];	
 
-	//TODO: write out the command queue to both users
+	//write out the command queue to both users
+	var commandQueue = [];
+	for(var i in game.commandQueue) {
+		commandQueue.push(game.commandQueue[i]);
+	}
+	game.commandQueue = [];
+	
+	var response = {
+		status:'ok',
+		alert: {
+			code: 250,
+			commandQueue: commandQueue
+		}
+	};
+	player1.write('-1|'+JSON.stringify(response));
+	player2.write('-1|'+JSON.stringify(response));	
+	
 };
 
 
@@ -469,10 +485,9 @@ var actionCommand = function(socket, message) {
 	log(socket, "Action Command");
 
 	var game = gamesMap[socket.user.gameId];
-	var player1 = userToSocketMap[game.player1Id];	
-	var player2 = userToSocketMap[game.player2Id];	
 
 	var command = message.command;
+	command.userId = socket.user.userId;
 	command.frame = Math.floor(((new Date()).getTime() - game.startTime)/FRAME_SIZE);
 	
 	game.commandQueue.push(command);
@@ -529,16 +544,16 @@ var stateReconnect = function(socket) {
 		
 		//update references
 		var oldSocket = userToSocketMap[socket.user.userId];
-		socket.prefs = oldSocket.prefs;
 		socket.user = oldSocket.user;
 		
 		var game = gamesMap[socket.user.gameId];
 		if(game) {
 			//game still available
-			
+						
 			//update references and clear disconnect timer
 			userToSocketMap[socket.user.userId] = socket;
-			clearTimeout(oldSocket.disconnectTimer);
+			clearTimeout(disconnectTimers[socket.user.userId]);
+			delete disconnectTimers[socket.user.userId];
 		
 		}else {
 			throw {
@@ -566,9 +581,16 @@ var eventDisconnect = function(socket) {
 	if(socket.forceDisconnect) {
 		return;
 	}
+
+	if(disconnectTimers[socket.user.userId]) {
+		//already handling
+		return;
+	}
+
+	log(socket, "Event Disconnect");
 	
 	//start a timer to end the game
-	socket.disconnectTimer = setTimeout(function() {
+	disconnectTimers[socket.user.userId] = setTimeout(function() {
 		actionQuitGame(socket, "Disconnect");
 	}, 15000);
 	
@@ -616,8 +638,10 @@ var actionQuitGame = function(socket, reason) {
 	var opponentSocket = game && (game.player1Id == socket.user.userId ? userToSocketMap[game.player2Id] : userToSocketMap[game.player1Id]);
 
 	//cleanup
-	opponentSocket && clearTimeout(opponentSocket.disconnectTimer);
-	socket && clearTimeout(socket.disconnectTimer);
+	opponentSocket && clearTimeout(disconnectTimers[opponentSocket.user.userId]);
+	opponentSocket && delete disconnectTimers[opponentSocket.user.userId];
+	socket && clearTimeout(disconnectTimers[socket.user.userId]);
+	socket && delete disconnectTimers[socket.user.userId];
 	game && clearTimeout(game.flushCommandQueueTimer);
 
 	game && delete userToSocketMap[game.player1Id];
