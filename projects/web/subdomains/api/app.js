@@ -182,7 +182,7 @@ console.log('Listening on port '+GAME_PORT+' for game socket');
 var validateSignature = function(socket, message) {
 
 	var signature = message._sig;
-	//TODO: validate signature;
+	//TODO: validate signature once client side is complete (too annoying manually)
 	return;
 
 	//unauthorized message
@@ -284,9 +284,7 @@ var onMessage = function(socket, message) {
 				
 };
 
-var sendResponse = function(socket, mid, response) {
 
-};
 
 /***************** End Game Socket Message Handling *****************/
 

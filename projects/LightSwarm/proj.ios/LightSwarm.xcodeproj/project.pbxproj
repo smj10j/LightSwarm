@@ -7,16 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15003FA315D2601D00B6775A /* iphone in Resources */ = {isa = PBXBuildFile; fileRef = 15003FA215D2601D00B6775A /* iphone */; };
 		154269EB15B5669E00712A7F /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 154269D015B5644500712A7F /* libcocos2dx.a */; };
-		1A1CF3691626CEFF00AFC938 /* ipad in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3671626CEFF00AFC938 /* ipad */; };
-		1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */ = {isa = PBXBuildFile; fileRef = 1A1CF3681626CEFF00AFC938 /* ipadhd */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */; };
 		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
+		AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4C16674A8C004C8E78 /* Sprites.plist */; };
+		AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */; };
+		AAD06D5416674E3A004C8E78 /* Stars1.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D5116674E3A004C8E78 /* Stars1.plist */; };
+		AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD06D571667549B004C8E78 /* Utilities.cpp */; };
 		BF1373EF128A898400D9F789 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492D4B1289302400A09262 /* OpenGLES.framework */; };
 		BF1373F0128A899500D9F789 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492C21128924A800A09262 /* libxml2.dylib */; };
 		BF1373F1128A899E00D9F789 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492B6912891AC600A09262 /* libz.dylib */; };
@@ -53,11 +54,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		15003FA215D2601D00B6775A /* iphone */ = {isa = PBXFileReference; lastKnownFileType = folder; path = iphone; sourceTree = "<group>"; };
 		154269C815B5644500712A7F /* cocos2dx.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2dx.xcodeproj; path = ../../../cocos2dx/proj.ios/cocos2dx.xcodeproj; sourceTree = "<group>"; };
 		1A1CF3661626CB6000AFC938 /* AppMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppMacros.h; sourceTree = "<group>"; };
-		1A1CF3671626CEFF00AFC938 /* ipad */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipad; sourceTree = "<group>"; };
-		1A1CF3681626CEFF00AFC938 /* ipadhd */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ipadhd; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* LightSwarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LightSwarm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -70,6 +68,11 @@
 		AA0B1D201664C0EC0011F556 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		AA0B1D211664C0EC0011F556 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		AA0B1D2B1664C3840011F556 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		AAD06D4C16674A8C004C8E78 /* Sprites.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Sprites.plist; sourceTree = "<group>"; };
+		AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sprites.pvr.ccz; sourceTree = "<group>"; };
+		AAD06D5116674E3A004C8E78 /* Stars1.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Stars1.plist; sourceTree = "<group>"; };
+		AAD06D571667549B004C8E78 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
+		AAD06D581667549B004C8E78 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		BF137426128A8E4600D9F789 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BF23D4E3143315EB00657E08 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		BF23D4E4143315EB00657E08 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -161,9 +164,9 @@
 		784521C214EBA449009D533B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				1A1CF3671626CEFF00AFC938 /* ipad */,
-				1A1CF3681626CEFF00AFC938 /* ipadhd */,
-				15003FA215D2601D00B6775A /* iphone */,
+				AAD06D5116674E3A004C8E78 /* Stars1.plist */,
+				AAD06D4C16674A8C004C8E78 /* Sprites.plist */,
+				AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */,
 				D4EF94ED15BD319D00D803EB /* Icon-144.png */,
 				D4EF94EB15BD319B00D803EB /* Icon-72.png */,
 				D4EF94E915BD319500D803EB /* Icon-114.png */,
@@ -205,6 +208,8 @@
 				BF23D4E3143315EB00657E08 /* AppDelegate.cpp */,
 				BF23D4E6143315EB00657E08 /* HelloWorldScene.h */,
 				BF23D4E5143315EB00657E08 /* HelloWorldScene.cpp */,
+				AAD06D581667549B004C8E78 /* Utilities.h */,
+				AAD06D571667549B004C8E78 /* Utilities.cpp */,
 			);
 			name = Classes;
 			path = ../Classes;
@@ -297,14 +302,14 @@
 				D4EF94EA15BD319500D803EB /* Icon-114.png in Resources */,
 				D4EF94EC15BD319B00D803EB /* Icon-72.png in Resources */,
 				D4EF94EE15BD319D00D803EB /* Icon-144.png in Resources */,
-				15003FA315D2601D00B6775A /* iphone in Resources */,
 				D446FD79161028E9000ADA7B /* Default.png in Resources */,
 				D446FD7B161028ED000ADA7B /* Default@2x.png in Resources */,
 				D446FD7D161028F4000ADA7B /* Default-568h@2x.png in Resources */,
-				1A1CF3691626CEFF00AFC938 /* ipad in Resources */,
-				1A1CF36A1626CEFF00AFC938 /* ipadhd in Resources */,
 				AA0B1D231664C0EC0011F556 /* README.md in Resources */,
 				AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */,
+				AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */,
+				AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */,
+				AAD06D5416674E3A004C8E78 /* Stars1.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +341,7 @@
 				D4ABB4B313B4395300552E6E /* main.m in Sources */,
 				BF23D4E7143315EB00657E08 /* AppDelegate.cpp in Sources */,
 				BF23D4E8143315EB00657E08 /* HelloWorldScene.cpp in Sources */,
+				AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

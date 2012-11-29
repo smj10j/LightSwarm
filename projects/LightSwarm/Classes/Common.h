@@ -52,8 +52,6 @@
 
 
 
-//TODO: this won't work on non-ios
-
 #if DEVICE_BUILD
 #define COCOS2D_DEBUG 0
 #else
@@ -66,5 +64,6 @@
 // Common includes
 #include "cocos2d.h"
 #include "AppMacros.h"
+#include "Utilities.h"
 #endif
 

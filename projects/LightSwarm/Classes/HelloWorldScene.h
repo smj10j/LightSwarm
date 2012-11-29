@@ -17,6 +17,15 @@ public:
     
     // implement the "static node()" method manually
     CREATE_FUNC(HelloWorld);
+	
+	
+	//touch handler
+	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
+	
+	
+private:
+	cocos2d::CCSpriteBatchNode * _batchNode;
+	cocos2d::CCSprite * _ship;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
