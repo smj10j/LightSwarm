@@ -40,10 +40,11 @@ bool HelloWorld::init()
 	
 	Utilities::setRandomSeed(450);
 	
-	for(int i = 0; i < 50; i++) {
+	for(int i = 0; i < 200; i++) {
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 		sprite->setPosition(ccp(winSize.width * Utilities::getRandomDouble(), winSize.height * Utilities::getRandomDouble()));
+		sprite->setScale(.25);
 		_batchNode->addChild(sprite, 1);
 		
 		Spark* spark = new Spark(sprite);

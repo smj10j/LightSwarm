@@ -20,8 +20,6 @@ void Spark::clearAllEffects() {
 
 
 void Spark::showSelectionEffect(const ccColor3B& colour, const CCSize& size) {
-
-    CCPoint pos = ccp(_sprite->getContentSize().width / 2, _sprite->getContentSize().height / 2);
 	
 	//_sprite->setBlendFunc({GL_BLEND_SRC_ALPHA, GL_BLEND_DST_ALPHA});
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
@@ -32,7 +30,9 @@ bool Spark::isInShape(list<CCPoint> shape) {
 
     // This is more accurate point for the node
     CCPoint absPoint = _sprite->convertToWorldSpace(CCPointZero);
-	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2, _sprite->getContentSize().height/2));
+	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+									_sprite->getContentSize().height/2 * _sprite->getScaleY())
+				);
 	
 	return Utilities::isPointInShape(absPoint, shape);
 }
@@ -65,6 +65,7 @@ void Spark::update(float dt) {
 		//on the move!
 		CCPoint pos = _sprite->getPosition();
 		CCPoint targetMoveLocation = _targetMovePath.front();
+		//TODO: replace 10 with something that is more cross-device compatible
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, 10);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
@@ -79,7 +80,7 @@ void Spark::update(float dt) {
 		}
 	}else {
 		//resting
-		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), 50);
+		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition());
 		if(isAtRest) {
 			//jitter
 			float ds = SPARK_SPEED*2*dt;
