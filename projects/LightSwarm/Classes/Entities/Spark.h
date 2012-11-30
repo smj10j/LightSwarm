@@ -12,6 +12,7 @@
 #include "Common.h"
 #include <set>
 #include <list>
+#include <queue>
 USING_NS_CC;
 using namespace std;
 
@@ -26,6 +27,10 @@ public:
 
 	CCSprite* getSprite();
 	
+	void update(float dt);
+	
+	void setTargetMovePath(list<CCPoint> path);
+	
 	void clearAllEffects();
 	void addGlowEffect(const ccColor3B& colour, const CCSize& size);
 	
@@ -37,6 +42,8 @@ private:
 
 	CCSprite* _sprite;
 	CCSprite* _glowSprite;
+	
+	queue<CCPoint> _targetMovePath;
 };
 
 

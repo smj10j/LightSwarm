@@ -45,6 +45,15 @@
 #define DEBUG_ALL_THE_THINGS	( false							 && !DEVICE_BUILD)
 #define DEBUG_ABC				((false || DEBUG_ALL_THE_THINGS) && !DEVICE_BUILD)
 
+
+
+
+
+#define SPARK_SPEED 100	//meters/sec
+
+
+
+
 /******************* END USER-DEFINABLE ******************/
 
 

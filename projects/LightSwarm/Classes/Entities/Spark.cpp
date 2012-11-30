@@ -76,17 +76,44 @@ bool Spark::isInShape(list<CCPoint> shape) {
 
 
         if( ((cp.y > y) != (prev.y > y)) && (x < (prev.x -cp.x) * (y - cp.y) / (prev.y - cp.y) + cp.x)) {
-
-			CCLOG("MATCH with coords %f,%f - %f,%f", cp.x,cp.y,prev.x,prev.y);
-
             isIn = !isIn;
         }
     }
     return isIn;
 }
 
+void Spark::setTargetMovePath(list<CCPoint> path) {
 
+	//clear the queue
+	queue<CCPoint> empty;
+	swap(_targetMovePath, empty);
+	
+	//convert path to a queue
+	for(list<CCPoint>::iterator pathIterator = path.begin();
+		pathIterator != path.end();
+		pathIterator++) {
+		_targetMovePath.push(*pathIterator);
+	}
+}
 
+void Spark::update(float dt) {
+	if(!_targetMovePath.empty()) {
+		CCPoint pos = _sprite->getPosition();
+		CCPoint targetMoveLocation = _targetMovePath.front();
+		bool isAtTarget = fabsf(targetMoveLocation.x-pos.x) < 10 && fabsf(targetMoveLocation.y-pos.y) < 10;
+		if(!isAtTarget) {
+			float ds = SPARK_SPEED*dt;
+			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
+			
+			CCPoint newLocation = ccpAdd(pos, ccp(ds*v.x,ds*v.y));
+			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
+			
+			_sprite->setPosition(newLocation);
+		}else {
+			_targetMovePath.pop();
+		}
+	}
+}
 
 
 Spark::~Spark() {

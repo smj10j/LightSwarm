@@ -61,22 +61,28 @@ bool HelloWorld::init()
 
 
 
-void HelloWorld::update(CCTime dt) {
+void HelloWorld::update(float dt) {
 
-
+	//let each spark update itself
+	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+		sparksIterator != _sparks.end();
+		sparksIterator++) {
+		
+		(*sparksIterator)->update(dt);
+	}
 }
 
 
 void HelloWorld::draw() {
 	
 	//draw a line as we drag our finger
-	glLineWidth(10);
-	list<CCPoint>::iterator prevLassoTouchesIterator = _lassoTouches.begin();
-	for(list<CCPoint>::iterator lassoTouchesIterator = _lassoTouches.begin();
-		lassoTouchesIterator != _lassoTouches.end();
-		prevLassoTouchesIterator = lassoTouchesIterator++) {
+	glLineWidth(5);
+	list<CCPoint>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
+	for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
+		currentTouchesIterator != _currentTouches.end();
+		prevcurrentTouchesIterator = currentTouchesIterator++) {
 			
-		ccDrawLine(*prevLassoTouchesIterator, *lassoTouchesIterator);
+		ccDrawLine(*prevcurrentTouchesIterator, *currentTouchesIterator);
 	}
 	
 }
@@ -85,8 +91,9 @@ void HelloWorld::draw() {
 
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
-	_lassoTouches.clear();
-	_selectedSparks.clear();
+
+	_currentTouches.clear();
+	
 }
 
 
@@ -99,14 +106,29 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCLog("touch at %f", Utilities::getMillis());
 	CCLOG("got touch at %f,%f", location.x, location.y);
 	
-	_lassoTouches.push_back(location);
+	_currentTouches.push_back(location);
 }
 
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
-	CCLOG("Processing %d touches", _lassoTouches.size());
+	CCLOG("Processing %d touches", _currentTouches.size());
 	
-	//add a few to test
+	if(!_selectedSparks.empty()) {
+		//move!
+		
+		CCLog("would now move the selected sparks");
+			
+		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+			selectedSparksIterator != _selectedSparks.end();
+			selectedSparksIterator++) {
+			
+			(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
+		}
+		
+		_currentTouches.clear();
+	}
+	
+	//remove the selection effects and apply any new efects
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		sparksIterator++) {
@@ -115,12 +137,20 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 		spark->clearAllEffects();
 	
-		if(spark->isInShape(_lassoTouches)) {
-			spark->addGlowEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
-			_selectedSparks.insert(spark);
+		if(!_currentTouches.empty()) {
+			if(spark->isInShape(_currentTouches)) {
+				spark->addGlowEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
+				_selectedSparks.insert(spark);
+			}
 		}
 	}
 	
+	
+	if(_currentTouches.empty()) {
+		//user tapped somewhere to deselect everything
+		_selectedSparks.clear();
+		_currentTouches.clear();
+	}
 }
 
 
