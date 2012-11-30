@@ -16,8 +16,9 @@
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
 		AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4C16674A8C004C8E78 /* Sprites.plist */; };
 		AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */; };
-		AAD06D5416674E3A004C8E78 /* Stars1.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D5116674E3A004C8E78 /* Stars1.plist */; };
 		AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD06D571667549B004C8E78 /* Utilities.cpp */; };
+		AAD06D7216685C66004C8E78 /* Spark.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD06D7016685C66004C8E78 /* Spark.cpp */; };
+		AAD06D7A16685C74004C8E78 /* mtrand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD06D7516685C74004C8E78 /* mtrand.cpp */; };
 		BF1373EF128A898400D9F789 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492D4B1289302400A09262 /* OpenGLES.framework */; };
 		BF1373F0128A899500D9F789 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492C21128924A800A09262 /* libxml2.dylib */; };
 		BF1373F1128A899E00D9F789 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF492B6912891AC600A09262 /* libz.dylib */; };
@@ -70,9 +71,12 @@
 		AA0B1D2B1664C3840011F556 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		AAD06D4C16674A8C004C8E78 /* Sprites.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Sprites.plist; sourceTree = "<group>"; };
 		AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sprites.pvr.ccz; sourceTree = "<group>"; };
-		AAD06D5116674E3A004C8E78 /* Stars1.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Stars1.plist; sourceTree = "<group>"; };
 		AAD06D571667549B004C8E78 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
 		AAD06D581667549B004C8E78 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
+		AAD06D7016685C66004C8E78 /* Spark.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Spark.cpp; sourceTree = "<group>"; };
+		AAD06D7116685C66004C8E78 /* Spark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spark.h; sourceTree = "<group>"; };
+		AAD06D7516685C74004C8E78 /* mtrand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mtrand.cpp; sourceTree = "<group>"; };
+		AAD06D7616685C74004C8E78 /* mtrand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mtrand.h; sourceTree = "<group>"; };
 		BF137426128A8E4600D9F789 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BF23D4E3143315EB00657E08 /* AppDelegate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppDelegate.cpp; sourceTree = "<group>"; };
 		BF23D4E4143315EB00657E08 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -164,7 +168,6 @@
 		784521C214EBA449009D533B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				AAD06D5116674E3A004C8E78 /* Stars1.plist */,
 				AAD06D4C16674A8C004C8E78 /* Sprites.plist */,
 				AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */,
 				D4EF94ED15BD319D00D803EB /* Icon-144.png */,
@@ -199,9 +202,37 @@
 			name = libs;
 			sourceTree = "<group>";
 		};
+		AAD06D6F16685C66004C8E78 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				AAD06D7116685C66004C8E78 /* Spark.h */,
+				AAD06D7016685C66004C8E78 /* Spark.cpp */,
+			);
+			path = Entities;
+			sourceTree = "<group>";
+		};
+		AAD06D7316685C74004C8E78 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				AAD06D7416685C74004C8E78 /* mtrand */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		AAD06D7416685C74004C8E78 /* mtrand */ = {
+			isa = PBXGroup;
+			children = (
+				AAD06D7616685C74004C8E78 /* mtrand.h */,
+				AAD06D7516685C74004C8E78 /* mtrand.cpp */,
+			);
+			path = mtrand;
+			sourceTree = "<group>";
+		};
 		BF23D4E2143315EB00657E08 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				AAD06D7316685C74004C8E78 /* libs */,
+				AAD06D6F16685C66004C8E78 /* Entities */,
 				AA0B1D2B1664C3840011F556 /* Common.h */,
 				1A1CF3661626CB6000AFC938 /* AppMacros.h */,
 				BF23D4E4143315EB00657E08 /* AppDelegate.h */,
@@ -309,7 +340,6 @@
 				AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */,
 				AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */,
 				AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */,
-				AAD06D5416674E3A004C8E78 /* Stars1.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +372,8 @@
 				BF23D4E7143315EB00657E08 /* AppDelegate.cpp in Sources */,
 				BF23D4E8143315EB00657E08 /* HelloWorldScene.cpp in Sources */,
 				AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */,
+				AAD06D7216685C66004C8E78 /* Spark.cpp in Sources */,
+				AAD06D7A16685C74004C8E78 /* mtrand.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

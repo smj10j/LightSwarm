@@ -160,6 +160,20 @@ QUIT GAME
 	
 	
 	
+Sample Commands
+
+
+
+{"action":"identify","user":{"userId":"steve"}}{"action":"setPrefs","prefs":{}}
+
+{"action":"identify","user":{"userId":"steve"}}{"action":"setPrefs","prefs":{"reconnect":true}}
+
+
+{"action":"command","command":{"a":"b"}}
+
+
+{"action":"win"}
+	
 	
 	
 	

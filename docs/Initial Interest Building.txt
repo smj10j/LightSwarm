@@ -1,0 +1,43 @@
+Interest curve
+
+
+On first play:
+
+	Open with completely black screen for 2 seconds. Build initial interest
+		- Fade in and out: "The world has fallen to darkness"
+		- Fade in and out: "Not darkness as in evil"
+		- Fade in and out: "It's just really, really dark"
+		- Fade in and out: "For Light"
+		- Fade in and out: "Is in civil war"
+	
+	Cut to a game. Provide a brief burst of excitement.
+		- Immediately get attacked by a rush of red sparks for a fantastic battle - you are playing as white. Nothing you need to do to win - it's just eye candy for now
+	
+	Show text overlayed on game screen
+		- Fade in and out: "The rebels have been driven back."
+		- Fade in and out: "But they will return. We must halt their progress."
+		- Fade in: "Draw a circle around our WHITE sparks to select them."
+		- After selecting
+			- Fade our old text, Fade in: "Good. Now draw a line from our sparks to the RED enemy orb."
+			- After drawing path
+				- Fade our old text
+				
+	After destroying the red sparks
+		- Fade in and out: "Well done. You have served the Master Light well."
+		- Fade in and out: "The rebels are many, however, and there is much to do.
+							
+		
+							"
+		
+
+- Proceed into single player where you play as White - the master Light that all light sprung from - trying to quell the rebellion and restore order to the Light 
+
+
+Level 2 (flesh out more)
+
+- Encouraged to build a hospital and some hatcheries to ramp up unit production and heal wounded units faster, interest drops a little
+
+- Prompt them to create a colo prism and attack and colonize a nearby orb, interest spikes even higher as they start to see the depth of the game
+
+- Tell them they must colonize the remaining giant orb in the sector - recommend they acquire a massive force first - interest spikes for huge final battle
+
