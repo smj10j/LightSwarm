@@ -95,8 +95,10 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCTouch* touch = (CCTouch*)(touches->anyObject());
 	CCPoint location = touch->getLocation();
 
-
+	_prevTouches = _currentTouches;
 	_currentTouches.clear();
+	
+	CCLog("Cleared touches - prev touches size = %d", _prevTouches.size());
 }
 
 
@@ -113,9 +115,12 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCLOG("Processing %d touches", _currentTouches.size());
 
 	bool isALoop = false;
+	bool isStartingWithinExistingLasso = false;
 	
 	if(!_currentTouches.empty()) {
 		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back());
+		
+		isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
 	}
 		
 	if(!_selectedSparks.empty()) {
@@ -123,7 +128,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 		//first let's see if we're drawing a new lasso - we're guessing
 		//this by having a start point near the end point
-		if(isALoop) {
+		if(isALoop && !isStartingWithinExistingLasso) {
 			//drew a new lasso - even though other sparks are already selected
 			_selectedSparks.clear();
 			
@@ -138,6 +143,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 				(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
 			}
 			
+			_prevTouches = _currentTouches;
 			_currentTouches.clear();
 		}
 	}
@@ -163,6 +169,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(_currentTouches.empty()) {
 		//user tapped somewhere to deselect everything
 		_selectedSparks.clear();
+		_prevTouches.clear();
 		_currentTouches.clear();
 	}
 }

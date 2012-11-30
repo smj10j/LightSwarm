@@ -58,28 +58,8 @@ bool Spark::isInShape(list<CCPoint> shape) {
     // This is more accurate point for the node
     CCPoint absPoint = _sprite->convertToWorldSpace(CCPointZero);
 	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2, _sprite->getContentSize().height/2));
-	    float x = absPoint.x;
-    float y = absPoint.y;
-
-    CCPoint prev;
-    CCPoint cp;
-    bool isIn = false;
-
-	list<CCPoint>::iterator prevShapeIterator = shape.begin();
-	for(list<CCPoint>::iterator shapeIterator = shape.begin();
-		shapeIterator != shape.end();
-		prevShapeIterator = shapeIterator++) {
-		
-		cp = *shapeIterator;
-		prev = *prevShapeIterator;
-
-
-
-        if( ((cp.y > y) != (prev.y > y)) && (x < (prev.x -cp.x) * (y - cp.y) / (prev.y - cp.y) + cp.x)) {
-            isIn = !isIn;
-        }
-    }
-    return isIn;
+	
+	return Utilities::isPointInShape(absPoint, shape);
 }
 
 void Spark::setTargetMovePath(list<CCPoint> path) {
