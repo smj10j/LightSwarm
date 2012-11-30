@@ -88,11 +88,18 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 	queue<CCPoint> empty;
 	swap(_targetMovePath, empty);
 	
-	//convert path to a queue
+	//convert path to a queue (skip the first element and only add 5 total items)
+	int step = path.size()/5.0;
+	int i = 0;
+	
 	for(list<CCPoint>::iterator pathIterator = path.begin();
 		pathIterator != path.end();
 		pathIterator++) {
-		_targetMovePath.push(*pathIterator);
+		
+		if(i > 0 && i%step == 0) {
+			_targetMovePath.push(*pathIterator);
+		}
+		i++;
 	}
 }
 
