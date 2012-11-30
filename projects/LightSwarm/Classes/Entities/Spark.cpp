@@ -15,11 +15,6 @@ CCSprite* Spark::getSprite() {
 
 
 void Spark::clearAllEffects() {
-	if(_glowSprite != NULL) {
-		_glowSprite->removeFromParentAndCleanup(true);
-		_glowSprite->release();
-		_glowSprite = NULL;
-	}
 	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
 }
 
@@ -60,10 +55,14 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 			_targetMovePath.push(*pathIterator);
 		}
 	}
+	
+	//set our final destination
+	_restingPosition = _targetMovePath.back();
 }
 
 void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
+		//on the move!
 		CCPoint pos = _sprite->getPosition();
 		CCPoint targetMoveLocation = _targetMovePath.front();
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, 10);
@@ -78,13 +77,24 @@ void Spark::update(float dt) {
 		}else {
 			_targetMovePath.pop();
 		}
+	}else {
+		//resting
+		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), 50);
+		if(isAtRest) {
+			//jitter
+			float ds = SPARK_SPEED*2*dt;
+			CCPoint v = ccp(Utilities::getRandomDouble()-0.5, Utilities::getRandomDouble()-0.5);
+			CCPoint newLocation = ccpAdd(_sprite->getPosition(), ccp(ds*v.x,ds*v.y));
+			_sprite->setPosition(newLocation);
+						
+		}else {
+			//move back into scope
+			_targetMovePath.push(_restingPosition);
+		}
 	}
 }
 
 
 Spark::~Spark() {
-	if(_glowSprite != NULL) {
-		_glowSprite->release();
-	}
 	_sprite->release();
 }

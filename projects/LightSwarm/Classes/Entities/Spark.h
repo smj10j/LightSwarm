@@ -22,7 +22,7 @@ public:
 
 	Spark(CCSprite* sprite):_sprite(sprite) {
 		_sprite->retain();
-		_glowSprite = NULL;
+		_restingPosition = _sprite->getPosition();
 	}
 
 	CCSprite* getSprite();
@@ -41,9 +41,9 @@ public:
 private:
 
 	CCSprite* _sprite;
-	CCSprite* _glowSprite;
 	
 	queue<CCPoint> _targetMovePath;
+	CCPoint _restingPosition;
 };
 
 

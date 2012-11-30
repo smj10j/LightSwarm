@@ -2,7 +2,6 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "Common.h"
-#include "mtrand.h"
 #include "Spark.h"
 #include <set>
 #include <list>
@@ -34,9 +33,7 @@ public:
 
 private:
 	CCSpriteBatchNode* _batchNode;
-	
-	MTRand_closed _randDouble;	//double in closed range [0,1]
-	
+		
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
 	set<Spark*> _sparks;

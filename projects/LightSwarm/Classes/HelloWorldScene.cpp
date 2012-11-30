@@ -37,12 +37,13 @@ bool HelloWorld::init()
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
 	//TODO: seed this with the value we get from the server
-	_randDouble.seed(450);
+	
+	Utilities::setRandomSeed(450);
 	
 	for(int i = 0; i < 50; i++) {
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
-		sprite->setPosition(ccp(winSize.width * _randDouble(), winSize.height * _randDouble()));
+		sprite->setPosition(ccp(winSize.width * Utilities::getRandomDouble(), winSize.height * Utilities::getRandomDouble()));
 		_batchNode->addChild(sprite, 1);
 		
 		Spark* spark = new Spark(sprite);

@@ -10,6 +10,7 @@
 #define __LightSwarm__Utilities__
 
 #include "Common.h"
+#include "mtrand.h"
 #include <list>
 USING_NS_CC;
 using namespace std;
@@ -25,6 +26,9 @@ public:
 
 	static bool isPointInShape(CCPoint point, list<CCPoint> shape);
 
+
+	static void setRandomSeed(int seed);
+	static double getRandomDouble();
 };
 
 

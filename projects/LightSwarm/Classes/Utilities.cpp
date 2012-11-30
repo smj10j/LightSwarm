@@ -8,6 +8,8 @@
 
 #include "Utilities.h"
 
+MTRand_closed _randDouble;	//double in closed range [0,1]
+
 double Utilities::getMillis() {
 	timeval time;
 	gettimeofday(&time, NULL);
@@ -46,3 +48,19 @@ bool Utilities::isPointInShape(CCPoint point, list<CCPoint> shape) {
     }
     return isIn;
 }
+
+
+
+
+void Utilities::setRandomSeed(int seed) {
+	_randDouble.seed(seed);
+}
+
+double Utilities::getRandomDouble() {
+	return _randDouble();
+}
+
+
+
+
+
