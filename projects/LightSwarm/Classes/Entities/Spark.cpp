@@ -23,7 +23,7 @@ void Spark::clearAllEffects() {
 }
 
 
-void Spark::addGlowEffect(const ccColor3B& colour, const CCSize& size) {
+void Spark::showSelectionEffect(const ccColor3B& colour, const CCSize& size) {
 
     CCPoint pos = ccp(_sprite->getContentSize().width / 2, _sprite->getContentSize().height / 2);
 
@@ -88,7 +88,7 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 	queue<CCPoint> empty;
 	swap(_targetMovePath, empty);
 	
-	//convert path to a queue (skip the first element and only add 5 total items)
+	//convert path to a queue (only add 5 total items)
 	int step = path.size()/5.0;
 	int i = 0;
 	
@@ -96,10 +96,9 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 		pathIterator != path.end();
 		pathIterator++) {
 		
-		if(i > 0 && i%step == 0) {
+		if(i++ % step == 0) {
 			_targetMovePath.push(*pathIterator);
 		}
-		i++;
 	}
 }
 
@@ -107,7 +106,7 @@ void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
 		CCPoint pos = _sprite->getPosition();
 		CCPoint targetMoveLocation = _targetMovePath.front();
-		bool isAtTarget = fabsf(targetMoveLocation.x-pos.x) < 10 && fabsf(targetMoveLocation.y-pos.y) < 10;
+		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, 10);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));

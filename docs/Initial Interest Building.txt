@@ -18,17 +18,15 @@ On first play:
 		- Fade in and out: "But they will return. We must halt their progress."
 		- Fade in: "Draw a circle around our WHITE sparks to select them."
 		- After selecting
-			- Fade our old text, Fade in: "Good. Now draw a line from our sparks to the RED enemy orb."
+			- Fade out old text, Fade in: "Good. Now draw a line from our sparks to the RED enemy orb."
 			- After drawing path
-				- Fade our old text
+				- Fade out old text
 				
 	After destroying the red sparks
 		- Fade in and out: "Well done. You have served the Master Light well."
-		- Fade in and out: "The rebels are many, however, and there is much to do.
-							
-		
-							"
-		
+		- Fade in and out: "Still, the rebels are many and there is much to do.
+
+	Show End Game popup		
 
 - Proceed into single player where you play as White - the master Light that all light sprung from - trying to quell the rebellion and restore order to the Light 
 

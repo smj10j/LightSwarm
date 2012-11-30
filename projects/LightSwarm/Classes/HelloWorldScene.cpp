@@ -91,20 +91,19 @@ void HelloWorld::draw() {
 
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
-
-	_currentTouches.clear();
-	
-}
-
-
-void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize() ;
 	
 	CCTouch* touch = (CCTouch*)(touches->anyObject());
 	CCPoint location = touch->getLocation();
 
-	CCLog("touch at %f", Utilities::getMillis());
-	CCLOG("got touch at %f,%f", location.x, location.y);
+
+	_currentTouches.clear();
+}
+
+
+void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+	
+	CCTouch* touch = (CCTouch*)(touches->anyObject());
+	CCPoint location = touch->getLocation();
 	
 	_currentTouches.push_back(location);
 }
@@ -112,20 +111,35 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
 	CCLOG("Processing %d touches", _currentTouches.size());
+
+	bool isALoop = false;
 	
+	if(!_currentTouches.empty()) {
+		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back());
+	}
+		
 	if(!_selectedSparks.empty()) {
 		//move!
 		
-		CCLog("would now move the selected sparks");
+		//first let's see if we're drawing a new lasso - we're guessing
+		//this by having a start point near the end point
+		if(isALoop) {
+			//drew a new lasso - even though other sparks are already selected
+			_selectedSparks.clear();
 			
-		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
-			selectedSparksIterator != _selectedSparks.end();
-			selectedSparksIterator++) {
-			
-			(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
-		}
+		}else if(!_currentTouches.empty()) {
 		
-		_currentTouches.clear();
+			CCLog("would now move the selected sparks");
+				
+			for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+				selectedSparksIterator != _selectedSparks.end();
+				selectedSparksIterator++) {
+				
+				(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
+			}
+			
+			_currentTouches.clear();
+		}
 	}
 	
 	//remove the selection effects and apply any new efects
@@ -139,7 +153,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	
 		if(!_currentTouches.empty()) {
 			if(spark->isInShape(_currentTouches)) {
-				spark->addGlowEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
+				spark->showSelectionEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
 				_selectedSparks.insert(spark);
 			}
 		}

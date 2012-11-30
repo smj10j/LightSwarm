@@ -32,7 +32,7 @@ public:
 	void setTargetMovePath(list<CCPoint> path);
 	
 	void clearAllEffects();
-	void addGlowEffect(const ccColor3B& colour, const CCSize& size);
+	void showSelectionEffect(const ccColor3B& colour, const CCSize& size);
 	
 	bool isInShape(list<CCPoint> shape);
 	

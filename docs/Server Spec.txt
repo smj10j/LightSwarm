@@ -1,3 +1,15 @@
+THOUGHTS
+
+- Arbitrary numbers of players in a game? Cooperative play? How can elders help new players?
+- Ability to add friends on game center is very important.
+- Is a lobby a good idea? Will it engender more community?
+- Allow setting the color and font of text with a few basic options
+- What kind of self-expression can I embed into the game? Custom flags planted on orbs? Picking the color of their sparks? 
+
+
+VERSION THE SERVER!!!! Only players with clients matching the server version can connect - force updates this way
+
+
 
 Use Sockets for API - express is only for server assets
 
