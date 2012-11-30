@@ -96,9 +96,7 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCPoint location = touch->getLocation();
 
 	_prevTouches = _currentTouches;
-	_currentTouches.clear();
-	
-	CCLog("Cleared touches - prev touches size = %d", _prevTouches.size());
+	_currentTouches.clear();	
 }
 
 
@@ -154,14 +152,16 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		sparksIterator++) {
 
 		Spark* spark = *sparksIterator;
-		
-		spark->clearAllEffects();
-	
+			
 		if(!_currentTouches.empty()) {
 			if(spark->isInShape(_currentTouches)) {
 				spark->showSelectionEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
 				_selectedSparks.insert(spark);
+			}else {
+				spark->clearAllEffects();
 			}
+		}else {
+			spark->clearAllEffects();
 		}
 	}
 	

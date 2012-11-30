@@ -20,36 +20,16 @@ void Spark::clearAllEffects() {
 		_glowSprite->release();
 		_glowSprite = NULL;
 	}
+	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
 }
 
 
 void Spark::showSelectionEffect(const ccColor3B& colour, const CCSize& size) {
 
     CCPoint pos = ccp(_sprite->getContentSize().width / 2, _sprite->getContentSize().height / 2);
-
-    _glowSprite = CCSprite::createWithSpriteFrameName("asteroid.png");
-
-    _glowSprite->setColor(colour);
-    _glowSprite->setPosition(pos);
-    _glowSprite->setRotation(_sprite->getRotation());
-
-    _ccBlendFunc f = {GL_ONE, GL_ONE};
-    _glowSprite->setBlendFunc(f);
 	
-    _sprite->addChild(_glowSprite, -1);
-
-/*
-    // Run some animation which scales a bit the glow
-    CCSequence* s1 = CCSequence::create(
-                     CCScaleTo::create(0.9f, size.width, size.height),
-                     CCScaleTo::create(0.9f, size.width*0.75f, size.height*0.75f),
-					 NULL);
-    CCRepeatForever* r = CCRepeatForever::create(s1);
-    _glowSprite->runAction(r);
-*/
-
-
-	_glowSprite->retain();
+	//_sprite->setBlendFunc({GL_BLEND_SRC_ALPHA, GL_BLEND_DST_ALPHA});
+	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
 }
 
 
