@@ -65,8 +65,7 @@ void Spark::update(float dt) {
 		//on the move!
 		CCPoint pos = _sprite->getPosition();
 		CCPoint targetMoveLocation = _targetMovePath.front();
-		//TODO: replace 10 with something that is more cross-device compatible
-		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, 10);
+		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
@@ -80,7 +79,7 @@ void Spark::update(float dt) {
 		}
 	}else {
 		//resting
-		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition());
+		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
 			float ds = SPARK_SPEED*2*dt;

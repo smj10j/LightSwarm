@@ -15,9 +15,15 @@
 USING_NS_CC;
 using namespace std;
 
+extern int DIRECT_TOUCH_DISTANCE;
+extern int IMMEDIATE_VINCINITY_DISTANCE;
+extern int NEARBY_DISTANCE;
+
 class Utilities
 {
 public:
+
+	static void init();
 
 	static double getMillis();
 

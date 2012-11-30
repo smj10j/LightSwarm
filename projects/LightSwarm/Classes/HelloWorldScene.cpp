@@ -98,7 +98,8 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCPoint location = touch->getLocation();
 
 	_prevTouches = _currentTouches;
-	_currentTouches.clear();	
+	_currentTouches.clear();
+	_currentTouches.push_back(location);
 }
 
 
@@ -118,7 +119,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	bool isStartingWithinExistingLasso = false;
 	
 	if(!_currentTouches.empty()) {
-		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back());
+		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);
 		
 		isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
 	}
@@ -134,16 +135,21 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			
 		}else if(!_currentTouches.empty()) {
 		
-			CCLog("would now move the selected sparks");
+			if(_currentTouches.size() > 1) {
+				//multi touch is valid
+						
+				CCLog("would now move the selected sparks");
+					
+				for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+					selectedSparksIterator != _selectedSparks.end();
+					selectedSparksIterator++) {
+					
+					(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
+				}
 				
-			for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
-				selectedSparksIterator != _selectedSparks.end();
-				selectedSparksIterator++) {
-				
-				(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
+				_prevTouches = _currentTouches;
 			}
 			
-			_prevTouches = _currentTouches;
 			_currentTouches.clear();
 		}
 	}
