@@ -32,7 +32,7 @@ public:
 	void setTargetMovePath(list<CCPoint> path);
 	
 	void clearAllEffects();
-	void showSelectionEffect(const ccColor3B& colour, const CCSize& size);
+	void addSelectionEffect();
 	
 	bool isInShape(list<CCPoint> shape);
 	
@@ -45,6 +45,11 @@ private:
 	queue<CCPoint> _targetMovePath;
 	CCPoint _restingPosition;
 };
+
+
+#define PATH_SAMPLE_RATE 20.0
+#define SPARK_SPEED 100		//TODO: need to figure out how to do this all with proper units
+
 
 
 

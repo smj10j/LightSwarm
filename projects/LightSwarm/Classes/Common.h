@@ -49,8 +49,6 @@
 
 
 
-#define SPARK_SPEED 100	//meters/sec
-
 
 
 

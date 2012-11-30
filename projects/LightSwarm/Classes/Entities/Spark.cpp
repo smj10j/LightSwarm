@@ -19,7 +19,7 @@ void Spark::clearAllEffects() {
 }
 
 
-void Spark::showSelectionEffect(const ccColor3B& colour, const CCSize& size) {
+void Spark::addSelectionEffect() {
 	
 	//_sprite->setBlendFunc({GL_BLEND_SRC_ALPHA, GL_BLEND_DST_ALPHA});
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
@@ -43,8 +43,8 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 	queue<CCPoint> empty;
 	swap(_targetMovePath, empty);
 	
-	//convert path to a queue (only add 5 total items)
-	int step = path.size()/5.0;
+	//convert path to a queue (only add some of the path items)
+	int step = path.size()/PATH_SAMPLE_RATE;
 	int i = 0;
 	
 	for(list<CCPoint>::iterator pathIterator = path.begin();

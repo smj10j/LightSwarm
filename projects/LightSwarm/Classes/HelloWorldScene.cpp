@@ -37,7 +37,6 @@ bool HelloWorld::init()
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
 	//TODO: seed this with the value we get from the server
-	
 	Utilities::setRandomSeed(450);
 	
 	for(int i = 0; i < 200; i++) {
@@ -52,11 +51,11 @@ bool HelloWorld::init()
 		_sparks.insert(spark);
 	}
 	
-	this->setTouchEnabled(true);
 
 	CCLog("Game started at %f", Utilities::getMillis());
 	
 	this->scheduleUpdate();
+	this->setTouchEnabled(true);
 	
 	return true;
 }
@@ -163,7 +162,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			
 		if(!_currentTouches.empty()) {
 			if(spark->isInShape(_currentTouches)) {
-				spark->showSelectionEffect(ccc3(255,255,255), CCSizeMake(2.5f, 2.5f));
+				spark->addSelectionEffect();
 				_selectedSparks.insert(spark);
 			}else {
 				spark->clearAllEffects();
