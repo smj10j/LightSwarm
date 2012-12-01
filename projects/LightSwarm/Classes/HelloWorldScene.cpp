@@ -112,14 +112,21 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
 		CCTouch* touch2 = (CCTouch*)(*touchIterator);		
 		
+		_currentTouches.clear();
 		_isManipulatingViewport = true;
-		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(), touch2->getLocation());
+		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(),
+																touch2->getLocation());
 
 	}
 }
 
 
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+	
+	if(!_isManipulatingViewport && touches->count() > 1) {
+		_currentTouches.clear();
+		_isManipulatingViewport = true;
+	}
 	
 	if(!_isManipulatingViewport) {
 		//interation with units/orbs
@@ -133,23 +140,25 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 		_currentTouches.push_back(location);
 		
-	}else {
+	}else if(touches->count() > 1) {
 		//viewport manipulation
 		
 		CCSetIterator touchIterator = touches->begin();
 		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
 		CCTouch* touch2 = (CCTouch*)(*touchIterator);
+		CCPoint location1 = touch1->getLocation();
+		CCPoint location2 = touch2->getLocation();
 		
-		float fingerDistance = ccpDistance(touch1->getLocation(), touch2->getLocation());
+		float fingerDistance = ccpDistance(location1, location2);
+		CCPoint center = ccp((location1.x+location2.x)/2,
+							(location1.y+location2.y)/2);
 			
 		float fingerDistanceDiff = fingerDistance - _prevViewportManipulationFingerDistance;
 		float fingerDistanceDiffPercent = fingerDistanceDiff/_prevViewportManipulationFingerDistance;
-
-		CCLog("fingerDistanceDiffPercent = %f", fingerDistanceDiffPercent);
 		
-		if(fabs(fingerDistanceDiffPercent) > 0.40) {
-			
+		if(fabs(fingerDistanceDiffPercent) > 0.15) {
 			//pinch
+			
 			_currentViewportScale+= fingerDistanceDiffPercent;
 			if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
 			if(_currentViewportScale > VIEWPORT_SCALE_MAX) _currentViewportScale = VIEWPORT_SCALE_MAX;
@@ -164,6 +173,11 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			}
 			
 			_prevViewportManipulationFingerDistance = fingerDistance;
+			
+		}else {
+			//drag
+			
+			
 		}
 		
 	}
