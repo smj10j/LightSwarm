@@ -28,10 +28,13 @@ void Spark::addSelectionEffect() {
 
 bool Spark::isInShape(list<CCPoint> shape) {
 
+	float scaleX =_sprite->getScaleX();
+	float scaleY = _sprite->getScaleY();
+
     // This is more accurate point for the node
     CCPoint absPoint = _sprite->convertToWorldSpace(CCPointZero);
-	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
-									_sprite->getContentSize().height/2 * _sprite->getScaleY())
+	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * scaleX,
+									_sprite->getContentSize().height/2 * scaleY)
 				);
 	
 	return Utilities::isPointInShape(absPoint, shape);

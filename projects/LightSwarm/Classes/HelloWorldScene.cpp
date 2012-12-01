@@ -28,7 +28,9 @@ bool HelloWorld::init()
 
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	
-	
+	_currentViewportScale = VIEWPORT_SCALE_INITIAL;
+	_isManipulatingViewport = false;
+	_prevViewportManipulationFingerDistance = 0;
 	
 	
 	//create a batch node
@@ -43,7 +45,7 @@ bool HelloWorld::init()
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 		sprite->setPosition(ccp(winSize.width * Utilities::getRandomDouble(), winSize.height * Utilities::getRandomDouble()));
-		sprite->setScale(.25);
+		sprite->setScale(_currentViewportScale*SCALE_FACTOR);
 		_batchNode->addChild(sprite, 1);
 		
 		Spark* spark = new Spark(sprite);
@@ -92,27 +94,86 @@ void HelloWorld::draw() {
 
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
-	
-	CCTouch* touch = (CCTouch*)(touches->anyObject());
-	CCPoint location = touch->getLocation();
+		
+	if(touches->count() == 1) {
+		//interation with units/orbs
+		CCTouch* touch = (CCTouch*)(touches->anyObject());
+		CCPoint location = touch->getLocation();
 
-	_prevTouches = _currentTouches;
-	_currentTouches.clear();
-	_currentTouches.push_back(location);
+		_prevTouches = _currentTouches;
+		_currentTouches.clear();
+		_currentTouches.push_back(location);
+		
+	}else {
+		CCLOG("Viewport manipulation");
+		//viewport manipulation
+		
+		CCSetIterator touchIterator = touches->begin();
+		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
+		CCTouch* touch2 = (CCTouch*)(*touchIterator);		
+		
+		_isManipulatingViewport = true;
+		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(), touch2->getLocation());
+
+	}
 }
 
 
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 	
-	CCTouch* touch = (CCTouch*)(touches->anyObject());
-	CCPoint location = touch->getLocation();
-	
-	_currentTouches.push_back(location);
+	if(!_isManipulatingViewport) {
+		//interation with units/orbs
+		
+		if(_currentTouches.size() >= MAX_TOUCHES) {
+			return;
+		}
+		
+		CCTouch* touch = (CCTouch*)(touches->anyObject());
+		CCPoint location = touch->getLocation();
+		
+		_currentTouches.push_back(location);
+		
+	}else {
+		//viewport manipulation
+		
+		CCSetIterator touchIterator = touches->begin();
+		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
+		CCTouch* touch2 = (CCTouch*)(*touchIterator);
+		
+		float fingerDistance = ccpDistance(touch1->getLocation(), touch2->getLocation());
+			
+		float fingerDistanceDiff = fingerDistance - _prevViewportManipulationFingerDistance;
+		float fingerDistanceDiffPercent = fingerDistanceDiff/_prevViewportManipulationFingerDistance;
+
+		CCLog("fingerDistanceDiffPercent = %f", fingerDistanceDiffPercent);
+		
+		if(fabs(fingerDistanceDiffPercent) > 0.40) {
+			
+			//pinch
+			_currentViewportScale+= fingerDistanceDiffPercent;
+			if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
+			if(_currentViewportScale > VIEWPORT_SCALE_MAX) _currentViewportScale = VIEWPORT_SCALE_MAX;
+			
+			for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+				sparksIterator != _sparks.end();
+				sparksIterator++) {
+				
+				Spark* spark = *sparksIterator;
+
+				spark->getSprite()->setScale(_currentViewportScale*SCALE_FACTOR);
+			}
+			
+			_prevViewportManipulationFingerDistance = fingerDistance;
+		}
+		
+	}
 }
 
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
 	CCLOG("Processing %d touches", _currentTouches.size());
+
+	_isManipulatingViewport = false;
 
 	bool isALoop = false;
 	bool isStartingWithinExistingLasso = false;

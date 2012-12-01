@@ -34,8 +34,14 @@ public:
 private:
 	CCSpriteBatchNode* _batchNode;
 		
+	bool _isManipulatingViewport;
+	float _currentViewportScale;
+	float _prevViewportManipulationFingerDistance;
+	
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
+	
+	
 	set<Spark*> _sparks;
 	set<Spark*> _selectedSparks;
 };

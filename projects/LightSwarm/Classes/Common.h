@@ -46,9 +46,15 @@
 #define DEBUG_ABC				((false || DEBUG_ALL_THE_THINGS) && !DEVICE_BUILD)
 
 
+#define MAX_TOUCHES 400
+
+#define VIEWPORT_SCALE_MIN 0.25
+#define VIEWPORT_SCALE_INITIAL 0.50
+#define VIEWPORT_SCALE_MAX 2
 
 
-
+//TODO: move all game config items into an xml file that can be reloaded at run-time
+//this will speed up balance and gameplay adjustments by not having to recompile
 
 
 

@@ -19,6 +19,8 @@ extern int DIRECT_TOUCH_DISTANCE;
 extern int IMMEDIATE_VINCINITY_DISTANCE;
 extern int NEARBY_DISTANCE;
 
+extern float SCALE_FACTOR;
+
 class Utilities
 {
 public:
