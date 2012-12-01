@@ -47,7 +47,7 @@ private:
 	
 	
 	
-	CCPoint jitter(CCPoint point, float dt);
+	CCPoint jitter(CCPoint point, CCPoint weights, float dt);
 };
 
 

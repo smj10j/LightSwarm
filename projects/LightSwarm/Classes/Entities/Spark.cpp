@@ -71,7 +71,7 @@ void Spark::update(float dt) {
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
 			
 			CCPoint newLocation = ccpAdd(pos, ccp(ds*v.x,ds*v.y));
-			newLocation = this->jitter(newLocation, dt);
+			newLocation = this->jitter(newLocation, ccp(-v.y, v.x), dt);
 			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
 			
 			_sprite->setPosition(newLocation);
@@ -83,7 +83,7 @@ void Spark::update(float dt) {
 		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
-			CCPoint newLocation = this->jitter(_sprite->getPosition(), dt);
+			CCPoint newLocation = this->jitter(_sprite->getPosition(), ccp(0.5,0.5), dt);
 			_sprite->setPosition(newLocation);
 						
 		}else {
@@ -93,9 +93,9 @@ void Spark::update(float dt) {
 	}
 }
 
-CCPoint Spark::jitter(CCPoint point, float dt) {
+CCPoint Spark::jitter(CCPoint point, CCPoint weights, float dt) {
 	float ds = SPARK_SPEED*2*dt;
-	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*ds, (Utilities::getRandomDouble()-0.5)*ds));
+	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
 
 
