@@ -213,9 +213,14 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
-	CCLOG("Processing %d touches", _currentTouches.size());
 
+	if(_isManipulatingViewport || _currentTouches.empty()) {
+		_isManipulatingViewport = false;
+		return;
+	}
 	_isManipulatingViewport = false;
+
+	CCLOG("Processing %d touches", _currentTouches.size());
 
 	bool isALoop = false;
 	bool isStartingWithinExistingLasso = false;

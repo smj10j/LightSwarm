@@ -42,6 +42,8 @@ bool Spark::isInShape(list<CCPoint> shape) {
 
 void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 
+	_targetViewportCenter = viewportCenter;
+
 	//clear the queue
 	queue<CCPoint> empty;
 	swap(_targetMovePath, empty);
@@ -54,21 +56,20 @@ void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 		pathIterator++) {
 		
 		if(i++ % PATH_SAMPLE_RATE == 0) {
-			_targetMovePath.push(*pathIterator);
+			_targetMovePath.push(ccpSub(*pathIterator, _targetViewportCenter));
 		}
 	}
 	_targetMovePath.push(path.back());
-	_targetViewportCenter = viewportCenter;
 	
 	//set our final destination
-	_restingPosition = _targetMovePath.back();
+	_restingPosition = ccpSub(_targetMovePath.back(), _targetViewportCenter);
 }
 
 void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
 		//on the move!
 		CCPoint pos = _sprite->getPosition();
-		CCPoint targetMoveLocation = ccpSub(_targetMovePath.front(), _targetViewportCenter);
+		CCPoint targetMoveLocation = _targetMovePath.front();
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
