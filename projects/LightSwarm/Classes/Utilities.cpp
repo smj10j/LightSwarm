@@ -17,7 +17,7 @@ void Utilities::init() {
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	NEARBY_DISTANCE = MAX(winSize.width, winSize.height)/10.0;
 	IMMEDIATE_VINCINITY_DISTANCE = MAX(winSize.width, winSize.height)/15.0;
-	DIRECT_TOUCH_DISTANCE = MAX(20, MAX(winSize.width, winSize.height)/25.0);
+	DIRECT_TOUCH_DISTANCE = MAX(20, MAX(winSize.width, winSize.height)/50.0);
 }
 
 double Utilities::getMillis() {

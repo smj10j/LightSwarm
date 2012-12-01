@@ -44,10 +44,14 @@ private:
 	
 	queue<CCPoint> _targetMovePath;
 	CCPoint _restingPosition;
+	
+	
+	
+	CCPoint jitter(CCPoint point, float dt);
 };
 
 
-#define PATH_SAMPLE_RATE 20.0
+#define PATH_SAMPLE_RATE 10
 #define SPARK_SPEED 100		//TODO: need to figure out how to do this all with proper units
 
 

@@ -44,17 +44,17 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 	swap(_targetMovePath, empty);
 	
 	//convert path to a queue (only add some of the path items)
-	int step = path.size()/PATH_SAMPLE_RATE;
 	int i = 0;
 	
 	for(list<CCPoint>::iterator pathIterator = path.begin();
 		pathIterator != path.end();
 		pathIterator++) {
 		
-		if(i++ % step == 0) {
+		if(i++ % PATH_SAMPLE_RATE == 0) {
 			_targetMovePath.push(*pathIterator);
 		}
 	}
+	_targetMovePath.push(path.back());
 	
 	//set our final destination
 	_restingPosition = _targetMovePath.back();
@@ -71,6 +71,7 @@ void Spark::update(float dt) {
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
 			
 			CCPoint newLocation = ccpAdd(pos, ccp(ds*v.x,ds*v.y));
+			newLocation = this->jitter(newLocation, dt);
 			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
 			
 			_sprite->setPosition(newLocation);
@@ -82,9 +83,7 @@ void Spark::update(float dt) {
 		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
-			float ds = SPARK_SPEED*2*dt;
-			CCPoint v = ccp(Utilities::getRandomDouble()-0.5, Utilities::getRandomDouble()-0.5);
-			CCPoint newLocation = ccpAdd(_sprite->getPosition(), ccp(ds*v.x,ds*v.y));
+			CCPoint newLocation = this->jitter(_sprite->getPosition(), dt);
 			_sprite->setPosition(newLocation);
 						
 		}else {
@@ -92,6 +91,11 @@ void Spark::update(float dt) {
 			_targetMovePath.push(_restingPosition);
 		}
 	}
+}
+
+CCPoint Spark::jitter(CCPoint point, float dt) {
+	float ds = SPARK_SPEED*2*dt;
+	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*ds, (Utilities::getRandomDouble()-0.5)*ds));
 }
 
 
