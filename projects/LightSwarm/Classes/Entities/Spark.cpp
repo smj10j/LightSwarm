@@ -59,10 +59,11 @@ void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 			_targetMovePath.push(ccpSub(*pathIterator, _targetViewportCenter));
 		}
 	}
-	_targetMovePath.push(path.back());
+	_targetMovePath.push(ccpSub(path.back(), _targetViewportCenter));
 	
 	//set our final destination
-	_restingPosition = ccpSub(_targetMovePath.back(), _targetViewportCenter);
+	_restingPosition = _targetMovePath.back();
+
 }
 
 void Spark::update(float dt) {
