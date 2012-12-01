@@ -136,9 +136,20 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 	
+		
+	CCSetIterator touchIterator = touches->begin();
+	CCTouch* touch1 = (CCTouch*)(*touchIterator);
+	CCTouch* touch2 = (CCTouch*)(touches->count() > 1 ? *(++touchIterator) : *touchIterator);
+	CCPoint location1 = touch1->getLocation();
+	CCPoint location2 = touch2->getLocation();
+	
+	
 	if(!_isManipulatingViewport && touches->count() > 1) {
 		//added another finger
 		_currentTouches.clear();
+		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(),
+															  touch2->getLocation());
+		_prevViewporCenter = ccpMidpoint(location1, location2);
 		_isManipulatingViewport = true;
 	}
 	
@@ -156,12 +167,6 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 	}else if(touches->count() > 1) {
 		//viewport manipulation
-		
-		CCSetIterator touchIterator = touches->begin();
-		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
-		CCTouch* touch2 = (CCTouch*)(*touchIterator);
-		CCPoint location1 = touch1->getLocation();
-		CCPoint location2 = touch2->getLocation();
 		
 		float fingerDistance = ccpDistance(location1, location2);
 		CCPoint center = ccpMidpoint(location1, location2);
@@ -234,9 +239,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 			if(_currentTouches.size() > 1) {
 				//multi touch is valid
-						
-				CCLog("would now move the selected sparks");
-					
+											
 				for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
 					selectedSparksIterator != _selectedSparks.end();
 					selectedSparksIterator++) {
