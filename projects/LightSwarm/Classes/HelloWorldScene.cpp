@@ -25,17 +25,20 @@ bool HelloWorld::init()
     {
         return false;
     }
+	
+	_gameLayer = CCLayer::create();
+	this->addChild(_gameLayer);
 
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	
 	_currentViewportScale = VIEWPORT_SCALE_INITIAL;
+	_prevViewporCenter = _gameLayer->getPosition();
 	_isManipulatingViewport = false;
 	_prevViewportManipulationFingerDistance = 0;
 	
-	
 	//create a batch node
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
-	this->addChild(_batchNode);
+	_gameLayer->addChild(_batchNode);
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
 	//TODO: seed this with the value we get from the server
@@ -78,6 +81,11 @@ void HelloWorld::update(float dt) {
 
 void HelloWorld::draw() {
 	
+	if(_currentTouches.size() < 5) {
+		//don't draw yet
+		return;
+	}
+	
 	//draw a line as we drag our finger
 	glLineWidth(5);
 	list<CCPoint>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
@@ -85,7 +93,9 @@ void HelloWorld::draw() {
 		currentTouchesIterator != _currentTouches.end();
 		prevcurrentTouchesIterator = currentTouchesIterator++) {
 			
-		ccDrawLine(*prevcurrentTouchesIterator, *currentTouchesIterator);
+		ccDrawLine(*prevcurrentTouchesIterator,
+					*currentTouchesIterator
+		);
 	}
 	
 }
@@ -105,17 +115,20 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		_currentTouches.push_back(location);
 		
 	}else {
-		CCLOG("Viewport manipulation");
 		//viewport manipulation
 		
 		CCSetIterator touchIterator = touches->begin();
 		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
-		CCTouch* touch2 = (CCTouch*)(*touchIterator);		
+		CCTouch* touch2 = (CCTouch*)(*touchIterator);
+		CCPoint location1 = touch1->getLocation();
+		CCPoint location2 = touch2->getLocation();
+		
 		
 		_currentTouches.clear();
 		_isManipulatingViewport = true;
 		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(),
 																touch2->getLocation());
+		_prevViewporCenter = ccpMidpoint(location1, location2);
 
 	}
 }
@@ -124,6 +137,7 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 	
 	if(!_isManipulatingViewport && touches->count() > 1) {
+		//added another finger
 		_currentTouches.clear();
 		_isManipulatingViewport = true;
 	}
@@ -150,8 +164,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		CCPoint location2 = touch2->getLocation();
 		
 		float fingerDistance = ccpDistance(location1, location2);
-		CCPoint center = ccp((location1.x+location2.x)/2,
-							(location1.y+location2.y)/2);
+		CCPoint center = ccpMidpoint(location1, location2);
 			
 		float fingerDistanceDiff = fingerDistance - _prevViewportManipulationFingerDistance;
 		float fingerDistanceDiffPercent = fingerDistanceDiff/_prevViewportManipulationFingerDistance;
@@ -159,17 +172,21 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		if(fabs(fingerDistanceDiffPercent) > 0.15) {
 			//pinch
 			
-			_currentViewportScale+= fingerDistanceDiffPercent;
-			if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
-			if(_currentViewportScale > VIEWPORT_SCALE_MAX) _currentViewportScale = VIEWPORT_SCALE_MAX;
-			
-			for(set<Spark*>::iterator sparksIterator = _sparks.begin();
-				sparksIterator != _sparks.end();
-				sparksIterator++) {
+			if(fingerDistanceDiffPercent < 1) {				
+				_currentViewportScale+= fingerDistanceDiffPercent;
+				if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
+				if(_currentViewportScale > VIEWPORT_SCALE_MAX) _currentViewportScale = VIEWPORT_SCALE_MAX;
 				
-				Spark* spark = *sparksIterator;
+				for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+					sparksIterator != _sparks.end();
+					sparksIterator++) {
+					
+					Spark* spark = *sparksIterator;
 
-				spark->getSprite()->setScale(_currentViewportScale*SCALE_FACTOR);
+					spark->getSprite()->setScale(_currentViewportScale*SCALE_FACTOR);
+				}
+			}else {
+				//error from slow fingers
 			}
 			
 			_prevViewportManipulationFingerDistance = fingerDistance;
@@ -177,9 +194,15 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		}else {
 			//drag
 			
-			
+			CCPoint v = ccpSub(center, _prevViewporCenter);
+			if(!isnan(v.x) && !isnan(v.y)) {
+				CCLOG("Dragging viewport by v=%f,%f", v.x,v.y);
+				_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), v));
+				CCLOG("_gameLayer.position = %f,%f", _gameLayer->getPosition().x, _gameLayer->getPosition().y);
+			}
 		}
 		
+		_prevViewporCenter = center;
 	}
 }
 
@@ -218,7 +241,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 					selectedSparksIterator != _selectedSparks.end();
 					selectedSparksIterator++) {
 					
-					(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
+					(*selectedSparksIterator)->setTargetMovePath(_currentTouches, _gameLayer->convertToWorldSpace(CCPointZero));
 				}
 				
 				_prevTouches = _currentTouches;

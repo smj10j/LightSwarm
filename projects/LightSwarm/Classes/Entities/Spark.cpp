@@ -40,7 +40,7 @@ bool Spark::isInShape(list<CCPoint> shape) {
 	return Utilities::isPointInShape(absPoint, shape);
 }
 
-void Spark::setTargetMovePath(list<CCPoint> path) {
+void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 
 	//clear the queue
 	queue<CCPoint> empty;
@@ -58,6 +58,7 @@ void Spark::setTargetMovePath(list<CCPoint> path) {
 		}
 	}
 	_targetMovePath.push(path.back());
+	_targetViewportCenter = viewportCenter;
 	
 	//set our final destination
 	_restingPosition = _targetMovePath.back();
@@ -67,14 +68,14 @@ void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
 		//on the move!
 		CCPoint pos = _sprite->getPosition();
-		CCPoint targetMoveLocation = _targetMovePath.front();
+		CCPoint targetMoveLocation = ccpSub(_targetMovePath.front(), _targetViewportCenter);
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
 			
 			CCPoint newLocation = ccpAdd(pos, ccp(ds*v.x,ds*v.y));
-			newLocation = this->jitter(newLocation, ccp(-v.y, v.x), dt);
+			newLocation = this->jitter(newLocation, ccpMult(ccpPerp(v), 2), dt);
 			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
 			
 			_sprite->setPosition(newLocation);

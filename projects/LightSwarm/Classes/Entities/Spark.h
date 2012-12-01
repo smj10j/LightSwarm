@@ -29,7 +29,7 @@ public:
 	
 	void update(float dt);
 	
-	void setTargetMovePath(list<CCPoint> path);
+	void setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter);
 	
 	void clearAllEffects();
 	void addSelectionEffect();
@@ -43,6 +43,7 @@ private:
 	CCSprite* _sprite;
 	
 	queue<CCPoint> _targetMovePath;
+	CCPoint _targetViewportCenter;
 	CCPoint _restingPosition;
 	
 	

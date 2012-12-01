@@ -37,6 +37,7 @@ private:
 	bool _isManipulatingViewport;
 	float _currentViewportScale;
 	float _prevViewportManipulationFingerDistance;
+	CCPoint _prevViewporCenter;
 	
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
@@ -44,6 +45,9 @@ private:
 	
 	set<Spark*> _sparks;
 	set<Spark*> _selectedSparks;
+	
+	
+	CCLayer* _gameLayer;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
