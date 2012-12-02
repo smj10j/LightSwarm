@@ -48,10 +48,9 @@ bool HelloWorld::init()
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 		sprite->setPosition(ccp(winSize.width * Utilities::getRandomDouble(), winSize.height * Utilities::getRandomDouble()));
-		sprite->setScale(_currentViewportScale*SCALE_FACTOR);
 		_batchNode->addChild(sprite, 1);
 		
-		Spark* spark = new Spark(sprite);
+		Spark* spark = new Spark(sprite, _currentViewportScale);
 		
 		_sparks.insert(spark);
 	}
@@ -170,13 +169,21 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 		float fingerDistance = ccpDistance(location1, location2);
 		CCPoint center = ccpMidpoint(location1, location2);
+		CCPoint dragDiff = ccpSub(center, _prevViewporCenter);
 			
 		float fingerDistanceDiff = fingerDistance - _prevViewportManipulationFingerDistance;
 		float fingerDistanceDiffPercent = fingerDistanceDiff/_prevViewportManipulationFingerDistance;
 		
-		if(fabs(fingerDistanceDiffPercent) > 0.15) {
-			//pinch
+		if(ccpDistance(center, _prevViewporCenter) > 5) {
+			//drag
 			
+			if(!isnan(dragDiff.x) && !isnan(dragDiff.y)) {
+				_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), dragDiff));
+			}
+			
+		}/*else if(fabs(fingerDistanceDiffPercent) > 0.15) {
+			//pinch
+					
 			if(fingerDistanceDiffPercent < 1) {				
 				_currentViewportScale+= fingerDistanceDiffPercent;
 				if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
@@ -188,24 +195,20 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 					
 					Spark* spark = *sparksIterator;
 
-					spark->getSprite()->setScale(_currentViewportScale*SCALE_FACTOR);
+					spark->setViewportScale(_currentViewportScale);
 				}
+					
+				if(!isnan(dragDiff.x) && !isnan(dragDiff.y)) {
+					_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), ccpMult(dragDiff, 1/_currentViewportScale)));
+				}				
+				
 			}else {
 				//error from slow fingers
 			}
 			
 			_prevViewportManipulationFingerDistance = fingerDistance;
 			
-		}else {
-			//drag
-			
-			CCPoint v = ccpSub(center, _prevViewporCenter);
-			if(!isnan(v.x) && !isnan(v.y)) {
-				CCLOG("Dragging viewport by v=%f,%f", v.x,v.y);
-				_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), v));
-				CCLOG("_gameLayer.position = %f,%f", _gameLayer->getPosition().x, _gameLayer->getPosition().y);
-			}
-		}
+		}*/
 		
 		_prevViewporCenter = center;
 	}
@@ -229,6 +232,12 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);
 		
 		isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
+	}else {
+		//user tapped somewhere to deselect everything
+		_selectedSparks.clear();
+		_prevTouches.clear();
+		_currentTouches.clear();
+		return;
 	}
 		
 	if(!_selectedSparks.empty()) {
@@ -244,7 +253,18 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 			if(_currentTouches.size() > 1) {
 				//multi touch is valid
-											
+				
+				//remove touches within the starting lasso if our ending touch is outside of it
+				if(!Utilities::isPointInShape(_currentTouches.back(), _prevTouches)) {
+					for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
+						currentTouchesIterator != _currentTouches.end();
+						_currentTouches.erase(currentTouchesIterator++)) {
+						if(!Utilities::isPointInShape(*currentTouchesIterator, _prevTouches)) {
+							break;
+						}
+					}
+				}
+																
 				for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
 					selectedSparksIterator != _selectedSparks.end();
 					selectedSparksIterator++) {
@@ -276,14 +296,6 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		}else {
 			spark->clearAllEffects();
 		}
-	}
-	
-	
-	if(_currentTouches.empty()) {
-		//user tapped somewhere to deselect everything
-		_selectedSparks.clear();
-		_prevTouches.clear();
-		_currentTouches.clear();
 	}
 }
 

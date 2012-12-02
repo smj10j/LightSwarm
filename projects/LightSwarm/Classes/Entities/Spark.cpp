@@ -40,6 +40,12 @@ bool Spark::isInShape(list<CCPoint> shape) {
 	return Utilities::isPointInShape(absPoint, shape);
 }
 
+void Spark::setViewportScale(float scale) {
+	_viewportScale = scale;
+	_sprite->setScale(_viewportScale*SCALE_FACTOR);
+	_sprite->setPosition(ccpMult(_sprite->getPosition(), _viewportScale));
+}
+
 void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 
 	_targetViewportCenter = viewportCenter;
@@ -69,28 +75,29 @@ void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
 		//on the move!
-		CCPoint pos = _sprite->getPosition();
 		CCPoint targetMoveLocation = _targetMovePath.front();
-		bool isAtTarget = Utilities::isNear(targetMoveLocation, pos, DIRECT_TOUCH_DISTANCE);
+		bool isAtTarget = Utilities::isNear(targetMoveLocation, _position, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
 			float ds = SPARK_SPEED*dt;
-			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-pos.x, targetMoveLocation.y-pos.y));
+			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-_position.x, targetMoveLocation.y-_position.y));
 			
-			CCPoint newLocation = ccpAdd(pos, ccp(ds*v.x,ds*v.y));
+			CCPoint newLocation = ccpAdd(_position, ccp(ds*v.x,ds*v.y));
 			newLocation = this->jitter(newLocation, ccpMult(ccpPerp(v), 2), dt);
 			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
 			
-			_sprite->setPosition(newLocation);
+			_sprite->setPosition(ccpMult(newLocation, _viewportScale));
+			_position = newLocation;
 		}else {
 			_targetMovePath.pop();
 		}
 	}else {
 		//resting
-		bool isAtRest = Utilities::isNear(_restingPosition, _sprite->getPosition(), NEARBY_DISTANCE);
+		bool isAtRest = Utilities::isNear(_restingPosition, _position, NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
-			CCPoint newLocation = this->jitter(_sprite->getPosition(), ccp(0.5,0.5), dt);
-			_sprite->setPosition(newLocation);
+			CCPoint newLocation = this->jitter(_position, ccp(0.5,0.5), dt);
+			_sprite->setPosition(ccpMult(newLocation, _viewportScale));
+			_position = newLocation;
 						
 		}else {
 			//move back into scope
