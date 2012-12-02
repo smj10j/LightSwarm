@@ -276,6 +276,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			}
 			
 			_currentTouches.clear();
+			_selectedSparks.clear();
 		}
 	}
 	
