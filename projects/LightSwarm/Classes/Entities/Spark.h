@@ -51,8 +51,6 @@ private:
 };
 
 
-#define PATH_SAMPLE_RATE 10
-#define SPARK_SPEED 100		//TODO: need to figure out how to do this all with proper units
 
 
 

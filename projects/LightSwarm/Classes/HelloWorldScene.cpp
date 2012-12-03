@@ -31,7 +31,7 @@ bool HelloWorld::init()
 
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	
-	_currentViewportScale = VIEWPORT_SCALE_INITIAL;
+	_currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_INITIAL);
 	_prevViewporCenter = _gameLayer->getPosition();
 	_isManipulatingViewport = false;
 	_prevViewportManipulationFingerDistance = 0;
@@ -61,7 +61,7 @@ bool HelloWorld::init()
 	
 	this->scheduleUpdate();
 	this->setTouchEnabled(true);
-	
+		
 	return true;
 }
 
@@ -156,7 +156,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(!_isManipulatingViewport) {
 		//interation with units/orbs
 		
-		if(_currentTouches.size() >= MAX_TOUCHES) {
+		if(_currentTouches.size() >= Config::getIntForKey(CONFIG_MAX_TOUCHES)) {
 			return;
 		}
 		
@@ -187,8 +187,8 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 					
 			if(fingerDistanceDiffPercent < 1) {				
 				_currentViewportScale+= fingerDistanceDiffPercent;
-				if(_currentViewportScale < VIEWPORT_SCALE_MIN) _currentViewportScale = VIEWPORT_SCALE_MIN;
-				if(_currentViewportScale > VIEWPORT_SCALE_MAX) _currentViewportScale = VIEWPORT_SCALE_MAX;
+				if(_currentViewportScale < Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MIN)) _currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MIN);
+				if(_currentViewportScale > Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MAX)) _currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MAX);
 				
 				for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 					sparksIterator != _sparks.end();

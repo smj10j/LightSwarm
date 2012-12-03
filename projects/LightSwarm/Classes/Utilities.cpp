@@ -28,7 +28,7 @@ void Utilities::init() {
 double Utilities::getMillis() {
 	timeval time;
 	gettimeofday(&time, NULL);
-	return ((double)time.tv_sec) + ((double)time.tv_usec / 1000000.0);
+	return ((double)time.tv_sec*1000.0) + ((double)time.tv_usec / 1000.0);
 }
 
 bool Utilities::isNear(CCPoint p1, CCPoint p2) {

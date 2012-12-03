@@ -55,7 +55,7 @@ void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 		pathIterator != path.end();
 		pathIterator++) {
 		
-		if(i++ % PATH_SAMPLE_RATE == 0) {
+		if(i++ % Config::getIntForKey(CONFIG_SPARK_PATH_SAMPLE_RATE) == 0) {
 			_targetMovePath.push(ccpSub(*pathIterator, _targetViewportCenter));
 		}
 	}
@@ -66,7 +66,6 @@ void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
 
 }
 
-//TODO: verify movement speed same on all devices
 void Spark::update(float dt) {
 	if(!_targetMovePath.empty()) {
 		//on the move!
@@ -74,7 +73,7 @@ void Spark::update(float dt) {
 		CCPoint targetMoveLocation = _targetMovePath.front();
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, position, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
-			float ds = SPARK_SPEED*dt;
+			float ds = Config::getDoubleForKey(CONFIG_SPARK_SPEED)*dt;
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-position.x, targetMoveLocation.y-position.y));
 			
 			CCPoint newLocation = ccpAdd(position, ccp(ds*v.x,ds*v.y));
@@ -102,7 +101,7 @@ void Spark::update(float dt) {
 }
 
 CCPoint Spark::jitter(CCPoint point, CCPoint weights, float dt) {
-	float ds = SPARK_SPEED*2*dt;
+	float ds = Config::getDoubleForKey(CONFIG_SPARK_SPEED)*2*dt;
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
 

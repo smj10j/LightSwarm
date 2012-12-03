@@ -48,7 +48,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         pDirector->setContentScaleFactor(smallResource.size.height/designResolutionSize.height);
     }
 	
-	if(!DISTRIBUTION_BUILD) {
+	if(!DEVICE_BUILD) {
 		// turn on display FPS
 		pDirector->setDisplayStats(true);
 	}
@@ -58,6 +58,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 	//setup commonly used utils
 	Utilities::init();
+	Config::init();
+	if(MODIFYING_GAME_CONFIG) {
+		//editing
+		const char* filepath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath("GameConfig.json");
+		CCLOG("Open file: %s to modify game config", filepath);
+	}
 
     // create a scene. it's an autorelease object
     CCScene *pScene = HelloWorld::scene();

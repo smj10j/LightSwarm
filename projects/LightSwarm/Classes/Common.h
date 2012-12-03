@@ -21,6 +21,10 @@
 //NOTE: be sure to set the correct distribution provisioning profile!
 #define BETA_BUILD (false && !DISTRIBUTION_BUILD)
 
+
+//opens up the GameConfig.json file on run
+#define MODIFYING_GAME_CONFIG (true && !DISTRIBUTION_BUILD)
+
 /******************* END USER-DEFINABLE ******************/
 
 
@@ -45,12 +49,6 @@
 #define DEBUG_ALL_THE_THINGS	( false							 && !DEVICE_BUILD)
 #define DEBUG_ABC				((false || DEBUG_ALL_THE_THINGS) && !DEVICE_BUILD)
 
-
-#define MAX_TOUCHES 400
-
-#define VIEWPORT_SCALE_MIN 0.25
-#define VIEWPORT_SCALE_INITIAL 1.0
-#define VIEWPORT_SCALE_MAX 2
 
 
 //TODO: move all game config items into an xml file that can be reloaded at run-time
@@ -78,5 +76,6 @@
 #include "cocos2d.h"
 #include "AppMacros.h"
 #include "Utilities.h"
+#include "Config.h"
 #endif
 

@@ -14,6 +14,15 @@
 		AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */; };
 		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
+		AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B5F166CB6CE00CC263A /* GameConfig.json */; };
+		AACD6B67166CB77D00CC263A /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B65166CB77D00CC263A /* Config.cpp */; };
+		AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B74166CB98B00CC263A /* json_internalarray.inl */; };
+		AACD6B7C166CB98B00CC263A /* json_internalmap.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B75166CB98B00CC263A /* json_internalmap.inl */; };
+		AACD6B7D166CB98B00CC263A /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B76166CB98B00CC263A /* json_reader.cpp */; };
+		AACD6B7E166CB98B00CC263A /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B77166CB98B00CC263A /* json_value.cpp */; };
+		AACD6B7F166CB98B00CC263A /* json_valueiterator.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B78166CB98B00CC263A /* json_valueiterator.inl */; };
+		AACD6B80166CB98B00CC263A /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B79166CB98B00CC263A /* json_writer.cpp */; };
+		AACD6B81166CB98B00CC263A /* sconscript in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B7A166CB98B00CC263A /* sconscript */; };
 		AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4C16674A8C004C8E78 /* Sprites.plist */; };
 		AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */; };
 		AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAD06D571667549B004C8E78 /* Utilities.cpp */; };
@@ -69,6 +78,25 @@
 		AA0B1D201664C0EC0011F556 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		AA0B1D211664C0EC0011F556 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		AA0B1D2B1664C3840011F556 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		AACD6B5F166CB6CE00CC263A /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
+		AACD6B65166CB77D00CC263A /* Config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Config.cpp; sourceTree = "<group>"; };
+		AACD6B66166CB77D00CC263A /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
+		AACD6B6A166CB98B00CC263A /* autolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autolink.h; sourceTree = "<group>"; };
+		AACD6B6B166CB98B00CC263A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		AACD6B6C166CB98B00CC263A /* features.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = features.h; sourceTree = "<group>"; };
+		AACD6B6D166CB98B00CC263A /* forwards.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = forwards.h; sourceTree = "<group>"; };
+		AACD6B6E166CB98B00CC263A /* json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		AACD6B6F166CB98B00CC263A /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
+		AACD6B70166CB98B00CC263A /* value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = value.h; sourceTree = "<group>"; };
+		AACD6B71166CB98B00CC263A /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
+		AACD6B73166CB98B00CC263A /* json_batchallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_batchallocator.h; sourceTree = "<group>"; };
+		AACD6B74166CB98B00CC263A /* json_internalarray.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_internalarray.inl; sourceTree = "<group>"; };
+		AACD6B75166CB98B00CC263A /* json_internalmap.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_internalmap.inl; sourceTree = "<group>"; };
+		AACD6B76166CB98B00CC263A /* json_reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_reader.cpp; sourceTree = "<group>"; };
+		AACD6B77166CB98B00CC263A /* json_value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_value.cpp; sourceTree = "<group>"; };
+		AACD6B78166CB98B00CC263A /* json_valueiterator.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_valueiterator.inl; sourceTree = "<group>"; };
+		AACD6B79166CB98B00CC263A /* json_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_writer.cpp; sourceTree = "<group>"; };
+		AACD6B7A166CB98B00CC263A /* sconscript */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sconscript; sourceTree = "<group>"; };
 		AAD06D4C16674A8C004C8E78 /* Sprites.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Sprites.plist; sourceTree = "<group>"; };
 		AAD06D4D16674A8C004C8E78 /* Sprites.pvr.ccz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sprites.pvr.ccz; sourceTree = "<group>"; };
 		AAD06D571667549B004C8E78 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
@@ -177,6 +205,7 @@
 				D446FD7C161028F4000ADA7B /* Default-568h@2x.png */,
 				D446FD7A161028ED000ADA7B /* Default@2x.png */,
 				D446FD78161028E9000ADA7B /* Default.png */,
+				AACD6B5F166CB6CE00CC263A /* GameConfig.json */,
 			);
 			name = Resources;
 			path = ../Resources;
@@ -202,6 +231,45 @@
 			name = libs;
 			sourceTree = "<group>";
 		};
+		AACD6B68166CB98B00CC263A /* jsoncpp */ = {
+			isa = PBXGroup;
+			children = (
+				AACD6B69166CB98B00CC263A /* json */,
+				AACD6B72166CB98B00CC263A /* src */,
+			);
+			path = jsoncpp;
+			sourceTree = "<group>";
+		};
+		AACD6B69166CB98B00CC263A /* json */ = {
+			isa = PBXGroup;
+			children = (
+				AACD6B6A166CB98B00CC263A /* autolink.h */,
+				AACD6B6B166CB98B00CC263A /* config.h */,
+				AACD6B6C166CB98B00CC263A /* features.h */,
+				AACD6B6D166CB98B00CC263A /* forwards.h */,
+				AACD6B6E166CB98B00CC263A /* json.h */,
+				AACD6B6F166CB98B00CC263A /* reader.h */,
+				AACD6B70166CB98B00CC263A /* value.h */,
+				AACD6B71166CB98B00CC263A /* writer.h */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
+		AACD6B72166CB98B00CC263A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				AACD6B73166CB98B00CC263A /* json_batchallocator.h */,
+				AACD6B74166CB98B00CC263A /* json_internalarray.inl */,
+				AACD6B75166CB98B00CC263A /* json_internalmap.inl */,
+				AACD6B76166CB98B00CC263A /* json_reader.cpp */,
+				AACD6B77166CB98B00CC263A /* json_value.cpp */,
+				AACD6B78166CB98B00CC263A /* json_valueiterator.inl */,
+				AACD6B79166CB98B00CC263A /* json_writer.cpp */,
+				AACD6B7A166CB98B00CC263A /* sconscript */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		AAD06D6F16685C66004C8E78 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,6 +282,7 @@
 		AAD06D7316685C74004C8E78 /* libs */ = {
 			isa = PBXGroup;
 			children = (
+				AACD6B68166CB98B00CC263A /* jsoncpp */,
 				AAD06D7416685C74004C8E78 /* mtrand */,
 			);
 			path = libs;
@@ -241,6 +310,8 @@
 				BF23D4E5143315EB00657E08 /* HelloWorldScene.cpp */,
 				AAD06D581667549B004C8E78 /* Utilities.h */,
 				AAD06D571667549B004C8E78 /* Utilities.cpp */,
+				AACD6B66166CB77D00CC263A /* Config.h */,
+				AACD6B65166CB77D00CC263A /* Config.cpp */,
 			);
 			name = Classes;
 			path = ../Classes;
@@ -340,6 +411,11 @@
 				AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */,
 				AAD06D4E16674A8C004C8E78 /* Sprites.plist in Resources */,
 				AAD06D4F16674A8C004C8E78 /* Sprites.pvr.ccz in Resources */,
+				AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */,
+				AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */,
+				AACD6B7C166CB98B00CC263A /* json_internalmap.inl in Resources */,
+				AACD6B7F166CB98B00CC263A /* json_valueiterator.inl in Resources */,
+				AACD6B81166CB98B00CC263A /* sconscript in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,6 +450,10 @@
 				AAD06D591667549B004C8E78 /* Utilities.cpp in Sources */,
 				AAD06D7216685C66004C8E78 /* Spark.cpp in Sources */,
 				AAD06D7A16685C74004C8E78 /* mtrand.cpp in Sources */,
+				AACD6B67166CB77D00CC263A /* Config.cpp in Sources */,
+				AACD6B7D166CB98B00CC263A /* json_reader.cpp in Sources */,
+				AACD6B7E166CB98B00CC263A /* json_value.cpp in Sources */,
+				AACD6B80166CB98B00CC263A /* json_writer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
