@@ -29,7 +29,7 @@ public:
 	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	
-	~HelloWorld();
+	virtual ~HelloWorld();
 
 private:
 	CCSpriteBatchNode* _batchNode;

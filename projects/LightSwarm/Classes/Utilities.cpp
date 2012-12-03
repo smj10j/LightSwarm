@@ -15,13 +15,14 @@ int NEARBY_DISTANCE = 0;
 float SCALE_FACTOR = 1;
 
 void Utilities::init() {
-	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-	NEARBY_DISTANCE = MAX(winSize.width, winSize.height)/10.0;
-	IMMEDIATE_VINCINITY_DISTANCE = MAX(winSize.width, winSize.height)/15.0;
-	DIRECT_TOUCH_DISTANCE = MAX(20, MAX(winSize.width, winSize.height)/50.0);
+	CCSize frameSize = CCDirector::sharedDirector()->getOpenGLView()->getFrameSize();
+
+	NEARBY_DISTANCE = MAX(frameSize.width, frameSize.height)/10.0;
+	IMMEDIATE_VINCINITY_DISTANCE = MAX(frameSize.width, frameSize.height)/15.0;
+	DIRECT_TOUCH_DISTANCE = MAX(20, MAX(frameSize.width, frameSize.height)/50.0);
 	
-	SCALE_FACTOR = fmin(winSize.width / designResolutionSize.width,
-						winSize.height / designResolutionSize.height);
+	SCALE_FACTOR = CCDirector::sharedDirector()->getContentScaleFactor();
+	CCLOG("Screen size = %fx%f - scale factor = %f", frameSize.width, frameSize.height, SCALE_FACTOR);
 }
 
 double Utilities::getMillis() {

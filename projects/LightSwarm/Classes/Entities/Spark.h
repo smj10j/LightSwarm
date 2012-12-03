@@ -20,10 +20,9 @@ class Spark
 {
 public:
 
-	Spark(CCSprite* sprite, float scale):_sprite(sprite),_viewportScale(scale) {
+	Spark(CCSprite* sprite):_sprite(sprite) {
 		_sprite->retain();
 		_restingPosition = _sprite->getPosition();
-		_position = _sprite->getPosition();
 	}
 
 	CCSprite* getSprite();
@@ -38,7 +37,7 @@ public:
 	
 	bool isInShape(list<CCPoint> shape);
 	
-	~Spark();
+	virtual ~Spark();
 
 private:
 
@@ -47,8 +46,6 @@ private:
 	queue<CCPoint> _targetMovePath;
 	CCPoint _targetViewportCenter;
 	CCPoint _restingPosition;
-	CCPoint _position;
-	float _viewportScale;
 	
 	CCPoint jitter(CCPoint point, CCPoint weights, float dt);
 };
