@@ -142,12 +142,6 @@ void Spark::update(Orb* orb, float dt) {
 void Spark::die() {
 	_isDead = true;
 	//TODO: play death animation
-	
-	if(_sprite != NULL) {
-		_sprite->removeFromParentAndCleanup(true);
-		_sprite->release();
-		_sprite = NULL;
-	}
 }
 
 CCPoint Spark::jitter(CCPoint point, CCPoint weights, float dt) {

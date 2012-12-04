@@ -10,11 +10,11 @@
 
 void PingLocation::update(float dt) {
 	if(_radius < _targetRadius) {
-		_radius+= _targetRadius*dt;		
+		_radius+= _targetRadius*(dt/Config::getDoubleForKey(CONFIG_PING_LOCATION_SPINUP_SECONDS));
 		_opacity = fmin(_radius/_targetRadius, 1);
 	}else {
 		if(_opacity > 0) {
-			_opacity-= dt/5.0;
+			_opacity-= dt/Config::getDoubleForKey(CONFIG_PING_LOCATION_SPINDOWN_SECONDS);
 		}
 	}
 }
@@ -23,8 +23,7 @@ void PingLocation::draw() {
 
 	if(_opacity <= 0) return;
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glLineWidth(2);
 	ccDrawColor4B(_color.r, _color.g, _color.b, _opacity*255);
-	ccDrawCircle(_position, _radius, 0, 60, false);
+	ccDrawCircle(_position, _radius, 0, 90, false);
 }

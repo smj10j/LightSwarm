@@ -25,6 +25,11 @@ bool HelloWorld::init()
     {
         return false;
     }
+
+
+	//default blend function
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	
 	_gameLayer = CCLayer::create();
 	this->addChild(_gameLayer);
@@ -88,6 +93,7 @@ void HelloWorld::update(float dt) {
 		Spark* spark = *sparksIterator;
 		
 		if(spark->isDead()) {
+			(*sparksIterator)->getSprite()->removeFromParentAndCleanup(true);
 			_sparks.erase(sparksIterator++);
 			continue;
 		}
@@ -182,14 +188,14 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 												1,
 												SCALE_FACTOR*150,
 												ccc4(0, 0, 255, 255));
-		_pingLocations.push_front(pingLocation);
+		_pingLocations.push_back(pingLocation);
 		this->addChild(pingLocation);
 	}else {
 		PingLocation* pingLocation = new PingLocation(location,
 												1,
 												SCALE_FACTOR*150,
 												ccc4(0, 255, 0, 255));
-		_pingLocations.push_front(pingLocation);
+		_pingLocations.push_back(pingLocation);
 		this->addChild(pingLocation);
 	}
 }
@@ -279,7 +285,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 												1,
 												SCALE_FACTOR*150,
 												ccc4(255, 0, 0, 255));
-		_pingLocations.push_front(pingLocation);
+		_pingLocations.push_back(pingLocation);
 		this->addChild(pingLocation);
 	}
 	_isManipulatingViewport = false;
@@ -313,6 +319,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		if(isALoop && !isStartingWithinExistingLasso) {
 			//drew a new lasso - even though other sparks are already selected
 			_selectedSparks.clear();
+			clearPingLocations();
 			
 		}else if(!_currentTouches.empty()) {
 		
