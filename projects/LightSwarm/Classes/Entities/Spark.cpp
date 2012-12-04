@@ -116,6 +116,20 @@ void Spark::update(Orb* orb, float dt) {
 		_health-= Config::getDoubleForKey(CONFIG_SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
 		
 		_sprite->setOpacity(255.0*(_health/_initialHealth));
+		
+	}else {
+		//heal
+		if(_health < _initialHealth) {
+			//TODO: healRate will also be modified by hospitals
+			float healRate = Config::getDoubleForKey(CONFIG_ORB_BASE_HEAL_RATE_PER_SECOND);
+			_health+= healRate*dt;
+			_sprite->setOpacity(255.0*(_health/_initialHealth));
+			
+		}else if(_health > _initialHealth) {
+			_health = _initialHealth;
+			_sprite->setOpacity(255.0*(_health/_initialHealth));
+			
+		}
 	}
 	
 	

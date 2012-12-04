@@ -81,7 +81,7 @@ bool HelloWorld::init()
 
 
 void HelloWorld::update(float dt) {
-		
+				
 	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
