@@ -49,7 +49,7 @@ bool HelloWorld::init()
 		//create an orb
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("asteroid.png");
 		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
-		sprite->setScale(SCALE_FACTOR);
+		sprite->setScale(SCALE_FACTOR*(Utilities::getRandomDouble()*3));
 		_batchNode->addChild(sprite, 1);
 		
 		Orb* orb = new Orb(sprite);

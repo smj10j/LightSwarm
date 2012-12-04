@@ -27,7 +27,7 @@ void Orb::addSelectionEffect() {
 }
 
 float Orb::getRadius() {
-	return SCALE_FACTOR*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
+	return _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
 }
 
 bool Orb::isInShape(list<CCPoint> shape) {
