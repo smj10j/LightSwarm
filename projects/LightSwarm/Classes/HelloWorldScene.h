@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Spark.h"
+#include "Orb.h"
 #include <set>
 #include <list>
 USING_NS_CC;
@@ -42,6 +43,7 @@ private:
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
 	
+	set<Orb*> _orbs;
 	
 	set<Spark*> _sparks;
 	set<Spark*> _selectedSparks;

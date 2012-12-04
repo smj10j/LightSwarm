@@ -10,6 +10,7 @@
 #define __LightSwarm__Spark__
 
 #include "Common.h"
+#include "Orb.h"
 #include <set>
 #include <list>
 #include <queue>
@@ -20,20 +21,33 @@ class Spark
 {
 public:
 
-	Spark(CCSprite* sprite):_sprite(sprite) {
+	Spark(CCSprite* sprite, float speedMultiplier, float strengthMultiplier, float healthMultiplier):
+		_sprite(sprite),
+		_speedMultiplier(speedMultiplier),
+		_strengthMultiplier(strengthMultiplier),
+		_initialHealth(healthMultiplier*Config::getDoubleForKey(CONFIG_SPARK_BASE_HEALTH)),
+		_isDead(false),
+		_restingPosition(sprite->getPosition()) {
+		
+		_nearestOrb = NULL;
+		_health = _initialHealth;
+		
 		_sprite->retain();
-		_restingPosition = _sprite->getPosition();
 	}
 
 	CCSprite* getSprite();
 	
-	void update(float dt);
+	void update(Orb* orb, float dt);
 	
 	void setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter);
 	void setViewportScale(float scale);
 	
 	void clearAllEffects();
 	void addSelectionEffect();
+
+	void die();
+	
+	bool isDead();
 	
 	bool isInShape(list<CCPoint> shape);
 	
@@ -46,6 +60,15 @@ private:
 	queue<CCPoint> _targetMovePath;
 	CCPoint _targetViewportCenter;
 	CCPoint _restingPosition;
+	
+	Orb* _nearestOrb;
+	
+	float _speedMultiplier;
+	float _strengthMultiplier;
+	float _health;
+	float _initialHealth;
+	
+	bool _isDead;
 	
 	CCPoint jitter(CCPoint point, CCPoint weights, float dt);
 };

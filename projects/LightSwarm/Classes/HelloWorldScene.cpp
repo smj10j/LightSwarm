@@ -44,6 +44,19 @@ bool HelloWorld::init()
 	//TODO: seed this with the value we get from the server
 	Utilities::setRandomSeed(450);
 	
+	
+	for(int i = 0; i < 10; i++) {
+		//create an orb
+		CCSprite* sprite = CCSprite::createWithSpriteFrameName("asteroid.png");
+		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
+		sprite->setScale(SCALE_FACTOR);
+		_batchNode->addChild(sprite, 1);
+		
+		Orb* orb = new Orb(sprite);
+		
+		_orbs.insert(orb);
+	}	
+	
 	for(int i = 0; i < 500; i++) {
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
@@ -51,7 +64,7 @@ bool HelloWorld::init()
 		sprite->setScale(SCALE_FACTOR);
 		_batchNode->addChild(sprite, 1);
 		
-		Spark* spark = new Spark(sprite);
+		Spark* spark = new Spark(sprite, 1.0, 1.0, 1.0);
 		
 		_sparks.insert(spark);
 	}
@@ -68,14 +81,45 @@ bool HelloWorld::init()
 
 
 void HelloWorld::update(float dt) {
-
-	//let each spark update itself
+		
+	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
-		sparksIterator++) {
+		 ) {
+				
+		Spark* spark = *sparksIterator;
 		
-		(*sparksIterator)->update(dt);
+		if(spark->isDead()) {
+			_sparks.erase(sparksIterator++);
+			continue;
+		}
+		
+		Orb* nearestOrb = NULL;
+		float minDistance = 10000000;
+		for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+			orbsIterator != _orbs.end();
+			orbsIterator++) {
+			float distance = ccpDistance((*orbsIterator)->getSprite()->getPosition(), spark->getSprite()->getPosition());
+			if(distance < minDistance) {
+				minDistance = distance;
+				nearestOrb = (*orbsIterator);
+			}
+		}
+		
+		spark->update(nearestOrb, dt);
+		
+		sparksIterator++;
 	}
+	
+	//update orbs
+	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+		orbsIterator != _orbs.end();
+		 orbsIterator++) {
+				
+		Orb* orb = *orbsIterator;
+		
+		orb->update(dt);
+	}	
 }
 
 

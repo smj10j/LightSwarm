@@ -14,6 +14,7 @@
 		AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */; };
 		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
+		AA315EBA166DEDFE006D5409 /* Orb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315EB8166DEDFE006D5409 /* Orb.cpp */; };
 		AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B5F166CB6CE00CC263A /* GameConfig.json */; };
 		AACD6B67166CB77D00CC263A /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B65166CB77D00CC263A /* Config.cpp */; };
 		AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B74166CB98B00CC263A /* json_internalarray.inl */; };
@@ -78,6 +79,8 @@
 		AA0B1D201664C0EC0011F556 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		AA0B1D211664C0EC0011F556 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		AA0B1D2B1664C3840011F556 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		AA315EB8166DEDFE006D5409 /* Orb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orb.cpp; sourceTree = "<group>"; };
+		AA315EB9166DEDFE006D5409 /* Orb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orb.h; sourceTree = "<group>"; };
 		AACD6B5F166CB6CE00CC263A /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
 		AACD6B65166CB77D00CC263A /* Config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Config.cpp; sourceTree = "<group>"; };
 		AACD6B66166CB77D00CC263A /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -275,6 +278,8 @@
 			children = (
 				AAD06D7116685C66004C8E78 /* Spark.h */,
 				AAD06D7016685C66004C8E78 /* Spark.cpp */,
+				AA315EB9166DEDFE006D5409 /* Orb.h */,
+				AA315EB8166DEDFE006D5409 /* Orb.cpp */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -454,6 +459,7 @@
 				AACD6B7D166CB98B00CC263A /* json_reader.cpp in Sources */,
 				AACD6B7E166CB98B00CC263A /* json_value.cpp in Sources */,
 				AACD6B80166CB98B00CC263A /* json_writer.cpp in Sources */,
+				AA315EBA166DEDFE006D5409 /* Orb.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
