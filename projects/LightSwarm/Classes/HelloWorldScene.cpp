@@ -208,12 +208,16 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCTouch* touch = (CCTouch*)touches->anyObject();
 	CCPoint location = touch->getLocation();
 	
+			
 	if(!_isManipulatingSparks && !_isManipulatingViewport) {
 		//well by golly, what ARE we doing?
 		
 		double now = Utilities::getMillis();
 
-		if(!_selectedSparks.empty() && (now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS)) {
+		if(!_selectedSparks.empty() && (
+				(now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS) ||
+				Utilities::isPointInShape(location, _prevTouches))
+			) {
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
 			
@@ -296,21 +300,10 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}
 
 
-	bool isALoop = false;
-	bool isStartingWithinExistingLasso = false;
+	bool isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);;		
+	bool isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
 	
-	if(!_currentTouches.empty()) {
-		isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);
-		
-		isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
-	}else {
-		//user tapped somewhere to deselect everything
-		_selectedSparks.clear();
-		_prevTouches.clear();
-		_currentTouches.clear();
-		return;
-	}
-		
+				
 	if(!_selectedSparks.empty()) {
 		//move!
 		
@@ -320,6 +313,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			//drew a new lasso - even though other sparks are already selected
 			_selectedSparks.clear();
 			clearPingLocations();
+			_prevTouches = _currentTouches;
 			
 		}else if(!_currentTouches.empty()) {
 		
@@ -350,6 +344,8 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			_currentTouches.clear();
 			_selectedSparks.clear();
 		}
+	}else {
+		_prevTouches = _currentTouches;
 	}
 	
 	//remove the selection effects and apply any new efects
@@ -370,6 +366,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			spark->clearAllEffects();
 		}
 	}
+	
 }
 
 
