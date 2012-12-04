@@ -147,78 +147,61 @@ void HelloWorld::draw() {
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 		
-	if(touches->count() == 1) {
-		//interation with units/orbs
-		CCTouch* touch = (CCTouch*)(touches->anyObject());
-		CCPoint location = touch->getLocation();
+	CCTouch* touch = (CCTouch*)touches->anyObject();
+	CCPoint location = touch->getLocation();
+	
+	_currentTouches.clear();
+	_prevViewporCenter = location;
+	_isManipulatingViewport = false;
+	_isManipulatingSparks = false;
 
-		_prevTouches = _currentTouches;
-		_currentTouches.clear();
-		_currentTouches.push_back(location);
-		
-	}else {
-		//viewport manipulation
-		
-		CCSetIterator touchIterator = touches->begin();
-		CCTouch* touch1 = (CCTouch*)(*touchIterator++);
-		CCTouch* touch2 = (CCTouch*)(*touchIterator);
-		CCPoint location1 = touch1->getLocation();
-		CCPoint location2 = touch2->getLocation();
-		
-		
-		_currentTouches.clear();
-		_isManipulatingViewport = true;
-		_prevViewporCenter = ccpMidpoint(location1, location2);
-
-	}
 	_lastTouchBeganMillis = Utilities::getMillis();
 }
 
 
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 	
+	CCTouch* touch = (CCTouch*)touches->anyObject();
+	CCPoint location = touch->getLocation();
+	
+	if(!_isManipulatingSparks && !_isManipulatingViewport) {
+		//well by golly, what ARE we doing?
 		
-	CCSetIterator touchIterator = touches->begin();
-	CCTouch* touch1 = (CCTouch*)(*touchIterator);
-	CCTouch* touch2 = (CCTouch*)(touches->count() > 1 ? *(++touchIterator) : *touchIterator);
-	CCPoint location1 = touch1->getLocation();
-	CCPoint location2 = touch2->getLocation();
-	
-	
-	if(!_isManipulatingViewport && touches->count() > 1) {
-		//added another finger
-		_currentTouches.clear();
-		_prevViewporCenter = ccpMidpoint(location1, location2);
-		_isManipulatingViewport = true;
+		if(!_selectedSparks.empty()) {
+			_isManipulatingViewport = false;
+			_isManipulatingSparks = true;
+		}else {
+			double now = Utilities::getMillis();
+			if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_LASSO_TOUCH_BEGAN_DELAY_MILLIS)) {
+				//started a drag movement by holding a finger down
+				//or restarted a drag by touching the screen while the view is still sliding
+				_isManipulatingViewport = false;
+				_isManipulatingSparks = true;
+				return;
+			}else {
+				_isManipulatingViewport = true;
+				_isManipulatingSparks = false;
+			}
+		}
 	}
 	
-	if(!_isManipulatingViewport) {
+	if(_isManipulatingSparks) {
 		//interation with units/orbs
 		
 		if(_currentTouches.size() >= Config::getIntForKey(CONFIG_MAX_TOUCHES)) {
 			return;
 		}
 		
-		if(_currentTouches.size() < 3 && (Utilities::getMillis() - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_DRAG_TOUCH_DELAY_MILLIS)) {
-			//started a drag movement by holding a finger down
-			CCLOG("START SINGLE FINGER DRAG!!");
-			_currentTouches.clear();
-			_prevViewporCenter = ccpMidpoint(location1, location2);
-			_isManipulatingViewport = true;
-			return;
-		}
+		_currentTouches.push_back(location);
 		
-		_currentTouches.push_back(location1);
-		
-	}else {
+	}else if(_isManipulatingViewport) {
 		//viewport manipulation
 		
 		_gameLayer->stopAllActions();
 		
-		CCPoint center = ccpMidpoint(location1, location2);
-		CCPoint dragDiff = ccpSub(center, _prevViewporCenter);
+		CCPoint dragDiff = ccpSub(location, _prevViewporCenter);
 			
-		if(ccpDistance(center, _prevViewporCenter) > 5) {
+		if(ccpDistance(location, _prevViewporCenter) > 5) {
 			//drag
 			
 			if(!isnan(dragDiff.x) && !isnan(dragDiff.y)) {
@@ -228,15 +211,17 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			
 		}
 		
-		_prevViewporCenter = center;
+		_prevViewporCenter = location;
 	}
 }
 
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
+	_lastTouchEndedMillis = Utilities::getMillis();
 
-	if(_isManipulatingViewport || _currentTouches.empty()) {
-		_isManipulatingViewport = false;
+	if(_isManipulatingViewport) {
+			
+		_gameLayer->stopAllActions();
 			
 		_gameLayer->runAction(CCSequence::create(
 			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 3)),
@@ -245,9 +230,17 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			NULL
 		));
 		
+		_isManipulatingViewport = false;
+		_isManipulatingSparks = false;
 		return;
 	}
 	_isManipulatingViewport = false;
+	_isManipulatingSparks = false;
+
+	if(_currentTouches.empty()) {
+		return;
+	}
+
 
 	bool isALoop = false;
 	bool isStartingWithinExistingLasso = false;

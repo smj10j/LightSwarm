@@ -29,16 +29,18 @@ public:
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
 	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
-	
+		
 	virtual ~HelloWorld();
 
 private:
 	CCSpriteBatchNode* _batchNode;
 		
 	bool _isManipulatingViewport;
+	bool _isManipulatingSparks;
 	CCPoint _prevViewporCenter;
 	CCPoint _viewportDragVelocity;
 	double _lastTouchBeganMillis;
+	double _lastTouchEndedMillis;
 	
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
@@ -47,6 +49,7 @@ private:
 	
 	set<Spark*> _sparks;
 	set<Spark*> _selectedSparks;
+	
 	
 	
 	CCLayer* _gameLayer;
