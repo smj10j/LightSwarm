@@ -117,33 +117,48 @@ void HelloWorld::update(float dt) {
 		Orb* orb = *orbsIterator;
 		
 		orb->update(dt);
-	}	
+	}
+	
+	
+	
+	
+	for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
+		pingLocationsIterator != _pingLocations.end();
+		pingLocationsIterator++) {
+		(*pingLocationsIterator)->update(dt);
+	}
 }
 
 
 void HelloWorld::draw() {
 	
-	if(_currentTouches.size() < 5) {
-		//don't draw yet
-		return;
+	if(_currentTouches.size() >= 5) {
+		//draw a line as we drag our finger
+		glLineWidth(5);
+		ccDrawColor4B(255, 255, 255, 255);
+		list<CCPoint>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
+		for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
+			currentTouchesIterator != _currentTouches.end();
+			prevcurrentTouchesIterator = currentTouchesIterator++) {
+				
+			ccDrawLine(*prevcurrentTouchesIterator,
+						*currentTouchesIterator
+			);
+		}
 	}
 	
-	//draw a line as we drag our finger
-	glLineWidth(5);
-	list<CCPoint>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
-	for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
-		currentTouchesIterator != _currentTouches.end();
-		prevcurrentTouchesIterator = currentTouchesIterator++) {
-			
-		ccDrawLine(*prevcurrentTouchesIterator,
-					*currentTouchesIterator
-		);
-	}
-	
+
 }
 
 
 
+void HelloWorld::clearPingLocations() {
+	for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
+		pingLocationsIterator != _pingLocations.end();
+		_pingLocations.erase(pingLocationsIterator++)) {
+		this->removeChild(*pingLocationsIterator, true);
+	}
+}
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 		
@@ -153,11 +168,30 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	CCPoint location = touch->getLocation();
 	
 	_currentTouches.clear();
+	
 	_prevViewporCenter = location;
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
 
 	_lastTouchBeganMillis = Utilities::getMillis();
+
+	clearPingLocations();
+	
+	if(_selectedSparks.empty()) {
+		PingLocation* pingLocation = new PingLocation(location,
+												1,
+												SCALE_FACTOR*150,
+												ccc4(0, 0, 255, 255));
+		_pingLocations.push_front(pingLocation);
+		this->addChild(pingLocation);
+	}else {
+		PingLocation* pingLocation = new PingLocation(location,
+												1,
+												SCALE_FACTOR*150,
+												ccc4(0, 255, 0, 255));
+		_pingLocations.push_front(pingLocation);
+		this->addChild(pingLocation);
+	}
 }
 
 
@@ -171,21 +205,22 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(!_isManipulatingSparks && !_isManipulatingViewport) {
 		//well by golly, what ARE we doing?
 		
-		if(!_selectedSparks.empty()) {
+		double now = Utilities::getMillis();
+
+		if(!_selectedSparks.empty() && (now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS)) {
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
-		}else {
-			double now = Utilities::getMillis();
-			if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_LASSO_TOUCH_BEGAN_DELAY_MILLIS)) {
+			
+		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
 				//or restarted a drag by touching the screen while the view is still sliding
 				_isManipulatingViewport = false;
 				_isManipulatingSparks = true;
-				return;
-			}else {
-				_isManipulatingViewport = true;
-				_isManipulatingSparks = false;
-			}
+					
+		}else {
+			_isManipulatingViewport = true;
+			_isManipulatingSparks = false;
+			clearPingLocations();
 		}
 	}
 	
@@ -239,6 +274,13 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		_isManipulatingViewport = false;
 		_isManipulatingSparks = false;
 		return;
+	}else if(!_selectedSparks.empty()){
+		PingLocation* pingLocation = new PingLocation(_currentTouches.back(),
+												1,
+												SCALE_FACTOR*150,
+												ccc4(255, 0, 0, 255));
+		_pingLocations.push_front(pingLocation);
+		this->addChild(pingLocation);
 	}
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
@@ -329,5 +371,5 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 
 HelloWorld::~HelloWorld() {
-
+	clearPingLocations();
 }

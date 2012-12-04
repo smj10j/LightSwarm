@@ -15,6 +15,7 @@
 		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
 		AA315EBA166DEDFE006D5409 /* Orb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315EB8166DEDFE006D5409 /* Orb.cpp */; };
+		AA315EC8166E5DFD006D5409 /* PingLocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315EC6166E5DFD006D5409 /* PingLocation.cpp */; };
 		AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B5F166CB6CE00CC263A /* GameConfig.json */; };
 		AACD6B67166CB77D00CC263A /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACD6B65166CB77D00CC263A /* Config.cpp */; };
 		AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B74166CB98B00CC263A /* json_internalarray.inl */; };
@@ -81,6 +82,8 @@
 		AA0B1D2B1664C3840011F556 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		AA315EB8166DEDFE006D5409 /* Orb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orb.cpp; sourceTree = "<group>"; };
 		AA315EB9166DEDFE006D5409 /* Orb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orb.h; sourceTree = "<group>"; };
+		AA315EC6166E5DFD006D5409 /* PingLocation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PingLocation.cpp; sourceTree = "<group>"; };
+		AA315EC7166E5DFD006D5409 /* PingLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PingLocation.h; sourceTree = "<group>"; };
 		AACD6B5F166CB6CE00CC263A /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
 		AACD6B65166CB77D00CC263A /* Config.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Config.cpp; sourceTree = "<group>"; };
 		AACD6B66166CB77D00CC263A /* Config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
@@ -234,6 +237,15 @@
 			name = libs;
 			sourceTree = "<group>";
 		};
+		AA315EC1166E5866006D5409 /* DrawNodes */ = {
+			isa = PBXGroup;
+			children = (
+				AA315EC7166E5DFD006D5409 /* PingLocation.h */,
+				AA315EC6166E5DFD006D5409 /* PingLocation.cpp */,
+			);
+			path = DrawNodes;
+			sourceTree = "<group>";
+		};
 		AACD6B68166CB98B00CC263A /* jsoncpp */ = {
 			isa = PBXGroup;
 			children = (
@@ -306,6 +318,7 @@
 			isa = PBXGroup;
 			children = (
 				AAD06D7316685C74004C8E78 /* libs */,
+				AA315EC1166E5866006D5409 /* DrawNodes */,
 				AAD06D6F16685C66004C8E78 /* Entities */,
 				AA0B1D2B1664C3840011F556 /* Common.h */,
 				1A1CF3661626CB6000AFC938 /* AppMacros.h */,
@@ -460,6 +473,7 @@
 				AACD6B7E166CB98B00CC263A /* json_value.cpp in Sources */,
 				AACD6B80166CB98B00CC263A /* json_writer.cpp in Sources */,
 				AA315EBA166DEDFE006D5409 /* Orb.cpp in Sources */,
+				AA315EC8166E5DFD006D5409 /* PingLocation.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

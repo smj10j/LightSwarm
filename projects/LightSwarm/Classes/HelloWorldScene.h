@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Spark.h"
 #include "Orb.h"
+#include "PingLocation.h"
 #include <set>
 #include <list>
 USING_NS_CC;
@@ -30,6 +31,8 @@ public:
 	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 		
+	void clearPingLocations();
+		
 	virtual ~HelloWorld();
 
 private:
@@ -51,6 +54,7 @@ private:
 	set<Spark*> _selectedSparks;
 	
 	
+	list<PingLocation*> _pingLocations;
 	
 	CCLayer* _gameLayer;
 };
