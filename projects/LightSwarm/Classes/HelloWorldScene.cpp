@@ -147,6 +147,8 @@ void HelloWorld::draw() {
 
 void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 		
+	if(touches->count() != 1) { return; };
+
 	CCTouch* touch = (CCTouch*)touches->anyObject();
 	CCPoint location = touch->getLocation();
 	
@@ -160,6 +162,8 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 
 void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+	
+	if(touches->count() != 1) { return; };
 	
 	CCTouch* touch = (CCTouch*)touches->anyObject();
 	CCPoint location = touch->getLocation();
@@ -216,6 +220,8 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 }
 
 void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+
+	if(touches->count() != 1) { return; };
 
 	_lastTouchEndedMillis = Utilities::getMillis();
 
