@@ -36,10 +36,9 @@ private:
 	CCSpriteBatchNode* _batchNode;
 		
 	bool _isManipulatingViewport;
-	float _currentViewportScale;
-	float _prevViewportManipulationFingerDistance;
 	CCPoint _prevViewporCenter;
 	CCPoint _viewportDragVelocity;
+	double _lastTouchBeganMillis;
 	
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;

@@ -31,10 +31,8 @@ bool HelloWorld::init()
 
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
 	
-	_currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_INITIAL);
 	_prevViewporCenter = _gameLayer->getPosition();
 	_isManipulatingViewport = false;
-	_prevViewportManipulationFingerDistance = 0;
 	
 	//create a batch node
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
@@ -170,11 +168,10 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		
 		_currentTouches.clear();
 		_isManipulatingViewport = true;
-		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(),
-																touch2->getLocation());
 		_prevViewporCenter = ccpMidpoint(location1, location2);
 
 	}
+	_lastTouchBeganMillis = Utilities::getMillis();
 }
 
 
@@ -191,8 +188,6 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(!_isManipulatingViewport && touches->count() > 1) {
 		//added another finger
 		_currentTouches.clear();
-		_prevViewportManipulationFingerDistance = ccpDistance(touch1->getLocation(),
-															  touch2->getLocation());
 		_prevViewporCenter = ccpMidpoint(location1, location2);
 		_isManipulatingViewport = true;
 	}
@@ -204,23 +199,25 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			return;
 		}
 		
-		CCTouch* touch = (CCTouch*)(touches->anyObject());
-		CCPoint location = touch->getLocation();
+		if(_currentTouches.size() < 3 && (Utilities::getMillis() - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_DRAG_TOUCH_DELAY_MILLIS)) {
+			//started a drag movement by holding a finger down
+			CCLOG("START SINGLE FINGER DRAG!!");
+			_currentTouches.clear();
+			_prevViewporCenter = ccpMidpoint(location1, location2);
+			_isManipulatingViewport = true;
+			return;
+		}
 		
-		_currentTouches.push_back(location);
+		_currentTouches.push_back(location1);
 		
-	}else if(touches->count() > 1) {
+	}else {
 		//viewport manipulation
 		
 		_gameLayer->stopAllActions();
 		
-		float fingerDistance = ccpDistance(location1, location2);
 		CCPoint center = ccpMidpoint(location1, location2);
 		CCPoint dragDiff = ccpSub(center, _prevViewporCenter);
 			
-		float fingerDistanceDiff = fingerDistance - _prevViewportManipulationFingerDistance;
-		float fingerDistanceDiffPercent = fingerDistanceDiff/_prevViewportManipulationFingerDistance;
-		
 		if(ccpDistance(center, _prevViewporCenter) > 5) {
 			//drag
 			
@@ -229,34 +226,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 				_viewportDragVelocity = dragDiff;
 			}
 			
-		}/*else if(fabs(fingerDistanceDiffPercent) > 0.15) {
-			//pinch
-					
-			if(fingerDistanceDiffPercent < 1) {				
-				_currentViewportScale+= fingerDistanceDiffPercent;
-				if(_currentViewportScale < Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MIN)) _currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MIN);
-				if(_currentViewportScale > Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MAX)) _currentViewportScale = Config::getIntForKey(CONFIG_VIEWPORT_SCALE_MAX);
-				
-				for(set<Spark*>::iterator sparksIterator = _sparks.begin();
-					sparksIterator != _sparks.end();
-					sparksIterator++) {
-					
-					Spark* spark = *sparksIterator;
-
-					spark->setViewportScale(_currentViewportScale);
-				}
-					
-				if(!isnan(dragDiff.x) && !isnan(dragDiff.y)) {
-					_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), ccpMult(dragDiff, 1/_currentViewportScale)));
-				}				
-				
-			}else {
-				//error from slow fingers
-			}
-			
-			_prevViewportManipulationFingerDistance = fingerDistance;
-			
-		}*/
+		}
 		
 		_prevViewporCenter = center;
 	}
@@ -269,17 +239,15 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		_isManipulatingViewport = false;
 			
 		_gameLayer->runAction(CCSequence::create(
-			CCMoveBy::create(0.25, ccpMult(_viewportDragVelocity, 3)),
-			CCMoveBy::create(0.25, ccpMult(_viewportDragVelocity, 2)),
-			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 1)),
+			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 3)),
+			CCMoveBy::create(0.20, ccpMult(_viewportDragVelocity, 2)),
+			CCMoveBy::create(0.25, ccpMult(_viewportDragVelocity, 1)),
 			NULL
 		));
 		
 		return;
 	}
 	_isManipulatingViewport = false;
-
-	CCLOG("Processing %d touches", _currentTouches.size());
 
 	bool isALoop = false;
 	bool isStartingWithinExistingLasso = false;
