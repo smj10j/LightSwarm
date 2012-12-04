@@ -45,7 +45,7 @@ bool HelloWorld::init()
 	Utilities::setRandomSeed(450);
 	
 	
-	for(int i = 0; i < 10; i++) {
+	for(int i = 0; i < 40; i++) {
 		//create an orb
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("asteroid.png");
 		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
