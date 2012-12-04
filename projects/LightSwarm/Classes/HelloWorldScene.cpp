@@ -212,6 +212,8 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}else if(touches->count() > 1) {
 		//viewport manipulation
 		
+		_gameLayer->stopAllActions();
+		
 		float fingerDistance = ccpDistance(location1, location2);
 		CCPoint center = ccpMidpoint(location1, location2);
 		CCPoint dragDiff = ccpSub(center, _prevViewporCenter);
@@ -224,6 +226,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			
 			if(!isnan(dragDiff.x) && !isnan(dragDiff.y)) {
 				_gameLayer->setPosition(ccpAdd(_gameLayer->getPosition(), dragDiff));
+				_viewportDragVelocity = dragDiff;
 			}
 			
 		}/*else if(fabs(fingerDistanceDiffPercent) > 0.15) {
@@ -264,6 +267,14 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 	if(_isManipulatingViewport || _currentTouches.empty()) {
 		_isManipulatingViewport = false;
+			
+		_gameLayer->runAction(CCSequence::create(
+			CCMoveBy::create(0.25, ccpMult(_viewportDragVelocity, 3)),
+			CCMoveBy::create(0.25, ccpMult(_viewportDragVelocity, 2)),
+			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 1)),
+			NULL
+		));
+		
 		return;
 	}
 	_isManipulatingViewport = false;

@@ -39,6 +39,7 @@ private:
 	float _currentViewportScale;
 	float _prevViewportManipulationFingerDistance;
 	CCPoint _prevViewporCenter;
+	CCPoint _viewportDragVelocity;
 	
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
