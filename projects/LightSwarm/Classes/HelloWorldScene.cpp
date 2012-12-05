@@ -172,32 +172,43 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 	CCTouch* touch = (CCTouch*)touches->anyObject();
 	CCPoint location = touch->getLocation();
-	
+
 	_currentTouches.clear();
-	
-	_prevViewporCenter = location;
-	_isManipulatingViewport = false;
-	_isManipulatingSparks = false;
-
-	_lastTouchBeganMillis = Utilities::getMillis();
-
 	clearPingLocations();
-	
-	if(_selectedSparks.empty()) {
-		PingLocation* pingLocation = new PingLocation(location,
-												1,
-												SCALE_FACTOR*150,
-												ccc4(0, 0, 255, 255));
-		_pingLocations.push_back(pingLocation);
-		this->addChild(pingLocation);
+
+	double now = Utilities::getMillis();
+	if(now - _lastTouchBeganMillis <= Config::getIntForKey(CONFIG_TOUCH_DOUBLE_TAP_DELAY_MILLIS)) {
+		//double-tap!
+		_isManipulatingViewport = false;
+		_isManipulatingSparks = true;
+		_currentTouches.push_back(location);
+		
 	}else {
-		PingLocation* pingLocation = new PingLocation(location,
-												1,
-												SCALE_FACTOR*150,
-												ccc4(0, 255, 0, 255));
-		_pingLocations.push_back(pingLocation);
-		this->addChild(pingLocation);
+		//normal tap
+		
+		_prevViewporCenter = location;
+		_isManipulatingViewport = false;
+		_isManipulatingSparks = false;
+		
+		//ping!
+		if(_selectedSparks.empty()) {
+			PingLocation* pingLocation = new PingLocation(location,
+													1,
+													SCALE_FACTOR*150,
+													ccc4(0, 0, 255, 255));
+			_pingLocations.push_back(pingLocation);
+			this->addChild(pingLocation);
+		}else {
+			PingLocation* pingLocation = new PingLocation(location,
+													1,
+													SCALE_FACTOR*150,
+													ccc4(0, 255, 0, 255));
+			_pingLocations.push_back(pingLocation);
+			this->addChild(pingLocation);
+		}					
 	}
+	
+	_lastTouchBeganMillis = now;
 }
 
 
@@ -269,7 +280,10 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(touches->count() != 1) { return; };
 
 	_lastTouchEndedMillis = Utilities::getMillis();
-
+	if(_currentTouches.empty()) {
+		return;
+	}
+	
 	if(_isManipulatingViewport) {
 			
 		_gameLayer->stopAllActions();
@@ -295,12 +309,10 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
 
-	if(_currentTouches.empty()) {
-		return;
-	}
+	CCLOG("CURRENTTOUCHES SIZE: %d", _currentTouches.size());
 
 
-	bool isALoop = Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);;		
+	bool isALoop = _currentTouches.size() > 1 && Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);;
 	bool isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);
 	
 				
@@ -315,32 +327,27 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			clearPingLocations();
 			_prevTouches = _currentTouches;
 			
-		}else if(!_currentTouches.empty()) {
-		
-			if(_currentTouches.size() > 1) {
-				//multi touch is valid
+		}else {
 				
-				//remove touches within the starting lasso if our ending touch is outside of it
-				if(!Utilities::isPointInShape(_currentTouches.back(), _prevTouches)) {
-					for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
-						currentTouchesIterator != _currentTouches.end();
-						_currentTouches.erase(currentTouchesIterator++)) {
-						if(!Utilities::isPointInShape(*currentTouchesIterator, _prevTouches)) {
-							break;
-						}
+			//remove touches within the starting lasso if our ending touch is outside of it
+			if(!Utilities::isPointInShape(_currentTouches.back(), _prevTouches)) {
+				for(list<CCPoint>::iterator currentTouchesIterator = _currentTouches.begin();
+					currentTouchesIterator != _currentTouches.end();
+					_currentTouches.erase(currentTouchesIterator++)) {
+					if(!Utilities::isPointInShape(*currentTouchesIterator, _prevTouches)) {
+						break;
 					}
 				}
-																
-				for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
-					selectedSparksIterator != _selectedSparks.end();
-					selectedSparksIterator++) {
-					
-					(*selectedSparksIterator)->setTargetMovePath(_currentTouches, _gameLayer->convertToWorldSpace(CCPointZero));
-				}
-				
-				_prevTouches = _currentTouches;
 			}
-			
+															
+			for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+				selectedSparksIterator != _selectedSparks.end();
+				selectedSparksIterator++) {
+				
+				(*selectedSparksIterator)->setTargetMovePath(_currentTouches, _gameLayer->convertToWorldSpace(CCPointZero));
+			}
+				
+			_prevTouches = _currentTouches;
 			_currentTouches.clear();
 			_selectedSparks.clear();
 		}
