@@ -99,10 +99,14 @@ void Spark::update(float dt) {
 		CCPoint position = _sprite->getPosition();
 		bool isAtRest = Utilities::isNear(_restingPosition, position, NEARBY_DISTANCE);
 		if(isAtRest) {
-			//jitter 
-			CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
-			_sprite->setPosition(newLocation);
-			updateCenter();
+			//jitter
+			double now = Utilities::getMillis();
+			if(now - _lastAtRestJitterMillis > 100) {
+				CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
+				_sprite->setPosition(newLocation);
+				updateCenter();
+				_lastAtRestJitterMillis = now;
+			}
 						
 		}else {
 			//move back into scope
@@ -150,22 +154,27 @@ void Spark::die() {
 }
 
 void Spark::setNearestOrb(set<Orb*>& orbs) {
-	//TODO: this can be optimized further to only occasionally check if we're near a new orb
-	if(_nearestOrb == NULL || !_targetMovePath.empty()) {
+	if(_nearestOrb == NULL ||
+		(!_targetMovePath.empty() && Utilities::getMillis() - _lastNearestOrbUpdateMillis > 1000)) {
 		float minDistance = 10000000;
 		for(set<Orb*>::iterator orbsIterator = orbs.begin();
 			orbsIterator != orbs.end();
 			orbsIterator++) {
-			float distance = ccpDistance((*orbsIterator)->getPosition(), _center);
+			float distance = Utilities::getDistance((*orbsIterator)->getPosition(), _center);
 			if(distance < minDistance) {
 				minDistance = distance;
 				_nearestOrb = (*orbsIterator);
 			}
 		}
+		_lastNearestOrbUpdateMillis = Utilities::getMillis();
 	}
 }
 
 void Spark::updateCenter() {
+	double now = Utilities::getMillis();
+	if(now - _lastCenterUpdateMillis < 1000) return;
+	_lastCenterUpdateMillis = now;
+	
 	// This is more accurate point for the node
 	_center = _sprite->convertToWorldSpace(CCPointZero);
 	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),

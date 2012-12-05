@@ -36,6 +36,10 @@ CCPoint Orb::getPosition() {
 
 
 void Orb::updateCenterAndRadius() {
+	double now = Utilities::getMillis();
+	if(now - _lastCenterUpdateMillis < 1000) return;
+	_lastCenterUpdateMillis = now;
+
 	// This is more accurate point for the node
 	_center = _sprite->convertToWorldSpace(CCPointZero);
 	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),

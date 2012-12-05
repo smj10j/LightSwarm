@@ -82,6 +82,9 @@ private:
 	bool _isDead;
 	
 	double _lifetimeMillis;
+	double _lastNearestOrbUpdateMillis;
+	double _lastCenterUpdateMillis;
+	double _lastAtRestJitterMillis;
 	
 	CCPoint jitter(const CCPoint& point, const CCPoint weights, const float dt);
 	void updateCenter();
