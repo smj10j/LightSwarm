@@ -93,7 +93,7 @@ void HelloWorld::update(float dt) {
 		Spark* spark = *sparksIterator;
 		
 		if(spark->isDead()) {
-			(*sparksIterator)->getSprite()->removeFromParentAndCleanup(true);
+			(*sparksIterator)->remove();
 			_sparks.erase(sparksIterator++);
 			continue;
 		}
@@ -236,10 +236,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			//press and hold, or placed finger in selecting lasso or near selected sparks
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
-			
-			//TODO: Utilities::isPointInShape is returning TRUE when clearly not the case
-				CCLOG("DRAG isNear %d, isPointInShape: %d, prevTouches.size: %d", Utilities::isNear(mapLocation, sparkPositions, NEARBY_DISTANCE), Utilities::isPointInShape(mapLocation, _prevTouches), _prevTouches.size());
-			
+						
 		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
 				//or restarted a drag by touching the screen while the view is still sliding
@@ -292,13 +289,12 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(touches->count() != 1) { return; };
 
 	_lastTouchEndedMillis = Utilities::getMillis();
-	if(_currentTouches.empty()) {
-		return;
-	}
 	
 	if(_isManipulatingViewport) {
 			
 		_gameLayer->stopAllActions();
+			
+		CCLOG("ZOOOM!");
 			
 		_gameLayer->runAction(CCSequence::create(
 			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 3)),
@@ -311,7 +307,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		_isManipulatingSparks = false;
 		return;
 		
-	}else if(!_selectedSparks.empty()){
+	}else if(!_selectedSparks.empty() && !_currentTouches.empty()){
 		CCPoint offset = _gameLayer->convertToWorldSpace(CCPointZero);
 		PingLocation* pingLocation = new PingLocation(ccpAdd(_currentTouches.back(),offset),
 												1,
@@ -322,6 +318,10 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
+
+	if(_currentTouches.empty()) {
+		return;
+	}
 
 	bool isALoop = _currentTouches.size() > 1 && Utilities::isNear(_currentTouches.front(), _currentTouches.back(), NEARBY_DISTANCE+Config::getIntForKey(TOUCH_MIN_PATH_POINT_DISTANCE));
 	bool isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);

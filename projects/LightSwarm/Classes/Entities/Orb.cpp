@@ -9,12 +9,6 @@
 #include "Orb.h"
 
 
-
-CCSprite* Orb::getSprite() {
-	return _sprite;
-}
-
-
 void Orb::clearAllEffects() {
 	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
 }

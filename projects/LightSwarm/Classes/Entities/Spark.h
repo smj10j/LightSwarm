@@ -38,7 +38,6 @@ public:
 		_sprite->retain();
 	}
 
-	CCSprite* getSprite();
 	CCPoint getPosition();
 	
 	void update(const float dt);
@@ -49,8 +48,7 @@ public:
 	void clearAllEffects();
 	void addSelectionEffect();
 
-	void die();
-	
+	void remove();
 	bool isDead();
 	
 	bool isInShape(const list<CCPoint>& shape);
@@ -87,6 +85,7 @@ private:
 	
 	CCPoint jitter(const CCPoint& point, const CCPoint weights, const float dt);
 	void updateCenter();
+	void die();
 };
 
 

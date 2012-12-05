@@ -28,7 +28,6 @@ public:
 		_sprite->retain();
 	}
 
-	CCSprite* getSprite();
 	CCPoint getPosition();
 	
 	void update(const float dt);

@@ -9,11 +9,6 @@
 #include "Spark.h"
 
 
-CCSprite* Spark::getSprite() {
-	return _sprite;
-}
-
-
 void Spark::clearAllEffects() {
 	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
 }
@@ -149,6 +144,10 @@ void Spark::update(float dt) {
 void Spark::die() {
 	_isDead = true;
 	//TODO: play death animation
+}
+
+void Spark::remove() {
+	_sprite->removeFromParentAndCleanup(true);
 }
 
 void Spark::setNearestOrb(set<Orb*>& orbs) {
