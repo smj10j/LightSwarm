@@ -25,7 +25,7 @@ public:
 		_sprite(sprite),
 		_speedMultiplier(speedMultiplier),
 		_strengthMultiplier(strengthMultiplier),
-		_initialHealth(healthMultiplier*Config::getDoubleForKey(CONFIG_SPARK_BASE_HEALTH)),
+		_initialHealth(healthMultiplier*Config::getDoubleForKey(SPARK_BASE_HEALTH)),
 		_isDead(false),
 		_restingPosition(sprite->getPosition()) {
 		

@@ -9,10 +9,32 @@
 #include "Config.h"
 #include <fstream>
 
+const char* CONFIG_STRINGS[] = {
+	stringify(MAX_TOUCHES),
+
+	stringify(SPARK_BASE_SPEED),
+	stringify(SPARK_BASE_POWER),
+	stringify(SPARK_BASE_HEALTH),
+
+	stringify(SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING),
+	
+	stringify(SPARK_PATH_SAMPLE_RATE),
+	
+	stringify(ORB_ATMOSPHERE_RADIUS_MULTIPLIER),
+	stringify(ORB_BASE_HEAL_RATE_PER_SECOND),
+	
+	stringify(TOUCH_LASSO_BEGAN_DELAY_MILLIS),
+	stringify(TOUCH_MOVE_BEGAN_DELAY_MILLIS),
+	stringify(TOUCH_DOUBLE_TAP_DELAY_MILLIS),
+
+	stringify(PING_LOCATION_SPINUP_SECONDS),
+	stringify(PING_LOCATION_SPINDOWN_SECONDS),
+};
+
 static Json::Value root;   // will contains the root value after parsing.
 
-static map<string,double> _doublesMap;
-static map<string,int> _intsMap;
+static map<CONFIG,double> _doublesMap;
+static map<CONFIG,int> _intsMap;
 
 static double lastConfigReloadMillis = 0;
 
@@ -43,32 +65,32 @@ void Config::init() {
 	lastConfigReloadMillis = Utilities::getMillis();
 }
 
-Json::Value Config::getValueForKey(string key) {
+Json::Value Config::getValueForKey(CONFIG key) {
 	if(MODIFYING_GAME_CONFIG && Utilities::getMillis()-lastConfigReloadMillis > 5000) {
 		//constantly reload
 		Config::init();
 	}
-	return root[key];
+	return root[CONFIG_STRINGS[key]];
 }
 
-double Config::getDoubleForKey(string key) {
-	map<string,double>::iterator it = _doublesMap.find(key);
+double Config::getDoubleForKey(CONFIG key) {
+	map<CONFIG,double>::iterator it = _doublesMap.find(key);
 	if(it == _doublesMap.end()) {
 		Json::Value value = Config::getValueForKey(key);
 		if(value == NULL) return NULL;
-		_doublesMap.insert(map<string,double>::value_type(key, value.asDouble()));
+		_doublesMap.insert(map<CONFIG,double>::value_type(key, value.asDouble()));
 		return value.asDouble();
 	}else {
 		return it->second;
 	}
 }
 
-int Config::getIntForKey(string key) {
-	map<string,int>::iterator it = _intsMap.find(key);
+int Config::getIntForKey(CONFIG key) {
+	map<CONFIG,int>::iterator it = _intsMap.find(key);
 	if(it == _intsMap.end()) {
 		Json::Value value = Config::getValueForKey(key);
 		if(value == NULL) return NULL;
-		_intsMap.insert(map<string,int>::value_type(key, value.asInt()));
+		_intsMap.insert(map<CONFIG,int>::value_type(key, value.asInt()));
 		return value.asInt();
 	}else {
 		return it->second;

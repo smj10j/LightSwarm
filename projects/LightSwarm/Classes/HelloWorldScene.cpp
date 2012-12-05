@@ -167,7 +167,7 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	clearPingLocations();
 
 	double now = Utilities::getMillis();
-	if(now - _lastTouchBeganMillis <= Config::getIntForKey(CONFIG_TOUCH_DOUBLE_TAP_DELAY_MILLIS)) {
+	if(now - _lastTouchBeganMillis <= Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)) {
 		//double-tap!
 		_isManipulatingViewport = false;
 		_isManipulatingSparks = true;
@@ -217,7 +217,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		list<CCPoint> sparkPositions = Spark::getPositionList(_selectedSparks);
 
 		if(!_selectedSparks.empty() && (
-				(now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS) ||
+				(now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_MOVE_BEGAN_DELAY_MILLIS) ||
 				Utilities::isNear(location, sparkPositions, NEARBY_DISTANCE) ||
 				Utilities::isPointInShape(location, _prevTouches))
 			) {
@@ -225,7 +225,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
 			
-		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
+		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
 				//or restarted a drag by touching the screen while the view is still sliding
 				_isManipulatingViewport = false;
@@ -241,7 +241,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(_isManipulatingSparks) {
 		//interation with units/orbs
 		
-		if(_currentTouches.size() >= Config::getIntForKey(CONFIG_MAX_TOUCHES)) {
+		if(_currentTouches.size() >= Config::getIntForKey(MAX_TOUCHES)) {
 			return;
 		}
 		

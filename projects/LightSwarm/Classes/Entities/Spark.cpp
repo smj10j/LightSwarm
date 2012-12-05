@@ -56,7 +56,7 @@ void Spark::setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportC
 		pathIterator != path.end();
 		pathIterator++) {
 		
-		if(i++ % Config::getIntForKey(CONFIG_SPARK_PATH_SAMPLE_RATE) == 0) {
+		if(i++ % Config::getIntForKey(SPARK_PATH_SAMPLE_RATE) == 0) {
 			_targetMovePath.push(ccpSub(*pathIterator, _targetViewportCenter));
 		}
 	}
@@ -80,7 +80,7 @@ void Spark::update(float dt) {
 		CCPoint targetMoveLocation = _targetMovePath.front();
 		bool isAtTarget = Utilities::isNear(targetMoveLocation, position, DIRECT_TOUCH_DISTANCE);
 		if(!isAtTarget) {
-			float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*dt;
+			float ds = Config::getDoubleForKey(SPARK_BASE_SPEED)*_speedMultiplier*dt;
 			CCPoint v = ccpNormalize(ccp(targetMoveLocation.x-position.x, targetMoveLocation.y-position.y));
 			
 			CCPoint newLocation = ccpAdd(position, ccp(ds*v.x,ds*v.y));
@@ -110,31 +110,29 @@ void Spark::update(float dt) {
 		}
 	}
 	
-	//TODO: optimize this code
 	//decrease health if out in space
-	float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(CONFIG_ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
-	
+	float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
 	float distance = Utilities::getDistance(_center, _nearestOrb->getPosition());
 
+
 	if(distance > nearestOrbAtmosphereRadius) {
-		_health-= Config::getDoubleForKey(CONFIG_SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
-		
-		_sprite->setOpacity(255.0*(_health/_initialHealth));
-		
+		_health-= Config::getDoubleForKey(SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
+				
 	}else {
 		//heal
 		if(_health < _initialHealth) {
 			//TODO: healRate will also be modified by hospitals
-			float healRate = Config::getDoubleForKey(CONFIG_ORB_BASE_HEAL_RATE_PER_SECOND);
+			float healRate = Config::getDoubleForKey(ORB_BASE_HEAL_RATE_PER_SECOND);
 			_health+= healRate*dt;
-			_sprite->setOpacity(255.0*(_health/_initialHealth));
 			
 		}else if(_health > _initialHealth) {
 			_health = _initialHealth;
-			_sprite->setOpacity(255.0*(_health/_initialHealth));
 			
 		}
 	}
+	
+	_sprite->setOpacity(255.0*(_health/_initialHealth));
+
 	
 	
 	if(!_isDead) {
@@ -176,7 +174,7 @@ void Spark::updateCenter() {
 }
 
 CCPoint Spark::jitter(const CCPoint& point, const CCPoint weights, const float dt) {
-	float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*2*dt;
+	float ds = Config::getDoubleForKey(SPARK_BASE_SPEED)*_speedMultiplier*2*dt;
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
 

@@ -10,11 +10,11 @@
 
 void PingLocation::update(float dt) {
 	if(_radius < _targetRadius) {
-		_radius+= _targetRadius*(dt/Config::getDoubleForKey(CONFIG_PING_LOCATION_SPINUP_SECONDS));
+		_radius+= _targetRadius*(dt/Config::getDoubleForKey(PING_LOCATION_SPINUP_SECONDS));
 		_opacity = fmin(_radius/_targetRadius, 1);
 	}else {
 		if(_opacity > 0) {
-			_opacity-= dt/Config::getDoubleForKey(CONFIG_PING_LOCATION_SPINDOWN_SECONDS);
+			_opacity-= dt/Config::getDoubleForKey(PING_LOCATION_SPINDOWN_SECONDS);
 		}
 	}
 }

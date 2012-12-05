@@ -69,6 +69,7 @@
 #define COCOS2D_DEBUG 1
 #endif
 
+#define stringify( name ) # name
 
 
 
