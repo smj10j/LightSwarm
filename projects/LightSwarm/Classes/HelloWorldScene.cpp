@@ -84,7 +84,33 @@ bool HelloWorld::init()
 
 
 void HelloWorld::update(float dt) {
-				
+	
+	_currentRunningTime+= dt;
+	_fixedTimestepAccumulator+= dt;
+
+	if(_isRollingBack) {
+		return;
+	}
+	
+	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
+	const int maxSteps = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
+	const int steps = floor(_fixedTimestepAccumulator / stepSize);
+	
+	if (steps > 0) {
+        _fixedTimestepAccumulator-= (steps * stepSize);
+
+		const int stepsClamped = min(steps, maxSteps);
+	 
+		for (int i = 0; i < stepsClamped; i++) {
+			singleUpdateStep(stepSize);
+		}
+	}else {
+		//no step - we're just too fast
+	}
+}
+
+
+void HelloWorld::singleUpdateStep(float dt) {
 	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
@@ -293,9 +319,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	if(_isManipulatingViewport) {
 			
 		_gameLayer->stopAllActions();
-			
-		CCLOG("ZOOOM!");
-			
+						
 		_gameLayer->runAction(CCSequence::create(
 			CCMoveBy::create(0.15, ccpMult(_viewportDragVelocity, 3)),
 			CCMoveBy::create(0.20, ccpMult(_viewportDragVelocity, 2)),

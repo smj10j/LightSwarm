@@ -93,12 +93,11 @@ void Spark::update(float dt) {
 		bool isAtRest = Utilities::isNear(_restingPosition, position, NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
-			double now = Utilities::getMillis();
-			if(now - _lastAtRestJitterMillis > 100) {
+			if(_lifetimeMillis - _lastAtRestJitterMillis > 100) {
 				CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
 				_sprite->setPosition(newLocation);
 				updateCenter();
-				_lastAtRestJitterMillis = now;
+				_lastAtRestJitterMillis = _lifetimeMillis;
 			}
 						
 		}else {
@@ -152,7 +151,7 @@ void Spark::remove() {
 
 void Spark::setNearestOrb(set<Orb*>& orbs) {
 	if(_nearestOrb == NULL ||
-		(!_targetMovePath.empty() && Utilities::getMillis() - _lastNearestOrbUpdateMillis > 1000)) {
+		(!_targetMovePath.empty() && _lifetimeMillis - _lastNearestOrbUpdateMillis > 1000)) {
 		float minDistance = 10000000;
 		for(set<Orb*>::iterator orbsIterator = orbs.begin();
 			orbsIterator != orbs.end();
@@ -163,14 +162,13 @@ void Spark::setNearestOrb(set<Orb*>& orbs) {
 				_nearestOrb = (*orbsIterator);
 			}
 		}
-		_lastNearestOrbUpdateMillis = Utilities::getMillis();
+		_lastNearestOrbUpdateMillis = _lifetimeMillis;
 	}
 }
 
 void Spark::updateCenter() {
-	double now = Utilities::getMillis();
-	if(now - _lastCenterUpdateMillis < 1000) return;
-	_lastCenterUpdateMillis = now;
+	if(_lifetimeMillis - _lastCenterUpdateMillis < 500) return;
+	_lastCenterUpdateMillis = _lifetimeMillis;
 	
 	// This is more accurate point for the node
 	_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));

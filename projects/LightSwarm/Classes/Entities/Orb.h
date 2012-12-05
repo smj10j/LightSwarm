@@ -48,6 +48,7 @@ private:
 	CCPoint _center;
 	float _radius;
 	
+	double _lifetimeMillis;
 	double _lastCenterUpdateMillis;
 	
 	void updateCenterAndRadius();

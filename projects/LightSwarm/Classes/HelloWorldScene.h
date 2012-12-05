@@ -20,11 +20,7 @@ public:
     static CCScene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(HelloWorld);
-	
-	void draw();
-	void update(float dt);
-	
+    CREATE_FUNC(HelloWorld);	
 	
 	//touch handlers
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
@@ -37,6 +33,10 @@ public:
 
 private:
 	CCSpriteBatchNode* _batchNode;
+	
+	double _currentRunningTime;
+	double _fixedTimestepAccumulator;
+	bool _isRollingBack;
 		
 	bool _isManipulatingViewport;
 	bool _isManipulatingSparks;
@@ -60,6 +60,11 @@ private:
 	
 	void updateSparkSelectionEffects();
 	void clearSelectedSparksIfNoAction();
+	
+	
+	void draw();
+	void update(float dt);
+	void singleUpdateStep(float dt);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

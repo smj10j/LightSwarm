@@ -30,9 +30,8 @@ CCPoint Orb::getPosition() {
 
 
 void Orb::updateCenterAndRadius() {
-	double now = Utilities::getMillis();
-	if(now - _lastCenterUpdateMillis < 1000) return;
-	_lastCenterUpdateMillis = now;
+	if(_lifetimeMillis - _lastCenterUpdateMillis < 500) return;
+	_lastCenterUpdateMillis = _lifetimeMillis;
 
 
 	// This is more accurate point for the node
@@ -52,6 +51,8 @@ bool Orb::isInShape(const list<CCPoint>& shape) {
 void Orb::update(const float dt) {
 
 	updateCenterAndRadius();
+	
+	_lifetimeMillis+= dt*1000.0;
 }
 
 

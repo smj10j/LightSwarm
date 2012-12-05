@@ -30,6 +30,11 @@ const char* CONFIG_STRINGS[] = {
 
 	stringify(PING_LOCATION_SPINUP_SECONDS),
 	stringify(PING_LOCATION_SPINDOWN_SECONDS),
+	
+	
+	stringify(SIMULATION_STEP_SIZE),
+	stringify(SIMULATION_MAX_STEPS)
+	
 };
 
 static Json::Value root;   // will contains the root value after parsing.
