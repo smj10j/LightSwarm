@@ -43,7 +43,7 @@ public:
 	
 	void update(const float dt);
 	
-	void setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportCenter);
+	void setTargetMovePath(const list<CCPoint>& path);
 	void setViewportScale(const float scale);
 	
 	void clearAllEffects();
@@ -68,7 +68,6 @@ private:
 	CCSprite* _sprite;
 	
 	queue<CCPoint> _targetMovePath;
-	CCPoint _targetViewportCenter;
 	CCPoint _restingPosition;
 	CCPoint _center;
 	

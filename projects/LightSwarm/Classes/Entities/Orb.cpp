@@ -42,7 +42,7 @@ void Orb::updateCenterAndRadius() {
 
 
 	// This is more accurate point for the node
-	_center = _sprite->convertToWorldSpace(CCPointZero);
+	_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
 	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
 								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
 				);

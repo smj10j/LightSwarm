@@ -41,9 +41,7 @@ CCPoint Spark::getPosition() {
 	return _center;
 }
 
-void Spark::setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportCenter) {
-
-	_targetViewportCenter = viewportCenter;
+void Spark::setTargetMovePath(const list<CCPoint>& path) {
 
 	//clear the queue
 	queue<CCPoint> empty;
@@ -57,10 +55,10 @@ void Spark::setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportC
 		pathIterator++) {
 		
 		if(i++ % Config::getIntForKey(SPARK_PATH_SAMPLE_RATE) == 0) {
-			_targetMovePath.push(ccpSub(*pathIterator, _targetViewportCenter));
+			_targetMovePath.push(*pathIterator);
 		}
 	}
-	_targetMovePath.push(ccpSub(path.back(), _targetViewportCenter));
+	_targetMovePath.push(path.back());
 	
 	//set our final destination
 	_restingPosition = _targetMovePath.back();
@@ -91,8 +89,8 @@ void Spark::update(float dt) {
 			
 		}else {
 			_targetMovePath.pop();
-			updateCenter();
 		}
+		updateCenter();
 		
 	}else {
 		//resting
@@ -176,7 +174,7 @@ void Spark::updateCenter() {
 	_lastCenterUpdateMillis = now;
 	
 	// This is more accurate point for the node
-	_center = _sprite->convertToWorldSpace(CCPointZero);
+	_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
 	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
 								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
 				);

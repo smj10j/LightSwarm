@@ -57,6 +57,9 @@ private:
 	list<PingLocation*> _pingLocations;
 	
 	CCLayer* _gameLayer;
+	
+	void updateSparkSelectionEffects();
+	void clearSelectedSparksIfNoAction();
 };
 
 #endif // __HELLOWORLD_SCENE_H__
