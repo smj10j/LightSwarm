@@ -31,15 +31,22 @@ public:
 		
 		_nearestOrb = NULL;
 		_health = _initialHealth;
+
+		// This is more accurate point for the node
+		_center = _sprite->convertToWorldSpace(CCPointZero);
+		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+					);
 		
 		_sprite->retain();
 	}
 
 	CCSprite* getSprite();
+	CCPoint getPosition();
 	
-	void update(Orb* orb, float dt);
+	void update(float dt);
 	
-	void setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter);
+	void setTargetMovePath(list<CCPoint>& path, CCPoint viewportCenter);
 	void setViewportScale(float scale);
 	
 	void clearAllEffects();
@@ -49,9 +56,11 @@ public:
 	
 	bool isDead();
 	
-	bool isInShape(list<CCPoint> shape);
-	bool isNear(CCPoint point);
-	bool isNear(CCPoint point, int threshold);
+	bool isInShape(list<CCPoint>& shape);
+	bool isNear(CCPoint& point);
+	bool isNear(CCPoint& point, int threshold);
+
+	void setNearestOrb(set<Orb*>& orbs);
 	
 	static list<CCPoint> getPositionList(set<Spark*> sparks);
 	
@@ -64,6 +73,7 @@ private:
 	queue<CCPoint> _targetMovePath;
 	CCPoint _targetViewportCenter;
 	CCPoint _restingPosition;
+	CCPoint _center;
 	
 	Orb* _nearestOrb;
 	
@@ -74,8 +84,7 @@ private:
 	
 	bool _isDead;
 	
-	CCPoint jitter(CCPoint point, CCPoint weights, float dt);
-	CCPoint getAbsPoint();
+	CCPoint jitter(CCPoint& point, CCPoint weights, float dt);
 };
 
 

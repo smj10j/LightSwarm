@@ -30,7 +30,11 @@ float Orb::getRadius() {
 	return _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
 }
 
-bool Orb::isInShape(list<CCPoint> shape) {
+CCPoint Orb::getPosition() {
+	return _center;
+}
+
+bool Orb::isInShape(list<CCPoint>& shape) {
 
 	float scaleX =_sprite->getScaleX();
 	float scaleY = _sprite->getScaleY();

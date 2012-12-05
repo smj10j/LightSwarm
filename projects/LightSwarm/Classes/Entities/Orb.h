@@ -23,10 +23,17 @@ public:
 	Orb(CCSprite* sprite):
 		_sprite(sprite){
 		
+		// This is more accurate point for the node
+		_center = _sprite->convertToWorldSpace(CCPointZero);
+		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+					);		
+		
 		_sprite->retain();
 	}
 
 	CCSprite* getSprite();
+	CCPoint getPosition();
 	
 	void update(float dt);
 	
@@ -35,13 +42,14 @@ public:
 	
 	float getRadius();
 
-	bool isInShape(list<CCPoint> shape);
+	bool isInShape(list<CCPoint>& shape);
 	
 	virtual ~Orb();
 
 private:
 
 	CCSprite* _sprite;
+	CCPoint _center;
 	
 };
 

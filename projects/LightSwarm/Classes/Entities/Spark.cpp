@@ -25,31 +25,25 @@ void Spark::addSelectionEffect() {
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
 }
 
-bool Spark::isNear(CCPoint point) {
+bool Spark::isNear(CCPoint& point) {
 	return isNear(point, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Spark::isNear(CCPoint point, int threshold) {
-	return Utilities::isNear(getAbsPoint(), point, threshold);
+bool Spark::isNear(CCPoint& point, int threshold) {
+	CCPoint absPoint = getPosition();
+	return Utilities::isNear(absPoint, point, threshold);
 }
 
-bool Spark::isInShape(list<CCPoint> shape) {
-	return Utilities::isPointInShape(getAbsPoint(), shape);
+bool Spark::isInShape(list<CCPoint>& shape) {
+	CCPoint absPoint = getPosition();
+	return Utilities::isPointInShape(absPoint, shape);
 }
 
-CCPoint Spark::getAbsPoint() {
-	float scaleX =_sprite->getScaleX();
-	float scaleY = _sprite->getScaleY();
-
-    // This is more accurate point for the node
-    CCPoint absPoint = _sprite->convertToWorldSpace(CCPointZero);
-	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * scaleX,
-									_sprite->getContentSize().height/2 * scaleY)
-				);
-	return absPoint;
+CCPoint Spark::getPosition() {
+	return _center;
 }
 
-void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
+void Spark::setTargetMovePath(list<CCPoint>& path, CCPoint viewportCenter) {
 
 	_targetViewportCenter = viewportCenter;
 
@@ -79,9 +73,7 @@ bool Spark::isDead() {
 	return _isDead;
 }
 
-void Spark::update(Orb* orb, float dt) {
-
-	_nearestOrb = orb;
+void Spark::update(float dt) {
 
 	//handle movement
 	if(!_targetMovePath.empty()) {
@@ -116,7 +108,7 @@ void Spark::update(Orb* orb, float dt) {
 		}
 	}
 	
-	
+	//TODO: optimize this code
 	//decrease health if out in space
 	float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(CONFIG_ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
 	float distance = ccpDistance(_sprite->getPosition(), _nearestOrb->getSprite()->getPosition());
@@ -153,7 +145,24 @@ void Spark::die() {
 	//TODO: play death animation
 }
 
-CCPoint Spark::jitter(CCPoint point, CCPoint weights, float dt) {
+void Spark::setNearestOrb(set<Orb*>& orbs) {
+	//TODO: this can be optimized further to only occasionally check if we're near a new orb
+	if(_nearestOrb == NULL || !_targetMovePath.empty()) {
+		float minDistance = 10000000;
+		for(set<Orb*>::iterator orbsIterator = orbs.begin();
+			orbsIterator != orbs.end();
+			orbsIterator++) {
+			float distance = ccpDistance((*orbsIterator)->getPosition(), getPosition());
+			if(distance < minDistance) {
+				minDistance = distance;
+				_nearestOrb = (*orbsIterator);
+			}
+		}
+	}
+}
+
+
+CCPoint Spark::jitter(CCPoint& point, CCPoint weights, float dt) {
 	float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*2*dt;
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
@@ -163,7 +172,7 @@ list<CCPoint> Spark::getPositionList(set<Spark*> sparks) {
 	for(set<Spark*>::iterator sparksIterator = sparks.begin();
 		sparksIterator != sparks.end();
 		sparksIterator++) {
-		points.push_back((*sparksIterator)->getAbsPoint());
+		points.push_back((*sparksIterator)->getPosition());
 	}
 	return points;
 }

@@ -60,7 +60,7 @@ bool HelloWorld::init()
 		_orbs.insert(orb);
 	}	
 	
-	for(int i = 0; i < 500; i++) {
+	for(int i = 0; i < 300; i++) {
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
@@ -98,19 +98,9 @@ void HelloWorld::update(float dt) {
 			continue;
 		}
 		
-		Orb* nearestOrb = NULL;
-		float minDistance = 10000000;
-		for(set<Orb*>::iterator orbsIterator = _orbs.begin();
-			orbsIterator != _orbs.end();
-			orbsIterator++) {
-			float distance = ccpDistance((*orbsIterator)->getSprite()->getPosition(), spark->getSprite()->getPosition());
-			if(distance < minDistance) {
-				minDistance = distance;
-				nearestOrb = (*orbsIterator);
-			}
-		}
-		
-		spark->update(nearestOrb, dt);
+		//TODO: OPTIMIZE!!!!
+		spark->setNearestOrb(_orbs);
+		spark->update(dt);
 		
 		sparksIterator++;
 	}
@@ -224,10 +214,11 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		//well by golly, what ARE we doing?
 		
 		double now = Utilities::getMillis();
+		list<CCPoint> sparkPositions = Spark::getPositionList(_selectedSparks);
 
 		if(!_selectedSparks.empty() && (
 				(now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS) ||
-				Utilities::isNear(location, Spark::getPositionList(_selectedSparks), NEARBY_DISTANCE) ||
+				Utilities::isNear(location, sparkPositions, NEARBY_DISTANCE) ||
 				Utilities::isPointInShape(location, _prevTouches))
 			) {
 			//press and hold, or placed finger in selecting lasso or near selected sparks

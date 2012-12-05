@@ -31,19 +31,19 @@ double Utilities::getMillis() {
 	return ((double)time.tv_sec*1000.0) + ((double)time.tv_usec / 1000.0);
 }
 
-bool Utilities::isNear(CCPoint p1, CCPoint p2) {
+bool Utilities::isNear(CCPoint& p1, CCPoint& p2) {
 	return Utilities::isNear(p1, p2, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(CCPoint p1, CCPoint p2, int threshold) {
+bool Utilities::isNear(CCPoint& p1, CCPoint& p2, int threshold) {
 	return ccpDistance(p1, p2) <= threshold;
 }
 
-bool Utilities::isNear(CCPoint point, list<CCPoint> points) {
+bool Utilities::isNear(CCPoint& point, list<CCPoint>& points) {
 	return Utilities::isNear(point, points, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(CCPoint point, list<CCPoint> points, int threshold) {
+bool Utilities::isNear(CCPoint& point, list<CCPoint>& points, int threshold) {
 	for(list<CCPoint>::iterator pointsIterator = points.begin();
 		pointsIterator != points.end();
 		pointsIterator++) {
@@ -55,7 +55,7 @@ bool Utilities::isNear(CCPoint point, list<CCPoint> points, int threshold) {
 }
 
 
-bool Utilities::isPointInShape(CCPoint point, list<CCPoint> shape) {
+bool Utilities::isPointInShape(CCPoint& point, list<CCPoint>& shape) {
 
 	//special case
 	if(shape.size() == 1) {
