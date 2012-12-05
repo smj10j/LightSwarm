@@ -64,6 +64,9 @@ bool Spark::isDead() {
 	return _isDead;
 }
 
+
+/* TODO: -dt won't work here because we lose path data - how can we handle rollback efficiently
+and for an arbitrary amount of time?*/
 void Spark::update(float dt) {
 
 	//handle movement
@@ -134,7 +137,7 @@ void Spark::update(float dt) {
 	if(!_isDead) {
 		if(_health < 0) {
 			die();
-		}else {
+		}else if(dt > 0) {
 			_lifetimeMillis+= dt*1000.0;
 		}
 	}

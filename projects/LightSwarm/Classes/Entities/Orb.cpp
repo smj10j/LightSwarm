@@ -52,7 +52,9 @@ void Orb::update(const float dt) {
 
 	updateCenterAndRadius();
 	
-	_lifetimeMillis+= dt*1000.0;
+	if(dt > 0) {
+		_lifetimeMillis+= dt*1000.0;
+	}
 }
 
 

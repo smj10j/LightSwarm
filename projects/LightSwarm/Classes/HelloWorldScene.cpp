@@ -84,6 +84,14 @@ bool HelloWorld::init()
 
 
 void HelloWorld::update(float dt) {
+
+	/*
+	//TEST CODE to simulate a bit of rollback
+	if(_currentRunningTime > 10) {
+		singleUpdateStep(-dt);
+		return;
+	}
+	*/
 	
 	_currentRunningTime+= dt;
 	_fixedTimestepAccumulator+= dt;
@@ -105,12 +113,16 @@ void HelloWorld::update(float dt) {
 			singleUpdateStep(stepSize);
 		}
 	}else {
-		//no step - we're just too fast
+		//no step - we're just too dang fast!
 	}
 }
 
 
+/* Use a negative step (-dt) on opponents sparks to rollback their position to the time of a command
+then apply the command and turn off rollback - the simulation should catch up automaticaly
+*/
 void HelloWorld::singleUpdateStep(float dt) {
+
 	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
@@ -119,6 +131,8 @@ void HelloWorld::singleUpdateStep(float dt) {
 		Spark* spark = *sparksIterator;
 		
 		if(spark->isDead()) {
+			//TODO: how to handle this with rollback?
+			//make the spark invisible for a few second before finally removing it?
 			(*sparksIterator)->remove();
 			_sparks.erase(sparksIterator++);
 			continue;
@@ -142,11 +156,15 @@ void HelloWorld::singleUpdateStep(float dt) {
 	
 	
 	
+	if(dt > 0) {
+		
+		//things in here don't need to listen to rollback
 	
-	for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
-		pingLocationsIterator != _pingLocations.end();
-		pingLocationsIterator++) {
-		(*pingLocationsIterator)->update(dt);
+		for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
+			pingLocationsIterator != _pingLocations.end();
+			pingLocationsIterator++) {
+			(*pingLocationsIterator)->update(dt);
+		}
 	}
 }
 
