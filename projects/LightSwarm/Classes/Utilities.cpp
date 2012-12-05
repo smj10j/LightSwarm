@@ -36,8 +36,24 @@ bool Utilities::isNear(CCPoint p1, CCPoint p2) {
 }
 
 bool Utilities::isNear(CCPoint p1, CCPoint p2, int threshold) {
-	return fabsf(p1.x-p2.x) < threshold && fabsf(p1.y-p2.y) < threshold;
+	return ccpDistance(p1, p2) <= threshold;
 }
+
+bool Utilities::isNear(CCPoint point, list<CCPoint> points) {
+	return Utilities::isNear(point, points, IMMEDIATE_VINCINITY_DISTANCE);
+}
+
+bool Utilities::isNear(CCPoint point, list<CCPoint> points, int threshold) {
+	for(list<CCPoint>::iterator pointsIterator = points.begin();
+		pointsIterator != points.end();
+		pointsIterator++) {
+		if(Utilities::isNear(point, *pointsIterator, threshold)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 bool Utilities::isPointInShape(CCPoint point, list<CCPoint> shape) {
 

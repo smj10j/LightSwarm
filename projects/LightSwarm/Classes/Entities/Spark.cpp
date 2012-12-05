@@ -25,9 +25,19 @@ void Spark::addSelectionEffect() {
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
 }
 
+bool Spark::isNear(CCPoint point) {
+	return isNear(point, IMMEDIATE_VINCINITY_DISTANCE);
+}
+
+bool Spark::isNear(CCPoint point, int threshold) {
+	return Utilities::isNear(getAbsPoint(), point, threshold);
+}
 
 bool Spark::isInShape(list<CCPoint> shape) {
+	return Utilities::isPointInShape(getAbsPoint(), shape);
+}
 
+CCPoint Spark::getAbsPoint() {
 	float scaleX =_sprite->getScaleX();
 	float scaleY = _sprite->getScaleY();
 
@@ -36,8 +46,7 @@ bool Spark::isInShape(list<CCPoint> shape) {
 	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * scaleX,
 									_sprite->getContentSize().height/2 * scaleY)
 				);
-	
-	return Utilities::isPointInShape(absPoint, shape);
+	return absPoint;
 }
 
 void Spark::setTargetMovePath(list<CCPoint> path, CCPoint viewportCenter) {
@@ -148,6 +157,17 @@ CCPoint Spark::jitter(CCPoint point, CCPoint weights, float dt) {
 	float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*2*dt;
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
+
+list<CCPoint> Spark::getPositionList(set<Spark*> sparks) {
+	list<CCPoint> points;
+	for(set<Spark*>::iterator sparksIterator = sparks.begin();
+		sparksIterator != sparks.end();
+		sparksIterator++) {
+		points.push_back((*sparksIterator)->getAbsPoint());
+	}
+	return points;
+}
+
 
 
 Spark::~Spark() {

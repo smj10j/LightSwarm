@@ -50,6 +50,10 @@ public:
 	bool isDead();
 	
 	bool isInShape(list<CCPoint> shape);
+	bool isNear(CCPoint point);
+	bool isNear(CCPoint point, int threshold);
+	
+	static list<CCPoint> getPositionList(set<Spark*> sparks);
 	
 	virtual ~Spark();
 
@@ -71,6 +75,7 @@ private:
 	bool _isDead;
 	
 	CCPoint jitter(CCPoint point, CCPoint weights, float dt);
+	CCPoint getAbsPoint();
 };
 
 

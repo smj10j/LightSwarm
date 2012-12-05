@@ -227,8 +227,10 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 		if(!_selectedSparks.empty() && (
 				(now - _lastTouchBeganMillis) >= Config::getDoubleForKey(CONFIG_TOUCH_MOVE_BEGAN_DELAY_MILLIS) ||
+				Utilities::isNear(location, Spark::getPositionList(_selectedSparks), NEARBY_DISTANCE) ||
 				Utilities::isPointInShape(location, _prevTouches))
 			) {
+			//press and hold, or placed finger in selecting lasso or near selected sparks
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
 			
@@ -308,8 +310,6 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
-
-	CCLOG("CURRENTTOUCHES SIZE: %d", _currentTouches.size());
 
 
 	bool isALoop = _currentTouches.size() > 1 && Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);;
