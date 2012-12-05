@@ -98,7 +98,6 @@ void HelloWorld::update(float dt) {
 			continue;
 		}
 		
-		//TODO: OPTIMIZE!!!!
 		spark->setNearestOrb(_orbs);
 		spark->update(dt);
 		
@@ -226,6 +225,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			_isManipulatingSparks = true;
 			
 			//TODO: Utilities::isPointInShape is returning TRUE when clearly not the case
+				CCLOG("DRAG isNear %d, isPointInShape: %d, prevTouches.size: %d", Utilities::isNear(location, sparkPositions, NEARBY_DISTANCE), Utilities::isPointInShape(location, _prevTouches), _prevTouches.size());
 			
 		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
@@ -297,6 +297,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 		_isManipulatingViewport = false;
 		_isManipulatingSparks = false;
 		return;
+		
 	}else if(!_selectedSparks.empty()){
 		PingLocation* pingLocation = new PingLocation(_currentTouches.back(),
 												1,
