@@ -60,7 +60,7 @@ bool HelloWorld::init()
 		_orbs.insert(orb);
 	}	
 	
-	for(int i = 0; i < 300; i++) {
+	for(int i = 0; i < 1000; i++) {
 		//create a ship
 		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));

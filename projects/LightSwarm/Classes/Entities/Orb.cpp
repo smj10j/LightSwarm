@@ -27,7 +27,7 @@ void Orb::addSelectionEffect() {
 }
 
 float Orb::getRadius() {
-	return _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
+	return _radius;
 }
 
 CCPoint Orb::getPosition() {
@@ -35,30 +35,22 @@ CCPoint Orb::getPosition() {
 }
 
 
-void Orb::updateCenter() {
+void Orb::updateCenterAndRadius() {
 	// This is more accurate point for the node
 	_center = _sprite->convertToWorldSpace(CCPointZero);
 	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
 								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
 				);
+				
+	_radius = _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
 }
 
-bool Orb::isInShape(list<CCPoint>& shape) {
-
-	float scaleX =_sprite->getScaleX();
-	float scaleY = _sprite->getScaleY();
-
-    // This is more accurate point for the node
-    CCPoint absPoint = _sprite->convertToWorldSpace(CCPointZero);
-	absPoint = ccpAdd(absPoint, ccp(_sprite->getContentSize().width/2 * scaleX,
-									_sprite->getContentSize().height/2 * scaleY)
-				);
-	
-	return Utilities::isPointInShape(absPoint, shape);
+bool Orb::isInShape(const list<CCPoint>& shape) {
+	return Utilities::isPointInShape(_center, shape);
 }
 
 
-void Orb::update(float dt) {
+void Orb::update(const float dt) {
 
 
 }

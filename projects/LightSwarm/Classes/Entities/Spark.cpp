@@ -25,25 +25,23 @@ void Spark::addSelectionEffect() {
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
 }
 
-bool Spark::isNear(CCPoint& point) {
+bool Spark::isNear(const CCPoint& point) {
 	return isNear(point, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Spark::isNear(CCPoint& point, int threshold) {
-	CCPoint absPoint = getPosition();
-	return Utilities::isNear(absPoint, point, threshold);
+bool Spark::isNear(const CCPoint& point, const int threshold) {
+	return Utilities::isNear(_center, point, threshold);
 }
 
-bool Spark::isInShape(list<CCPoint>& shape) {
-	CCPoint absPoint = getPosition();
-	return Utilities::isPointInShape(absPoint, shape);
+bool Spark::isInShape(const list<CCPoint>& shape) {
+	return Utilities::isPointInShape(_center, shape);
 }
 
 CCPoint Spark::getPosition() {
 	return _center;
 }
 
-void Spark::setTargetMovePath(list<CCPoint>& path, CCPoint viewportCenter) {
+void Spark::setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportCenter) {
 
 	_targetViewportCenter = viewportCenter;
 
@@ -54,7 +52,7 @@ void Spark::setTargetMovePath(list<CCPoint>& path, CCPoint viewportCenter) {
 	//convert path to a queue (only add some of the path items)
 	int i = 0;
 	
-	for(list<CCPoint>::iterator pathIterator = path.begin();
+	for(list<CCPoint>::const_iterator pathIterator = path.begin();
 		pathIterator != path.end();
 		pathIterator++) {
 		
@@ -90,18 +88,21 @@ void Spark::update(float dt) {
 			//CCLog("Moving sprite to: %f,%f from %f,%f -- target = %f,%f, ds=%f, v=%f,%f", newLocation.x, newLocation.y, pos.x,pos.y, targetMoveLocation.x,targetMoveLocation.y, ds, v.x, v.y);
 			
 			_sprite->setPosition(newLocation);
+			
 		}else {
 			_targetMovePath.pop();
 			updateCenter();
 		}
+		
 	}else {
 		//resting
 		CCPoint position = _sprite->getPosition();
 		bool isAtRest = Utilities::isNear(_restingPosition, position, NEARBY_DISTANCE);
 		if(isAtRest) {
-			//jitter
+			//jitter 
 			CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
 			_sprite->setPosition(newLocation);
+			updateCenter();
 						
 		}else {
 			//move back into scope
@@ -112,7 +113,8 @@ void Spark::update(float dt) {
 	//TODO: optimize this code
 	//decrease health if out in space
 	float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(CONFIG_ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
-	float distance = ccpDistance(_sprite->getPosition(), _nearestOrb->getSprite()->getPosition());
+	
+	float distance = Utilities::getDistance(_center, _nearestOrb->getPosition());
 
 	if(distance > nearestOrbAtmosphereRadius) {
 		_health-= Config::getDoubleForKey(CONFIG_SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
@@ -135,9 +137,12 @@ void Spark::update(float dt) {
 	}
 	
 	
-	
-	if(!_isDead && _health < 0) {
-		die();
+	if(!_isDead) {
+		if(_health < 0) {
+			die();
+		}else {
+			_lifetimeMillis+= dt*1000.0;
+		}
 	}
 }
 
@@ -153,7 +158,7 @@ void Spark::setNearestOrb(set<Orb*>& orbs) {
 		for(set<Orb*>::iterator orbsIterator = orbs.begin();
 			orbsIterator != orbs.end();
 			orbsIterator++) {
-			float distance = ccpDistance((*orbsIterator)->getPosition(), getPosition());
+			float distance = ccpDistance((*orbsIterator)->getPosition(), _center);
 			if(distance < minDistance) {
 				minDistance = distance;
 				_nearestOrb = (*orbsIterator);
@@ -170,14 +175,14 @@ void Spark::updateCenter() {
 				);
 }
 
-CCPoint Spark::jitter(CCPoint& point, CCPoint weights, float dt) {
+CCPoint Spark::jitter(const CCPoint& point, const CCPoint weights, const float dt) {
 	float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*2*dt;
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
 
-list<CCPoint> Spark::getPositionList(set<Spark*> sparks) {
+list<CCPoint> Spark::getPositionList(const set<Spark*> sparks) {
 	list<CCPoint> points;
-	for(set<Spark*>::iterator sparksIterator = sparks.begin();
+	for(set<Spark*>::const_iterator sparksIterator = sparks.begin();
 		sparksIterator != sparks.end();
 		sparksIterator++) {
 		points.push_back((*sparksIterator)->getPosition());

@@ -31,6 +31,7 @@ public:
 		
 		_nearestOrb = NULL;
 		_health = _initialHealth;
+		_lifetimeMillis = 0;
 
 		updateCenter();
 		
@@ -40,10 +41,10 @@ public:
 	CCSprite* getSprite();
 	CCPoint getPosition();
 	
-	void update(float dt);
+	void update(const float dt);
 	
-	void setTargetMovePath(list<CCPoint>& path, CCPoint viewportCenter);
-	void setViewportScale(float scale);
+	void setTargetMovePath(const list<CCPoint>& path, const CCPoint viewportCenter);
+	void setViewportScale(const float scale);
 	
 	void clearAllEffects();
 	void addSelectionEffect();
@@ -52,13 +53,13 @@ public:
 	
 	bool isDead();
 	
-	bool isInShape(list<CCPoint>& shape);
-	bool isNear(CCPoint& point);
-	bool isNear(CCPoint& point, int threshold);
+	bool isInShape(const list<CCPoint>& shape);
+	bool isNear(const CCPoint& point);
+	bool isNear(const CCPoint& point, const int threshold);
 
 	void setNearestOrb(set<Orb*>& orbs);
 	
-	static list<CCPoint> getPositionList(set<Spark*> sparks);
+	static list<CCPoint> getPositionList(const set<Spark*> sparks);
 	
 	virtual ~Spark();
 
@@ -80,7 +81,9 @@ private:
 	
 	bool _isDead;
 	
-	CCPoint jitter(CCPoint& point, CCPoint weights, float dt);
+	double _lifetimeMillis;
+	
+	CCPoint jitter(const CCPoint& point, const CCPoint weights, const float dt);
 	void updateCenter();
 };
 

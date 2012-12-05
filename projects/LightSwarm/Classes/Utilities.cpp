@@ -31,20 +31,20 @@ double Utilities::getMillis() {
 	return ((double)time.tv_sec*1000.0) + ((double)time.tv_usec / 1000.0);
 }
 
-bool Utilities::isNear(CCPoint& p1, CCPoint& p2) {
+bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2) {
 	return Utilities::isNear(p1, p2, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(CCPoint& p1, CCPoint& p2, int threshold) {
-	return ccpDistance(p1, p2) <= threshold;
+bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2, const int threshold) {
+	return getDistance(p1, p2) <= threshold;
 }
 
-bool Utilities::isNear(CCPoint& point, list<CCPoint>& points) {
+bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points) {
 	return Utilities::isNear(point, points, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(CCPoint& point, list<CCPoint>& points, int threshold) {
-	for(list<CCPoint>::iterator pointsIterator = points.begin();
+bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points, const int threshold) {
+	for(list<CCPoint>::const_iterator pointsIterator = points.begin();
 		pointsIterator != points.end();
 		pointsIterator++) {
 		if(Utilities::isNear(point, *pointsIterator, threshold)) {
@@ -54,8 +54,13 @@ bool Utilities::isNear(CCPoint& point, list<CCPoint>& points, int threshold) {
 	return false;
 }
 
+float Utilities::getDistance(const CCPoint& p1, const CCPoint& p2) {
+	float x = p2.x-p1.x;
+	float y = p2.y-p1.y;
+	return sqrt(x*x + y*y);
+}
 
-bool Utilities::isPointInShape(CCPoint& point, list<CCPoint>& shape) {
+bool Utilities::isPointInShape(const CCPoint& point, const list<CCPoint>& shape) {
 
 	//special case
 	if(shape.size() == 1) {
@@ -69,8 +74,8 @@ bool Utilities::isPointInShape(CCPoint& point, list<CCPoint>& shape) {
     CCPoint current;
     bool isIn = false;
 
-	list<CCPoint>::iterator prevShapeIterator = --shape.end();
-	for(list<CCPoint>::iterator shapeIterator = shape.begin();
+	list<CCPoint>::const_iterator prevShapeIterator = --shape.end();
+	for(list<CCPoint>::const_iterator shapeIterator = shape.begin();
 		shapeIterator != shape.end();
 		prevShapeIterator = shapeIterator++) {
 		
@@ -87,7 +92,7 @@ bool Utilities::isPointInShape(CCPoint& point, list<CCPoint>& shape) {
 
 
 
-void Utilities::setRandomSeed(int seed) {
+void Utilities::setRandomSeed(const int seed) {
 	_randDouble.seed(seed);
 }
 

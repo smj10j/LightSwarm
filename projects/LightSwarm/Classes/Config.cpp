@@ -10,6 +10,10 @@
 #include <fstream>
 
 static Json::Value root;   // will contains the root value after parsing.
+
+static map<string,double> _doublesMap;
+static map<string,int> _intsMap;
+
 static double lastConfigReloadMillis = 0;
 
 void Config::init() {
@@ -31,7 +35,11 @@ void Config::init() {
 			exit(1);
 		}
 		is.close();
+		
+		_doublesMap.clear();
+		_intsMap.clear();
 	}
+	
 	lastConfigReloadMillis = Utilities::getMillis();
 }
 
@@ -44,13 +52,25 @@ Json::Value Config::getValueForKey(string key) {
 }
 
 double Config::getDoubleForKey(string key) {
-	Json::Value value = Config::getValueForKey(key);
-	if(value == NULL) return NULL;
-	return value.asDouble();
+	map<string,double>::iterator it = _doublesMap.find(key);
+	if(it == _doublesMap.end()) {
+		Json::Value value = Config::getValueForKey(key);
+		if(value == NULL) return NULL;
+		_doublesMap.insert(map<string,double>::value_type(key, value.asDouble()));
+		return value.asDouble();
+	}else {
+		return it->second;
+	}
 }
 
 int Config::getIntForKey(string key) {
-	Json::Value value = Config::getValueForKey(key);
-	if(value == NULL) return NULL;
-	return value.asInt();
+	map<string,int>::iterator it = _intsMap.find(key);
+	if(it == _intsMap.end()) {
+		Json::Value value = Config::getValueForKey(key);
+		if(value == NULL) return NULL;
+		_intsMap.insert(map<string,int>::value_type(key, value.asInt()));
+		return value.asInt();
+	}else {
+		return it->second;
+	}
 }

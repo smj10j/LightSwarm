@@ -29,16 +29,18 @@ public:
 
 	static double getMillis();
 
-	static bool isNear(CCPoint& p1, CCPoint& p2);
-	static bool isNear(CCPoint& p1, CCPoint& p2, int threshold);
+	static bool isNear(const CCPoint& p1, const CCPoint& p2);
+	static bool isNear(const CCPoint& p1, const CCPoint& p2, const int threshold);
 
-	static bool isNear(CCPoint& point, list<CCPoint>& points);
-	static bool isNear(CCPoint& point, list<CCPoint>& points, int threshold);
+	static bool isNear(const CCPoint& point, const list<CCPoint>& points);
+	static bool isNear(const CCPoint& point, const list<CCPoint>& points, const int threshold);
 
-	static bool isPointInShape(CCPoint& point, list<CCPoint>& shape);
+	static bool isPointInShape(const CCPoint& point, const list<CCPoint>& shape);
+
+	static float getDistance(const CCPoint& p1, const CCPoint& p2);
 
 
-	static void setRandomSeed(int seed);
+	static void setRandomSeed(const int seed);
 	static double getRandomDouble();
 };
 

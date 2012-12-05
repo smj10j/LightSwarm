@@ -23,7 +23,7 @@ public:
 	Orb(CCSprite* sprite):
 		_sprite(sprite){
 		
-		updateCenter();
+		updateCenterAndRadius();
 
 		_sprite->retain();
 	}
@@ -31,23 +31,25 @@ public:
 	CCSprite* getSprite();
 	CCPoint getPosition();
 	
-	void update(float dt);
+	void update(const float dt);
 	
 	void clearAllEffects();
 	void addSelectionEffect();
 	
 	float getRadius();
 
-	bool isInShape(list<CCPoint>& shape);
+	bool isInShape(const list<CCPoint>& shape);
 	
 	virtual ~Orb();
 
 private:
 
 	CCSprite* _sprite;
-	CCPoint _center;
 	
-	void updateCenter();
+	CCPoint _center;
+	float _radius;
+	
+	void updateCenterAndRadius();
 	
 };
 

@@ -11,23 +11,25 @@
 
 
 #include "Common.h"
+#include <map>
 #include "json.h"
 
 using namespace std;
 
 class Config
 {
-
-private:
-
-	static Json::Value getValueForKey(string key);
-
 public:
 
 	static void init();
 
 	static double getDoubleForKey(string key);
 	static int getIntForKey(string key);
+	
+	
+private:
+
+	static Json::Value getValueForKey(string key);
+
 };
 
 
