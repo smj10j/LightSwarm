@@ -23,12 +23,8 @@ public:
 	Orb(CCSprite* sprite):
 		_sprite(sprite){
 		
-		// This is more accurate point for the node
-		_center = _sprite->convertToWorldSpace(CCPointZero);
-		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
-									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
-					);		
-		
+		updateCenter();
+
 		_sprite->retain();
 	}
 
@@ -50,6 +46,8 @@ private:
 
 	CCSprite* _sprite;
 	CCPoint _center;
+	
+	void updateCenter();
 	
 };
 

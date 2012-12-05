@@ -32,11 +32,7 @@ public:
 		_nearestOrb = NULL;
 		_health = _initialHealth;
 
-		// This is more accurate point for the node
-		_center = _sprite->convertToWorldSpace(CCPointZero);
-		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
-									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
-					);
+		updateCenter();
 		
 		_sprite->retain();
 	}
@@ -85,6 +81,7 @@ private:
 	bool _isDead;
 	
 	CCPoint jitter(CCPoint& point, CCPoint weights, float dt);
+	void updateCenter();
 };
 
 

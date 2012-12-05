@@ -92,6 +92,7 @@ void Spark::update(float dt) {
 			_sprite->setPosition(newLocation);
 		}else {
 			_targetMovePath.pop();
+			updateCenter();
 		}
 	}else {
 		//resting
@@ -161,6 +162,13 @@ void Spark::setNearestOrb(set<Orb*>& orbs) {
 	}
 }
 
+void Spark::updateCenter() {
+	// This is more accurate point for the node
+	_center = _sprite->convertToWorldSpace(CCPointZero);
+	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+				);
+}
 
 CCPoint Spark::jitter(CCPoint& point, CCPoint weights, float dt) {
 	float ds = Config::getDoubleForKey(CONFIG_SPARK_BASE_SPEED)*_speedMultiplier*2*dt;

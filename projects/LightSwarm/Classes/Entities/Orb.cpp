@@ -34,6 +34,15 @@ CCPoint Orb::getPosition() {
 	return _center;
 }
 
+
+void Orb::updateCenter() {
+	// This is more accurate point for the node
+	_center = _sprite->convertToWorldSpace(CCPointZero);
+	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+				);
+}
+
 bool Orb::isInShape(list<CCPoint>& shape) {
 
 	float scaleX =_sprite->getScaleX();
