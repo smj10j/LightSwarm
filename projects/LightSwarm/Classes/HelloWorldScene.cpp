@@ -128,7 +128,7 @@ void HelloWorld::update(float dt) {
 
 void HelloWorld::draw() {
 	
-	if(_currentTouches.size() >= 5) {
+	if(_currentTouches.size() >= 2) {
 		//draw a line as we drag our finger
 		glLineWidth(5);
 		ccDrawColor4B(255, 255, 255, 255);
@@ -225,6 +225,8 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
 			
+			//TODO: Utilities::isPointInShape is returning TRUE when clearly not the case
+			
 		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
 				//or restarted a drag by touching the screen while the view is still sliding
@@ -245,7 +247,11 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			return;
 		}
 		
-		_currentTouches.push_back(location);
+		double distance = _currentTouches.empty() ? 100000 : Utilities::getDistance(location, _currentTouches.back());
+		
+		if(distance >= Config::getIntForKey(TOUCH_MIN_PATH_POINT_DISTANCE)) {
+			_currentTouches.push_back(location);
+		}
 		
 	}else if(_isManipulatingViewport) {
 		//viewport manipulation
@@ -301,7 +307,6 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
-
 
 	bool isALoop = _currentTouches.size() > 1 && Utilities::isNear(_currentTouches.front(), _currentTouches.back(), IMMEDIATE_VINCINITY_DISTANCE);;
 	bool isStartingWithinExistingLasso = Utilities::isPointInShape(_currentTouches.front(), _prevTouches);

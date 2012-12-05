@@ -39,7 +39,6 @@ public:
 
 	static float getDistance(const CCPoint& p1, const CCPoint& p2);
 
-
 	static void setRandomSeed(const int seed);
 	static double getRandomDouble();
 };

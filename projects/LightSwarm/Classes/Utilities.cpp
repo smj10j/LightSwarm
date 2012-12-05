@@ -62,7 +62,10 @@ float Utilities::getDistance(const CCPoint& p1, const CCPoint& p2) {
 
 bool Utilities::isPointInShape(const CCPoint& point, const list<CCPoint>& shape) {
 
-	//special case
+	//special cases
+	if(shape.empty()) {
+		return false;
+	}
 	if(shape.size() == 1) {
 		return Utilities::isNear(point, shape.front(), DIRECT_TOUCH_DISTANCE);
 	}
@@ -82,14 +85,15 @@ bool Utilities::isPointInShape(const CCPoint& point, const list<CCPoint>& shape)
 		current = *shapeIterator;
 		prev = *prevShapeIterator;
 
-        if( ((current.y > y) != (prev.y > y)) && (x < (prev.x -current.x) * (y - current.y) / (prev.y - current.y) + current.x)) {
+		bool crossesVertically = ((current.y > y) != (prev.y > y));
+				
+        if( crossesVertically &&
+			(x < (prev.x - current.x) * (y - current.y) / (prev.y - current.y) + current.x)) {
             isIn = !isIn;
         }
     }
     return isIn;
 }
-
-
 
 
 void Utilities::setRandomSeed(const int seed) {
