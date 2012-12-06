@@ -10,7 +10,7 @@
 #define __LightSwarm__GameStateSnapshot__
 
 
-#define SPARK_INITIAL_MEMORY_ALLOCATION_SIZE 500
+#define SPARK_INITIAL_MEMORY_ALLOCATION_SIZE 1000
 
 
 #include "Common.h"
@@ -44,9 +44,9 @@ public:
 			sparksIterator++) {
 							
 			if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
-				Spark::copy(&_sparks[i++], *sparksIterator);
+				Spark::copy(&_sparks[i++], *sparksIterator, false);
 			}else {
-				Spark::copy(&_sparksOverflow[i++ - SPARK_INITIAL_MEMORY_ALLOCATION_SIZE], *sparksIterator);
+				Spark::copy(&_sparksOverflow[i++ - SPARK_INITIAL_MEMORY_ALLOCATION_SIZE], *sparksIterator, false);
 			}
 		}
 		
@@ -58,13 +58,13 @@ public:
 			orbsIterator != gameScene->_orbs.end();
 			orbsIterator++) {
 		
-			Orb::copy(&_orbs[j++], *orbsIterator);
+			Orb::copy(&_orbs[j++], *orbsIterator, false);
 		}
 		
 		_isRestoring = false;
 		
 		float size = (sizeof(Spark)*(_sparksSize > SPARK_INITIAL_MEMORY_ALLOCATION_SIZE ? _sparksSize : SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
-		CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
+		//CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
 	}
 
 	virtual ~GameStateSnapshot();

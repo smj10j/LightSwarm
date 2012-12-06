@@ -132,6 +132,8 @@ void GameScene::restoreToFrame(int targetFrame) {
 	}
 	if(gameStateSnapshot != NULL) {
 	
+		clearPingLocations();
+
 		set<int> selectedSparkIds;
 		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
 			selectedSparksIterator != _selectedSparks.end();
@@ -176,7 +178,7 @@ void GameScene::singleUpdateStep(float dt) {
 	//TEST CODE to simulate a bit of rollback
 	if(!ROLLBACK_TESTED && !_gameStateSnapshots.empty() && _currentFrame == 500) {
 
-		int targetFrame = _currentFrame-25;
+		int targetFrame = _currentFrame-155;
 		restoreToFrame(targetFrame);
 
 		ROLLBACK_TESTED = true;
@@ -529,8 +531,6 @@ void GameScene::deselectSpark(Spark* spark) {
 
 
 void GameScene::cleanup() {
-
-	clearPingLocations();
 			
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();

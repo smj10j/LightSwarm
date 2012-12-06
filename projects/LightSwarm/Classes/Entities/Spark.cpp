@@ -222,10 +222,12 @@ void Spark::addSpriteToParent() {
 	if(_sprite == NULL) {
 		loadSprite();
 	}
-	_isModifyingState = true;
-	_parent->addChild(_sprite, 20);
-	_isOnParent = true;
-	_isModifyingState = false;
+	if(!_isOnParent) {
+		_isModifyingState = true;
+		_parent->addChild(_sprite, 20);
+		_isOnParent = true;
+		_isModifyingState = false;
+	}
 }
 
 void Spark::removeSpriteFromParent() {

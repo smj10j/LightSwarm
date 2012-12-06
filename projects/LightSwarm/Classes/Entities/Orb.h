@@ -21,6 +21,7 @@ class Orb
 public:
 
 	Orb() {
+		_parent = NULL;
 		_sprite = NULL;
 		_isModifyingState = false;
 		_isOnParent = false;
@@ -48,7 +49,7 @@ public:
 	}
 
 	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
-	static void copy(Orb* dst, Orb* src) {
+	static void copy(Orb* dst, Orb* src, bool reuseDstSprite) {
 		
 		dst->_id = src->_id;
 		
@@ -64,6 +65,28 @@ public:
 		dst->_updateOffset = src->_updateOffset;
 
 		dst->_lastCenterUpdateMillis = src->_lastCenterUpdateMillis;
+
+		
+		if(reuseDstSprite && dst->_sprite != NULL) {
+			dst->_sprite->setPosition(dst->_position);
+			dst->_sprite->setScale(SCALE_FACTOR*dst->_scaleMultiplier);
+			
+		}else {
+			if(dst->_sprite != NULL) {
+				dst->removeSpriteFromParent();
+				dst->_sprite->release();
+				dst->_sprite = NULL;
+			}
+			if(dst->_parent != NULL) {
+				dst->_parent->release();
+				dst->_parent = NULL;
+			}
+			
+			if(src->_parent != NULL) {
+				dst->_parent = src->_parent;
+				dst->_parent->retain();
+			}					
+		}
 	}
 
 	CCPoint getPosition();

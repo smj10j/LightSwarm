@@ -67,10 +67,12 @@ void Orb::addSpriteToParent() {
 	if(_sprite == NULL) {
 		loadSprite();
 	}
-	_isModifyingState = true;
-	_parent->addChild(_sprite, 10);
-	_isOnParent = true;
-	_isModifyingState = false;
+	if(!_isOnParent) {
+		_isModifyingState = true;
+		_parent->addChild(_sprite, 10);
+		_isOnParent = true;
+		_isModifyingState = false;
+	}
 }
 
 void Orb::removeSpriteFromParent() {

@@ -24,6 +24,7 @@ public:
 	//used by clone()
 	Spark() {
 		_nearestOrb = NULL;
+		_parent = NULL;
 		_sprite = NULL;
 		_isModifyingState = false;
 		_isOnParent = false;		
@@ -63,12 +64,9 @@ public:
 	}
 	
 	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
-	static void copy(Spark* dst, Spark* src) {
-				
-		dst->_id = src->_id;
+	static void copy(Spark* dst, Spark* src, bool reuseDstSprite) {
 		
-		dst->_parent = src->_parent;
-		dst->_parent->retain();
+		dst->_id = src->_id;
 		
 		dst->_targetMovePath = src->_targetMovePath;
 		dst->_restingPosition = src->_restingPosition;
@@ -88,7 +86,28 @@ public:
 		dst->_lastNearestOrbUpdateMillis = src->_lastNearestOrbUpdateMillis;
 		dst->_lastCenterUpdateMillis = src->_lastCenterUpdateMillis;
 		dst->_lastAtRestJitterMillis = src->_lastAtRestJitterMillis;
-		
+
+		if(reuseDstSprite && dst->_sprite != NULL) {
+			dst->_sprite->setPosition(dst->_position);
+			dst->_sprite->setScale(SCALE_FACTOR*dst->_scaleMultiplier);
+			
+		}else {
+			if(dst->_sprite != NULL) {
+				dst->removeSpriteFromParent();
+				dst->_sprite->release();
+				dst->_sprite = NULL;
+			}
+			if(dst->_parent != NULL) {
+				dst->_parent->release();
+				dst->_parent = NULL;
+			}
+			
+			if(src->_parent != NULL) {
+				dst->_parent = src->_parent;
+				dst->_parent->retain();
+			}					
+		}
+				
 		//CCLOG("Called sprite copy constructor");		
 	};
 		

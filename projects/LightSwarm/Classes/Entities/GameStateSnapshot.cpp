@@ -18,31 +18,55 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	
 	gameScene->retain();
 	
-	gameScene->cleanup();
-
 	gameScene->_currentFrame = _frame;
 	Utilities::setRandomSeed(_frame);//sync random generators
 
+	set<Spark*>::iterator gameSceneSparksIterator = gameScene->_sparks.begin();
+
 	for(int i = 0; i < _sparksSize; i++) {
-		
+
 		Spark* spark = NULL;
-		if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
-			spark = new Spark(_sparks[i]);
+		bool reuseDstSprite = false;
+				
+		if(gameSceneSparksIterator != gameScene->_sparks.end()) {
+			//replace existing sparks for memory efficiency
+			spark = *gameSceneSparksIterator++;
+			reuseDstSprite = true;
+			
 		}else {
-			spark = new Spark(_sparksOverflow[i-SPARK_INITIAL_MEMORY_ALLOCATION_SIZE]);
+			//create a new entry
+			spark = new Spark();
+			gameScene->_sparks.insert(spark);
 		}
 		
-		spark->addSpriteToParent();
-				
-		gameScene->_sparks.insert(spark);
+		
+		if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
+			Spark::copy(spark, &_sparks[i], reuseDstSprite);
+		}else {
+			Spark::copy(spark, &_sparksOverflow[i-SPARK_INITIAL_MEMORY_ALLOCATION_SIZE], reuseDstSprite);
+		}
+		
+		spark->addSpriteToParent();		
 	}
+	
+	//remove any leftovers
+	while(gameSceneSparksIterator != gameScene->_sparks.end()) {
+		delete *gameSceneSparksIterator;
+		gameScene->_sparks.erase(gameSceneSparksIterator++);
+	}
+	
 	
 	for(int i = 0; i < _orbsSize; i++) {
 		
-		Orb* orb = new Orb(_orbs[i]);
-		orb->addSpriteToParent();
-
+		Orb* orb = new Orb();
+		bool reuseDstSprite = false;
+		
+		
+		Orb::copy(orb, &_orbs[i], reuseDstSprite);
+		
 		gameScene->_orbs.insert(orb);
+
+		orb->addSpriteToParent();
 	}
 	
 	gameScene->release();

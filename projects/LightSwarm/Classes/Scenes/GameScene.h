@@ -39,8 +39,6 @@ public:
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
 
-	void cleanup();
-
 private:
 	CCSpriteBatchNode* _batchNode;
 			
@@ -63,6 +61,7 @@ private:
 	void updateSparkSelectionEffects();
 	void clearSelectedSparksIfNoAction();
 	
+	void cleanup();
 	
 	void draw();
 	void update(float dt);
