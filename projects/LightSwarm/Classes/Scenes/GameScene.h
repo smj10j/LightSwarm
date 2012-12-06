@@ -45,7 +45,6 @@ public:
 
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
-	set<Spark*> _selectedSparks;
 
 	void cleanup();
 
@@ -63,7 +62,8 @@ private:
 	list<CCPoint> _currentTouches;
 	
 	list<PingLocation*> _pingLocations;
-	
+	set<Spark*> _selectedSparks;
+	void deselectSpark(Spark* spark);
 	
 	CCLayer* _gameLayer;
 	

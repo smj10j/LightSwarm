@@ -134,7 +134,32 @@ void GameScene::rollbackTo(double runningTimeMillis) {
 		}
 	}
 	if(gameStateSnapshot != NULL) {
+	
+		set<int> selectedSparkIds;
+		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+			selectedSparksIterator != _selectedSparks.end();
+			selectedSparksIterator++) {
+			selectedSparkIds.insert((*selectedSparksIterator)->getId());
+		}
+		
+		//restore
 		gameStateSnapshot->restoreTo(this);
+		
+		//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
+		//reselect sparks
+		_selectedSparks.clear();
+		for(set<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
+			selectedSparkIdsIterator != selectedSparkIds.end();
+			selectedSparkIdsIterator++) {
+			for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+				sparksIterator != _sparks.end();
+				sparksIterator++) {
+				if((*selectedSparkIdsIterator) == (*sparksIterator)->getId()) {				
+					_selectedSparks.insert(*sparksIterator);
+					break;
+				}
+			}
+		}
 		updateSparkSelectionEffects();
 	}
 	
@@ -165,8 +190,7 @@ void GameScene::singleUpdateStep(float dt) {
 		Spark* spark = *sparksIterator;
 		
 		if(spark->isDead()) {
-			//TODO: how to handle this with rollback?
-			//make the spark invisible for a few second before finally removing it?
+			deselectSpark(*sparksIterator);
 			delete *sparksIterator;
 			_sparks.erase(sparksIterator++);
 			continue;
@@ -482,13 +506,23 @@ void GameScene::updateSparkSelectionEffects() {
 	
 }
 
+void GameScene::deselectSpark(Spark* spark) {
+	for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+		selectedSparksIterator != _selectedSparks.end();
+		selectedSparksIterator++) {
+
+		if((*selectedSparksIterator)->getId() == spark->getId()) {
+			_selectedSparks.erase(selectedSparksIterator);
+			break;
+		}
+	}
+}
+
 
 void GameScene::cleanup() {
 
 	clearPingLocations();
-	
-	_selectedSparks.clear();
-		
+			
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		_sparks.erase(sparksIterator++)) {
@@ -507,8 +541,6 @@ GameScene::~GameScene() {
 	
 	cleanup();
 	
-	_selectedSparks.clear();
-
 	for(list<GameStateSnapshot*>::iterator gameStateSnapshotsIterator = _gameStateSnapshots.begin();
 		gameStateSnapshotsIterator != _gameStateSnapshots.end();
 		_gameStateSnapshots.erase(gameStateSnapshotsIterator++)) {

@@ -27,7 +27,7 @@ public:
 	
 		_isRestoring = true;
 		double startTime = Utilities::getMillis();
-	
+			
 		Utilities::setRandomSeed(_randomGeneratorSeed);//sync random generators
 	
 		//copy orbs and sparks

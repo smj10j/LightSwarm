@@ -31,6 +31,8 @@ public:
 		_isDead(false),
 		_restingPosition(position) {
 		
+		_id = 10000*Utilities::getRandomDouble() + 10000*Utilities::getRandomDouble();
+		
 		_parent->retain();
 		
 		_nearestOrb = NULL;
@@ -54,6 +56,8 @@ public:
 	//copy constructor
 	Spark(Spark* spark) {
 		
+		_id = spark->_id;
+		
 		_parent = spark->_parent;
 		_parent->retain();
 
@@ -62,7 +66,6 @@ public:
 		_isModifyingState = false;
 		_isOnParent = false;
 		
-		_isSelected = spark->_isSelected;
 		_targetMovePath = spark->_targetMovePath;
 		_restingPosition = spark->_restingPosition;
 		_position = (spark->_sprite != NULL && spark->_isOnParent) ? spark->_sprite->getPosition() : spark->_position;
@@ -74,6 +77,7 @@ public:
 		_initialHealth = spark->_initialHealth;
 		_health = spark->_health;
 		_isDead = spark->_isDead;
+		_isSelected = false;
 
 		_lifetimeMillis = spark->_lifetimeMillis;
 		_updateOffset = spark->_updateOffset;
@@ -108,6 +112,10 @@ public:
 
 	void setNearestOrb(set<Orb*>& orbs);
 	
+	int getId() {
+		return _id;
+	}	
+	
 	static list<CCPoint> getPositionList(const set<Spark*> sparks);
 	
 	virtual ~Spark();
@@ -116,6 +124,7 @@ private:
 
 	CCNode* _parent;
 	CCSprite* _sprite;
+	int _id;
 	
 	queue<CCPoint> _targetMovePath;
 	CCPoint _restingPosition;

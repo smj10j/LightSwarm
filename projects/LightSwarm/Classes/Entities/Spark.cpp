@@ -10,14 +10,18 @@
 
 
 void Spark::clearAllEffects() {
-	_isSelected = false;
-	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
+	if(_isSelected) {
+		_isSelected = false;
+		_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
+	}
 }
 
 
 void Spark::addSelectionEffect() {
-	_isSelected = true;
-	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
+	if(!_isSelected) {
+		_isSelected = true;
+		_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
+	}
 }
 
 bool Spark::isNear(const CCPoint& point) {

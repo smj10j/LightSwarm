@@ -25,6 +25,8 @@ public:
 		_position(position),
 		_scaleMultiplier(scaleMultiplier) {
 
+		_id = 10000*Utilities::getRandomDouble() + 10000*Utilities::getRandomDouble();
+
 		_parent->retain();
 
 		_lifetimeMillis = 0;
@@ -41,6 +43,8 @@ public:
 	
 	//copy constructor
 	Orb(Orb* orb) {
+		
+		_id = orb->_id;
 		
 		_parent = orb->_parent;
 		_parent->retain();
@@ -75,12 +79,17 @@ public:
 
 	bool isInShape(const list<CCPoint>& shape);
 	
+	int getId() {
+		return _id;
+	}
+			
 	virtual ~Orb();
 
 private:
 
 	CCNode* _parent;
 	CCSprite* _sprite;
+	int _id;
 	
 	CCPoint _center;
 	CCPoint _position;

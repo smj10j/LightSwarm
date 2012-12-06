@@ -31,11 +31,7 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 		
 		Spark* spark = new Spark(**sparksIterator);
 		spark->addSpriteToParent();
-		
-		if(spark->isSelected()) {
-			gameScene->_selectedSparks.insert(spark);
-		}
-		
+				
 		gameScene->_sparks.insert(spark);
 	}
 	
