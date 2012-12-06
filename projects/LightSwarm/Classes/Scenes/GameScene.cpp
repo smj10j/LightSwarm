@@ -1,15 +1,15 @@
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 #include "Common.h"
 USING_NS_CC;
 
 
-CCScene* HelloWorld::scene()
+CCScene* GameScene::scene()
 {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
     // 'layer' is an autorelease object
-    HelloWorld *layer = HelloWorld::create();
+    GameScene *layer = GameScene::create();
 
     // add layer as a child to scene
     scene->addChild(layer);
@@ -19,7 +19,7 @@ CCScene* HelloWorld::scene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool GameScene::init()
 {
     if ( !CCLayer::init() )
     {
@@ -83,7 +83,7 @@ bool HelloWorld::init()
 
 
 
-void HelloWorld::update(float dt) {
+void GameScene::update(float dt) {
 
 	/*
 	//TEST CODE to simulate a bit of rollback
@@ -97,17 +97,18 @@ void HelloWorld::update(float dt) {
 	_fixedTimestepAccumulator+= dt;
 
 	if(_isRollingBack) {
+		//new command was received from network player - adding it in
 		return;
 	}
 	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
 	const int maxSteps = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
-	const int steps = floor(_fixedTimestepAccumulator / stepSize);
+	const int steps = _fixedTimestepAccumulator / stepSize;
 	
 	if (steps > 0) {
         _fixedTimestepAccumulator-= (steps * stepSize);
 
-		const int stepsClamped = min(steps, maxSteps);
+		const int stepsClamped = MIN(steps, maxSteps);
 	 
 		for (int i = 0; i < stepsClamped; i++) {
 			singleUpdateStep(stepSize);
@@ -121,7 +122,7 @@ void HelloWorld::update(float dt) {
 /* Use a negative step (-dt) on opponents sparks to rollback their position to the time of a command
 then apply the command and turn off rollback - the simulation should catch up automaticaly
 */
-void HelloWorld::singleUpdateStep(float dt) {
+void GameScene::singleUpdateStep(float dt) {
 
 	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
@@ -169,7 +170,7 @@ void HelloWorld::singleUpdateStep(float dt) {
 }
 
 
-void HelloWorld::draw() {
+void GameScene::draw() {
 	
 	if(_currentTouches.size() >= 2) {
 		//draw a line as we drag our finger
@@ -192,7 +193,7 @@ void HelloWorld::draw() {
 
 
 
-void HelloWorld::clearPingLocations() {
+void GameScene::clearPingLocations() {
 	for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
 		pingLocationsIterator != _pingLocations.end();
 		_pingLocations.erase(pingLocationsIterator++)) {
@@ -200,7 +201,7 @@ void HelloWorld::clearPingLocations() {
 	}
 }
 
-void HelloWorld::clearSelectedSparksIfNoAction() {
+void GameScene::clearSelectedSparksIfNoAction() {
 	if(!_isManipulatingSparks && !_isManipulatingViewport) {
 		_selectedSparks.clear();
 		clearPingLocations();
@@ -208,7 +209,7 @@ void HelloWorld::clearSelectedSparksIfNoAction() {
 	}
 }
 
-void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+void GameScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 		
 	if(touches->count() != 1) { return; };
 
@@ -250,14 +251,14 @@ void HelloWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 			this->addChild(pingLocation);
 		}
 		
-		this->scheduleOnce(schedule_selector(HelloWorld::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)/1000.0+0.100);
+		this->scheduleOnce(schedule_selector(GameScene::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)/1000.0+0.100);
 	}
 	
 	_lastTouchBeganMillis = now;
 }
 
 
-void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+void GameScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 	
 	if(touches->count() != 1) { return; };
 	
@@ -328,7 +329,7 @@ void HelloWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	}
 }
 
-void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
+void GameScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event) {
 
 	if(touches->count() != 1) { return; };
 
@@ -416,7 +417,7 @@ void HelloWorld::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 	updateSparkSelectionEffects();
 }
 
-void HelloWorld::updateSparkSelectionEffects() {
+void GameScene::updateSparkSelectionEffects() {
 	//remove the selection effects and apply any new efects
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
@@ -441,6 +442,6 @@ void HelloWorld::updateSparkSelectionEffects() {
 
 
 
-HelloWorld::~HelloWorld() {
+GameScene::~GameScene() {
 	clearPingLocations();
 }

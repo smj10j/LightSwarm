@@ -1,5 +1,5 @@
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+#ifndef __GAME_SCENE_H__
+#define __GAME_SCENE_H__
 
 #include "Common.h"
 #include "Spark.h"
@@ -10,7 +10,7 @@
 USING_NS_CC;
 using namespace std;
 
-class HelloWorld : public CCLayer
+class GameScene : public CCLayer
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -20,7 +20,7 @@ public:
     static CCScene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(HelloWorld);	
+    CREATE_FUNC(GameScene);	
 	
 	//touch handlers
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
@@ -29,7 +29,7 @@ public:
 		
 	void clearPingLocations();
 		
-	virtual ~HelloWorld();
+	virtual ~GameScene();
 
 private:
 	CCSpriteBatchNode* _batchNode;
@@ -67,4 +67,4 @@ private:
 	void singleUpdateStep(float dt);
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif // __GAME_SCENE_H__
