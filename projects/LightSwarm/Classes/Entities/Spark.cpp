@@ -110,7 +110,7 @@ void Spark::update(float dt) {
 			
 				_lastAtRestJitterMillis = _lifetimeMillis;
 
-				CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
+				CCPoint newLocation = this->jitter(position, ccp(1,1), dt);
 				_sprite->setPosition(newLocation);
 				updateCenter();
 			}

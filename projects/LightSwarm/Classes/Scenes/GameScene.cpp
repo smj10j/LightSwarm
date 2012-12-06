@@ -328,7 +328,7 @@ void GameScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 			this->addChild(pingLocation);
 		}
 		
-		//this->scheduleOnce(schedule_selector(GameScene::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)/1000.0+0.100);
+		this->scheduleOnce(schedule_selector(GameScene::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_MOVE_BEGAN_DELAY_MILLIS)/1000.0+0.150);
 	}
 	
 	_lastTouchBeganMillis = now;
@@ -347,6 +347,8 @@ void GameScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 	if(!_isManipulatingSparks && !_isManipulatingViewport) {
 		//well by golly, what ARE we doing?
 		
+		this->unschedule(schedule_selector(GameScene::clearSelectedSparksIfNoAction));
+		
 		double now = Utilities::getMillis();
 		list<CCPoint> sparkPositions = Spark::getPositionList(_selectedSparks);
 
@@ -358,6 +360,7 @@ void GameScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 			//press and hold, or placed finger in selecting lasso or near selected sparks
 			_isManipulatingViewport = false;
 			_isManipulatingSparks = true;
+			
 						
 		}else if((now - _lastTouchBeganMillis) >= Config::getDoubleForKey(TOUCH_LASSO_BEGAN_DELAY_MILLIS)) {
 				//started a drag movement by holding a finger down
