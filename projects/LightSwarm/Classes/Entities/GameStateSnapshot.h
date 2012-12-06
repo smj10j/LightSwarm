@@ -13,8 +13,6 @@
 #include "Common.h"
 #include "GameScene.h"
 #include <set>
-#include <list>
-#include <queue>
 USING_NS_CC;
 using namespace std;
 

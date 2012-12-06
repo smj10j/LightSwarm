@@ -10,13 +10,13 @@
 
 
 void Spark::clearAllEffects() {
+	_isSelected = false;
 	_sprite->runAction(CCTintTo::create(0.50, 255, 255, 255));
 }
 
 
 void Spark::addSelectionEffect() {
-	
-	//_sprite->setBlendFunc({GL_BLEND_SRC_ALPHA, GL_BLEND_DST_ALPHA});
+	_isSelected = true;
 	_sprite->runAction(CCTintTo::create(0.25, 100, 100, 255));
 }
 
@@ -64,6 +64,9 @@ bool Spark::isDead() {
 	return _isDead;
 }
 
+bool Spark::isSelected() {
+	return _isSelected;
+}
 
 /* TODO: -dt won't work here because we lose path data - how can we handle rollback efficiently
 and for an arbitrary amount of time?*/

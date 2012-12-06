@@ -35,6 +35,7 @@ public:
 		
 		_nearestOrb = NULL;
 		_sprite = NULL;
+		_isSelected = false;
 		_health = _initialHealth;
 		_lifetimeMillis = 0;
 		_lastNearestOrbUpdateMillis = -10000;
@@ -61,6 +62,7 @@ public:
 		_isModifyingState = false;
 		_isOnParent = false;
 		
+		_isSelected = spark->_isSelected;
 		_targetMovePath = spark->_targetMovePath;
 		_restingPosition = spark->_restingPosition;
 		_position = (spark->_sprite != NULL && spark->_isOnParent) ? spark->_sprite->getPosition() : spark->_position;
@@ -98,6 +100,7 @@ public:
 	void addSelectionEffect();
 
 	bool isDead();
+	bool isSelected();
 	
 	bool isInShape(const list<CCPoint>& shape);
 	bool isNear(const CCPoint& point);
@@ -128,6 +131,7 @@ private:
 	float _initialHealth;
 	
 	bool _isDead;
+	bool _isSelected;//also added to _selectedSparks
 	
 	double _lifetimeMillis;
 	float _updateOffset;

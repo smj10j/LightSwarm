@@ -135,6 +135,7 @@ void GameScene::rollbackTo(double runningTimeMillis) {
 	}
 	if(gameStateSnapshot != NULL) {
 		gameStateSnapshot->restoreTo(this);
+		updateSparkSelectionEffects();
 	}
 	
 	_isRestoringGameStateSnapshot = false;
@@ -487,33 +488,37 @@ void GameScene::cleanup() {
 	clearPingLocations();
 	
 	_selectedSparks.clear();
-	
+		
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
-		sparksIterator++) {
-		Spark* spark = *sparksIterator;
-		delete spark;
+		_sparks.erase(sparksIterator++)) {
+		delete (*sparksIterator);
 	}
-	_sparks.clear();
 
 	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
 		orbsIterator != _orbs.end();
-		orbsIterator++) {
-		Orb* orb = *orbsIterator;
-		delete orb;
+		_orbs.erase(orbsIterator++)) {
+		delete (*orbsIterator);
 	}
-	_orbs.clear();
 }
 
 
 GameScene::~GameScene() {
 	
 	cleanup();
+	
+	_selectedSparks.clear();
 
 	for(list<GameStateSnapshot*>::iterator gameStateSnapshotsIterator = _gameStateSnapshots.begin();
 		gameStateSnapshotsIterator != _gameStateSnapshots.end();
-		gameStateSnapshotsIterator++) {
+		_gameStateSnapshots.erase(gameStateSnapshotsIterator++)) {
 		delete (*gameStateSnapshotsIterator);
 	}
-	_gameStateSnapshots.clear();
+
+	for(list<Command*>::iterator commandHistoryIterator = _commandHistory.begin();
+		commandHistoryIterator != _commandHistory.end();
+		_commandHistory.erase(commandHistoryIterator++)) {
+		delete (*commandHistoryIterator);
+	}	
+
 }

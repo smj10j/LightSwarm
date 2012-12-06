@@ -5,11 +5,13 @@
 #include "Spark.h"
 #include "Orb.h"
 #include "PingLocation.h"
+#include "Command.h"
 #include <set>
 #include <list>
 USING_NS_CC;
 using namespace std;
 
+//forward declaration and GameStateSnapshot needs GameScene defined
 class GameStateSnapshot;
 
 class GameScene : public CCLayer
@@ -43,6 +45,7 @@ public:
 
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
+	set<Spark*> _selectedSparks;
 
 	void cleanup();
 
@@ -59,7 +62,6 @@ private:
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
 	
-	set<Spark*> _selectedSparks;
 	list<PingLocation*> _pingLocations;
 	
 	
@@ -79,6 +81,8 @@ private:
 	list<GameStateSnapshot*> _gameStateSnapshots;
 	bool _isRestoringGameStateSnapshot;
 	void rollbackTo(double runningTimeMillis);
+	
+	list<Command*> _commandHistory;
 };
 
 #endif // __GAME_SCENE_H__
