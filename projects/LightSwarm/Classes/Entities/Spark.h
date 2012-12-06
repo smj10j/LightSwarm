@@ -85,7 +85,7 @@ public:
 		_lastNearestOrbUpdateMillis = spark->_lastNearestOrbUpdateMillis;
 		_lastCenterUpdateMillis = spark->_lastCenterUpdateMillis;
 		_lastAtRestJitterMillis = spark->_lastAtRestJitterMillis;
-				
+		
 		//CCLOG("Called sprite copy constructor");
 	};
 	

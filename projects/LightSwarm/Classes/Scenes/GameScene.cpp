@@ -39,9 +39,7 @@ bool GameScene::init() {
 	_isRestoringGameStateSnapshot = false;
 	_isCreatingGameStateSnapshot = false;
 	
-	_currentRunningTimeMills = 0;
-	_lastGameStateSnapshotMillis = -10000;
-	
+	_currentFrame = 0;
 	
 	//create a batch node
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
@@ -49,8 +47,7 @@ bool GameScene::init() {
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
 	//TODO: seed this with the value we get from the server
-	_randomGeneratorSeed = 450;
-	Utilities::setRandomSeed(_randomGeneratorSeed);
+	Utilities::setRandomSeed(450);
 	
 	
 	for(int i = 0; i < 40; i++) {
@@ -90,7 +87,6 @@ void GameScene::update(float dt) {
 
 	if(_isRestoringGameStateSnapshot) return;
 	
-	_currentRunningTimeMills+= dt*1000;
 	_fixedTimestepAccumulator+= dt;
 	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
@@ -112,14 +108,14 @@ void GameScene::update(float dt) {
 
 
 
-void GameScene::restoreToRunningTime(double runningTimeMillis) {
+void GameScene::restoreToFrame(int targetFrame) {
 
 	_isRestoringGameStateSnapshot = true;
 
-	CCLOG("Received command to rollback to %f (we're at %f - diff = %f)", runningTimeMillis, _currentRunningTimeMills, (_currentRunningTimeMills - runningTimeMillis));
+	CCLOG("Received command to rollback to frame %d (we're at %d - diff = %d)", targetFrame, _currentFrame, (_currentFrame - targetFrame));
 	
-	if(runningTimeMillis > _currentRunningTimeMills) {
-		CCLOG("Rollback time is in the future - ignoring");
+	if(targetFrame >= _currentFrame) {
+		CCLOG("Rollback time is in the future or now - ignoring");
 		return;
 	}
 	
@@ -128,8 +124,8 @@ void GameScene::restoreToRunningTime(double runningTimeMillis) {
 	while(!_gameStateSnapshots.empty()) {
 		gameStateSnapshot = _gameStateSnapshots.front();
 		_gameStateSnapshots.pop_front();
-		CCLOG("Examining if we should rollback to %f", gameStateSnapshot->_currentRunningTimeMills);
-		if(gameStateSnapshot->_currentRunningTimeMills < runningTimeMillis) {
+		CCLOG("Examining if we should rollback to frame %d", gameStateSnapshot->_frame);
+		if(gameStateSnapshot->_frame <= _currentFrame) {
 			CCLOG("ROLLBACK MATCH!");
 			break;
 		}
@@ -146,6 +142,10 @@ void GameScene::restoreToRunningTime(double runningTimeMillis) {
 		//restore
 		gameStateSnapshot->restoreTo(this);
 		
+		//add rollback state different to accumulator
+		//TODO: add in sender accumulator as well
+		_fixedTimestepAccumulator = (targetFrame - gameStateSnapshot->_frame) * Config::getDoubleForKey(SIMULATION_STEP_SIZE);
+				
 		//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
 		//reselect sparks
 		_selectedSparks.clear();
@@ -167,18 +167,19 @@ void GameScene::restoreToRunningTime(double runningTimeMillis) {
 	_isRestoringGameStateSnapshot = false;
 }
 
-
-static bool BLAHBLAH = false;
+static bool ROLLBACK_TESTED = false;
 
 void GameScene::singleUpdateStep(float dt) {
 
+	_currentFrame++;
+
 	//TEST CODE to simulate a bit of rollback
-	if(!_gameStateSnapshots.empty() && !BLAHBLAH && _currentRunningTimeMills > 10000) {
+	if(!ROLLBACK_TESTED && !_gameStateSnapshots.empty() && _currentFrame == 500) {
 
-		double restoreToMillis = _currentRunningTimeMills-100;
-		restoreToRunningTime(restoreToMillis);
+		int targetFrame = _currentFrame-5;
+		restoreToFrame(targetFrame);
 
-		BLAHBLAH = true;
+		ROLLBACK_TESTED = true;
 	}
 	
 	
@@ -223,21 +224,22 @@ void GameScene::singleUpdateStep(float dt) {
 	}
 	
 	
-	
-	if(_currentRunningTimeMills - _lastGameStateSnapshotMillis > Config::getIntForKey(SIMULATION_FRAME_SIZE) && !_isCreatingGameStateSnapshot) {
+	//see if we need to take a game state snapshot
+	if(_currentFrame % Config::getIntForKey(SIMULATION_FRAME_SNAPSHOT_INTERVAL) == 0
+		&& !_isCreatingGameStateSnapshot) {
 		_isCreatingGameStateSnapshot = true;
-		this->scheduleOnce(schedule_selector(GameScene::createGameStateSnapshot), 10);
+		this->scheduleOnce(schedule_selector(GameScene::createGameStateSnapshot), 0.01);
 	}
 }
 
 void GameScene::createGameStateSnapshot() {
 	if(_gameStateSnapshots.size() >= Config::getIntForKey(SIMULATION_FRAME_STACK_SIZE)) {
+		//TODO: optimize this so we're not deleting so often - delete in bulk
 		GameStateSnapshot* gameStateSnapshot = _gameStateSnapshots.back();
 		_gameStateSnapshots.pop_back();
 		delete gameStateSnapshot;
 	}
 	_gameStateSnapshots.push_front(new GameStateSnapshot(this));
-	_lastGameStateSnapshotMillis = _currentRunningTimeMills;
 	_isCreatingGameStateSnapshot = false;
 }
 

@@ -33,15 +33,8 @@ public:
 				
 	virtual ~GameScene();
 
-	int getFrameNumber() {
-		const int frameSize = Config::getIntForKey(SIMULATION_FRAME_SIZE);
-		return _currentRunningTimeMills/frameSize;
-	}
-
 	//making public for saving state
-	double _currentRunningTimeMills;
-	float _fixedTimestepAccumulator;
-	long _randomGeneratorSeed;
+	int _currentFrame;
 
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
@@ -77,11 +70,12 @@ private:
 
 	void clearPingLocations();
 	
-	double _lastGameStateSnapshotMillis;
+	float _fixedTimestepAccumulator;
+
 	list<GameStateSnapshot*> _gameStateSnapshots;
 	bool _isRestoringGameStateSnapshot;
 	bool _isCreatingGameStateSnapshot;
-	void restoreToRunningTime(double runningTimeMillis);
+	void restoreToFrame(int targetFrame);
 	void createGameStateSnapshot();
 	
 	list<Command*> _commandHistory;

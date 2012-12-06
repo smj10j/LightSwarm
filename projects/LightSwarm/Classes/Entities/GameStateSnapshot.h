@@ -21,20 +21,23 @@ class GameStateSnapshot
 public:
 
 	GameStateSnapshot(GameScene* gameScene):
-		_currentRunningTimeMills(gameScene->_currentRunningTimeMills),
-		_fixedTimestepAccumulator(gameScene->_fixedTimestepAccumulator),
-		_randomGeneratorSeed(Utilities::getRandomDouble()*10000000) {
+		_frame(gameScene->_currentFrame) {
 	
 		_isRestoring = true;
 		double startTime = Utilities::getMillis();
-			
-		Utilities::setRandomSeed(_randomGeneratorSeed);//sync random generators
-	
+				
 		//copy orbs and sparks
 		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
-												
+							
+			//TODO: on iPad1 with 100 sparks
+			//insertion into set takes about 4ms
+			//creation of sparks with no data takes about 24ms
+			//filling the sparks with data takes about 5ms
+			//total of about 33ms
+			//BIG WIN COMES FROM FIGURING OUT HOW TO CREATE ITEMS ON THE HEAP EFFICIENTLY
+			
 			_sparks.insert(new Spark(*sparksIterator));
 		}
 		
@@ -55,9 +58,7 @@ public:
 	
 	void restoreTo(GameScene* gameScene);
 
-	double _currentRunningTimeMills;
-	float _fixedTimestepAccumulator;
-	long _randomGeneratorSeed;
+	int _frame;
 
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;

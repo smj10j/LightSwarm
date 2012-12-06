@@ -14,16 +14,14 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	if(_isRestoring) return;
 	
 	_isRestoring = true;
-	
 	double startTime = Utilities::getMillis();
+	
 	gameScene->retain();
 	
 	gameScene->cleanup();
 
-	gameScene->_fixedTimestepAccumulator = _fixedTimestepAccumulator;
-	gameScene->_currentRunningTimeMills = _currentRunningTimeMills;
-	gameScene->_randomGeneratorSeed = _randomGeneratorSeed;
-	Utilities::setRandomSeed(_randomGeneratorSeed);//sync random generators
+	gameScene->_currentFrame = _frame;
+	Utilities::setRandomSeed(_frame);//sync random generators
 
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();

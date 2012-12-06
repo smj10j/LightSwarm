@@ -29,8 +29,8 @@
 	"SIMULATION_MAX_STEPS": 5,
 	
 	
-	"SIMULATION_FRAME_SIZE": 100,			//snapshots are based on this
-	"SIMULATION_FRAME_STACK_SIZE": 30,		//eg. frame_size of 100 and stack_size of 10 will save 1 second of gameplay history
+	"SIMULATION_FRAME_SNAPSHOT_INTERVAL": 10,	//snapshots are based on this
+	"SIMULATION_FRAME_STACK_SIZE": 30,		
 	
 	"COMMAND_HISTORY_SIZE": 30
 }
