@@ -112,7 +112,7 @@ void GameScene::restoreToFrame(int targetFrame) {
 
 	_isRestoringGameStateSnapshot = true;
 
-	CCLOG("Received command to rollback to frame %d (we're at %d - diff = %d)", targetFrame, _currentFrame, (_currentFrame - targetFrame));
+	CCLOG("Received command to rollback to frame %d (we're at %d - diff = %d frames, which is about %fms)", targetFrame, _currentFrame, (_currentFrame - targetFrame), (_currentFrame - targetFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000);
 	
 	if(targetFrame >= _currentFrame) {
 		CCLOG("Rollback time is in the future or now - ignoring");
@@ -125,7 +125,7 @@ void GameScene::restoreToFrame(int targetFrame) {
 		gameStateSnapshot = _gameStateSnapshots.front();
 		_gameStateSnapshots.pop_front();
 		CCLOG("Examining if we should rollback to frame %d", gameStateSnapshot->_frame);
-		if(gameStateSnapshot->_frame <= _currentFrame) {
+		if(gameStateSnapshot->_frame <= targetFrame) {
 			CCLOG("ROLLBACK MATCH!");
 			break;
 		}
@@ -176,7 +176,7 @@ void GameScene::singleUpdateStep(float dt) {
 	//TEST CODE to simulate a bit of rollback
 	if(!ROLLBACK_TESTED && !_gameStateSnapshots.empty() && _currentFrame == 500) {
 
-		int targetFrame = _currentFrame-5;
+		int targetFrame = _currentFrame-25;
 		restoreToFrame(targetFrame);
 
 		ROLLBACK_TESTED = true;

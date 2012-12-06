@@ -43,12 +43,6 @@ public:
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
 							
-			//TODO: on iPad1 with 1000 sparks
-			//fill of all sparks takes 5ms
-			//heap allocation is taking 17ms
-			//total of about 22s
-			//BIG WIN COMES FROM FIGURING OUT HOW TO CREATE ITEMS ON THE HEAP EFFICIENTLY
-			
 			if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
 				Spark::copy(&_sparks[i++], *sparksIterator);
 			}else {
@@ -69,7 +63,7 @@ public:
 		
 		_isRestoring = false;
 		
-		float size = (sizeof(Spark)*_sparksSize + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
+		float size = (sizeof(Spark)*(_sparksSize > SPARK_INITIAL_MEMORY_ALLOCATION_SIZE ? _sparksSize : SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
 		CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
 	}
 
