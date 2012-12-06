@@ -80,38 +80,6 @@ bool GameScene::init() {
 static bool BLAHBLAH = false;
 static bool BLAHBLAH2 = false;
 
-void GameScene::restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot) {
-	_isRestoringGameStateSnapshot = true;
-	
-	cleanup();
-
-	_fixedTimestepAccumulator = gameStateSnapshot->_fixedTimestepAccumulator;
-	_currentRunningTime = gameStateSnapshot->_currentRunningTime;
-	
-
-	for(set<Spark*>::iterator sparksIterator = gameStateSnapshot->_sparks.begin();
-		sparksIterator != gameStateSnapshot->_sparks.end();
-		sparksIterator++) {
-		
-		Spark* spark = new Spark(**sparksIterator);
-		spark->addSpriteToParent();
-		
-		_sparks.insert(spark);
-	}
-	
-	for(set<Orb*>::iterator orbsIterator = gameStateSnapshot->_orbs.begin();
-		orbsIterator != gameStateSnapshot->_orbs.end();
-		orbsIterator++) {
-		
-		Orb* orb = new Orb(**orbsIterator);
-		orb->addSpriteToParent();
-
-		_orbs.insert(orb);
-	}		
-	
-	_isRestoringGameStateSnapshot = false;
-}
-
 
 void GameScene::update(float dt) {
 
@@ -123,14 +91,13 @@ void GameScene::update(float dt) {
 			delete _gameStateSnapshot;
 			_gameStateSnapshot = NULL;
 		}
-		CCLOG("Taking snapshot at %f", Utilities::getMillis());
 		_gameStateSnapshot = new GameStateSnapshot(this);
 		BLAHBLAH = true;
-		CCLOG("Took snapshot at %f", Utilities::getMillis());
+		
 	}else if(!BLAHBLAH2 && _currentRunningTime > 10) {
-		CCLOG("Restoring at %f", Utilities::getMillis());
-		restoreGameStateSnapshot(_gameStateSnapshot);
-		CCLOG("Restored at %f", Utilities::getMillis());
+		_isRestoringGameStateSnapshot = true;
+		_gameStateSnapshot->restoreTo(this);
+		_isRestoringGameStateSnapshot = false;
 		BLAHBLAH2 = true;
 	}
 	

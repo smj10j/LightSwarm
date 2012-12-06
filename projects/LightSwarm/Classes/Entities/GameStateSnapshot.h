@@ -25,27 +25,27 @@ public:
 	GameStateSnapshot(GameScene* gameScene):
 		_currentRunningTime(gameScene->_currentRunningTime),
 		_fixedTimestepAccumulator(gameScene->_fixedTimestepAccumulator) {
+		Utilities::setRandomSeed(_currentRunningTime);//sync random generators
 	
-		//TODO: copy orbs and sparks
+		//copy orbs and sparks
 		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
-						
-			Spark* spark = new Spark(**sparksIterator);
-						
-			_sparks.insert(spark);
+												
+			_sparks.insert(new Spark(**sparksIterator));
 		}
 		
 		for(set<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
 			orbsIterator != gameScene->_orbs.end();
 			orbsIterator++) {
-			
-			Orb* orb = new Orb(**orbsIterator);
-
-			_orbs.insert(orb);
-		}		
+		
+			_orbs.insert(new Orb(**orbsIterator));
+		}
+		
+		CCLOG("Created a game state snapshot");
 	}
 	
+	void restoreTo(GameScene* gameScene);
 
 	double _currentRunningTime;
 	float _fixedTimestepAccumulator;
@@ -55,7 +55,7 @@ public:
 
 private:
 
-
+	bool _isRestoring;
 };
 
 #endif /* defined(__LightSwarm__GameStateSnapshot__) */

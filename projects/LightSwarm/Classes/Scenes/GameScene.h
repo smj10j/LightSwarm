@@ -31,6 +31,7 @@ public:
 				
 	virtual ~GameScene();
 
+
 	//making public for saving state
 	double _currentRunningTime;
 	float _fixedTimestepAccumulator;
@@ -38,6 +39,7 @@ public:
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
 
+	void cleanup();
 
 private:
 	CCSpriteBatchNode* _batchNode;
@@ -61,7 +63,6 @@ private:
 	void updateSparkSelectionEffects();
 	void clearSelectedSparksIfNoAction();
 	
-	void cleanup();
 	
 	void draw();
 	void update(float dt);
@@ -71,7 +72,6 @@ private:
 	
 	GameStateSnapshot* _gameStateSnapshot;
 	bool _isRestoringGameStateSnapshot;
-	void restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot);
 };
 
 #endif // __GAME_SCENE_H__
