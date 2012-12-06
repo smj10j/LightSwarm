@@ -25,7 +25,13 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 
 	for(int i = 0; i < _sparksSize; i++) {
 		
-		Spark* spark = new Spark(_sparks[i]);
+		Spark* spark = NULL;
+		if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
+			spark = new Spark(_sparks[i]);
+		}else {
+			spark = new Spark(_sparksOverflow[i-SPARK_INITIAL_MEMORY_ALLOCATION_SIZE]);
+		}
+		
 		spark->addSpriteToParent();
 				
 		gameScene->_sparks.insert(spark);
@@ -47,9 +53,9 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 }
 
 GameStateSnapshot::~GameStateSnapshot() {
-	if(_sparks != NULL) {
-		delete[] _sparks;
-		_sparks = NULL;
+	if(_sparksOverflow != NULL) {
+		delete[] _sparksOverflow;
+		_sparksOverflow = NULL;
 	}
 
 	if(_orbs != NULL) {

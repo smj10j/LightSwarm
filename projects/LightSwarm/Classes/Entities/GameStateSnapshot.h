@@ -10,6 +10,9 @@
 #define __LightSwarm__GameStateSnapshot__
 
 
+#define SPARK_INITIAL_MEMORY_ALLOCATION_SIZE 500
+
+
 #include "Common.h"
 #include "GameScene.h"
 #include <set>
@@ -29,7 +32,11 @@ public:
 		//copy orbs and sparks
 		
 		_sparksSize = gameScene->_sparks.size();
-		_sparks = new Spark[_sparksSize];
+		if(_sparksSize > SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
+			_sparksOverflow = new Spark[_sparksSize-SPARK_INITIAL_MEMORY_ALLOCATION_SIZE];
+		}else {
+			_sparksOverflow = NULL;
+		}
 
 		int i = 0;
 		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
@@ -42,8 +49,11 @@ public:
 			//total of about 22s
 			//BIG WIN COMES FROM FIGURING OUT HOW TO CREATE ITEMS ON THE HEAP EFFICIENTLY
 			
-			Spark::copy(&_sparks[i++], *sparksIterator);
-			//_sparks.insert(new Spark(*sparksIterator));
+			if(i < SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) {
+				Spark::copy(&_sparks[i++], *sparksIterator);
+			}else {
+				Spark::copy(&_sparksOverflow[i++ - SPARK_INITIAL_MEMORY_ALLOCATION_SIZE], *sparksIterator);
+			}
 		}
 		
 		_orbsSize = gameScene->_orbs.size();
@@ -69,7 +79,8 @@ public:
 
 	int _frame;
 
-	Spark* _sparks;
+	Spark _sparks[SPARK_INITIAL_MEMORY_ALLOCATION_SIZE];
+	Spark* _sparksOverflow;
 	int _sparksSize;
 	
 	Orb* _orbs;

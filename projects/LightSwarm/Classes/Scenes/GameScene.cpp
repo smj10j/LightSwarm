@@ -234,7 +234,7 @@ void GameScene::singleUpdateStep(float dt) {
 
 void GameScene::createGameStateSnapshot() {
 	if(_gameStateSnapshots.size() >= Config::getIntForKey(SIMULATION_FRAME_STACK_SIZE)) {
-		//TODO: optimize this so we're not deleting so often - delete in bulk
+		//TODO: optimize this so we're not deleting so often - delete in bulk?
 		GameStateSnapshot* gameStateSnapshot = _gameStateSnapshots.back();
 		_gameStateSnapshots.pop_back();
 		delete gameStateSnapshot;
