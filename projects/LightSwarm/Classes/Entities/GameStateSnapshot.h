@@ -31,31 +31,30 @@ public:
 		_sparksSize = gameScene->_sparks.size();
 		_sparks = new Spark[_sparksSize];
 
-		_orbsSize = gameScene->_orbs.size();
-		_orbs = new Orb[_orbsSize];
-		
 		int i = 0;
 		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
 							
-			//TODO: on iPad1 with 100 sparks
-			//insertion into set takes about 4ms
-			//creation of sparks with no data takes about 24ms
-			//filling the sparks with data takes about 5ms
-			//total of about 33ms
+			//TODO: on iPad1 with 1000 sparks
+			//fill of all sparks takes 5ms
+			//heap allocation is taking 17ms
+			//total of about 22s
 			//BIG WIN COMES FROM FIGURING OUT HOW TO CREATE ITEMS ON THE HEAP EFFICIENTLY
 			
 			Spark::copy(&_sparks[i++], *sparksIterator);
 			//_sparks.insert(new Spark(*sparksIterator));
 		}
 		
-		i = 0;
+		_orbsSize = gameScene->_orbs.size();
+		_orbs = new Orb[_orbsSize];
+
+		int j = 0;
 		for(set<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
 			orbsIterator != gameScene->_orbs.end();
 			orbsIterator++) {
 		
-			Orb::copy(&_orbs[i++], *orbsIterator);
+			Orb::copy(&_orbs[j++], *orbsIterator);
 		}
 		
 		_isRestoring = false;
