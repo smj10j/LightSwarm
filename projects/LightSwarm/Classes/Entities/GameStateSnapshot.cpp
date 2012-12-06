@@ -21,7 +21,7 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	gameScene->_currentFrame = _frame;
 	Utilities::setRandomSeed(_frame);//sync random generators
 
-	set<Spark*>::iterator gameSceneSparksIterator = gameScene->_sparks.begin();
+	list<Spark*>::iterator gameSceneSparksIterator = gameScene->_sparks.begin();
 
 	for(int i = 0; i < _sparksSize; i++) {
 
@@ -36,7 +36,7 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 		}else {
 			//create a new entry
 			spark = new Spark();
-			gameScene->_sparks.insert(spark);
+			gameScene->_sparks.push_back(spark);
 		}
 		
 		
@@ -64,7 +64,7 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 		
 		Orb::copy(orb, &_orbs[i], reuseDstSprite);
 		
-		gameScene->_orbs.insert(orb);
+		gameScene->_orbs.push_back(orb);
 
 		orb->addSpriteToParent();
 	}

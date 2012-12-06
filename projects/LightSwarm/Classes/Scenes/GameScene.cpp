@@ -58,7 +58,7 @@ bool GameScene::init() {
 		Orb* orb = new Orb(_batchNode, position, Utilities::getRandomDouble()*2+.5);
 		orb->addSpriteToParent();
 		
-		_orbs.insert(orb);
+		_orbs.push_back(orb);
 	}	
 	
 	for(int i = 0; i < 1000; i++) {
@@ -69,7 +69,7 @@ bool GameScene::init() {
 		Spark* spark = new Spark(_batchNode, position, 1.0, 1.0, 1.0, 1.0);
 		spark->addSpriteToParent();
 		
-		_sparks.insert(spark);
+		_sparks.push_back(spark);
 	}
 	
 
@@ -154,7 +154,7 @@ void GameScene::restoreToFrame(int targetFrame) {
 		for(set<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
 			selectedSparkIdsIterator != selectedSparkIds.end();
 			selectedSparkIdsIterator++) {
-			for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+			for(list<Spark*>::iterator sparksIterator = _sparks.begin();
 				sparksIterator != _sparks.end();
 				sparksIterator++) {
 				if((*selectedSparkIdsIterator) == (*sparksIterator)->getId()) {				
@@ -187,7 +187,7 @@ void GameScene::singleUpdateStep(float dt) {
 	
 
 	//update sparks
-	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+	for(list<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		 ) {
 				
@@ -207,7 +207,7 @@ void GameScene::singleUpdateStep(float dt) {
 	}
 	
 	//update orbs
-	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+	for(list<Orb*>::iterator orbsIterator = _orbs.begin();
 		orbsIterator != _orbs.end();
 		 orbsIterator++) {
 				
@@ -497,7 +497,7 @@ void GameScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 
 void GameScene::updateSparkSelectionEffects() {
 	//remove the selection effects and apply any new efects
-	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+	for(list<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		sparksIterator++) {
 
@@ -532,13 +532,13 @@ void GameScene::deselectSpark(Spark* spark) {
 
 void GameScene::cleanup() {
 			
-	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+	for(list<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		_sparks.erase(sparksIterator++)) {
 		delete (*sparksIterator);
 	}
 
-	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+	for(list<Orb*>::iterator orbsIterator = _orbs.begin();
 		orbsIterator != _orbs.end();
 		_orbs.erase(orbsIterator++)) {
 		delete (*orbsIterator);

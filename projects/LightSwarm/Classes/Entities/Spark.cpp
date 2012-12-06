@@ -123,10 +123,10 @@ void Spark::update(float dt) {
 	
 	
 	if(_nearestOrb != NULL) {
+	
 		//decrease health if out in space
 		float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
 		float distance = Utilities::getDistance(_center, _nearestOrb->getPosition());
-
 
 		if(distance > nearestOrbAtmosphereRadius) {
 			_health-= Config::getDoubleForKey(SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
@@ -162,14 +162,14 @@ void Spark::die() {
 	//TODO: play death animation
 }
 
-void Spark::setNearestOrb(set<Orb*>& orbs) {
+void Spark::setNearestOrb(const list<Orb*>& orbs) {
 	if(_nearestOrb == NULL ||
 		(!_targetMovePath.empty() && _lifetimeMillis - _lastNearestOrbUpdateMillis > 1000+_updateOffset)) {
-		
+				
 		_lastNearestOrbUpdateMillis = _lifetimeMillis;
-
+		
 		float minDistance = 10000000;
-		for(set<Orb*>::iterator orbsIterator = orbs.begin();
+		for(list<Orb*>::const_iterator orbsIterator = orbs.begin();
 			orbsIterator != orbs.end();
 			orbsIterator++) {
 			float distance = Utilities::getDistance((*orbsIterator)->getPosition(), _center);
@@ -226,6 +226,7 @@ void Spark::addSpriteToParent() {
 		_isModifyingState = true;
 		_parent->addChild(_sprite, 20);
 		_isOnParent = true;
+		updateCenter();
 		_isModifyingState = false;
 	}
 }

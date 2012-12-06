@@ -15,7 +15,7 @@
 
 #include "Common.h"
 #include "GameScene.h"
-#include <set>
+#include <list>
 USING_NS_CC;
 using namespace std;
 
@@ -27,7 +27,7 @@ public:
 		_frame(gameScene->_currentFrame) {
 	
 		_isRestoring = true;
-		double startTime = Utilities::getMillis();
+		//double startTime = Utilities::getMillis();
 				
 		//copy orbs and sparks
 		
@@ -39,7 +39,7 @@ public:
 		}
 
 		int i = 0;
-		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
+		for(list<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
 							
@@ -54,7 +54,7 @@ public:
 		_orbs = new Orb[_orbsSize];
 
 		int j = 0;
-		for(set<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
+		for(list<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
 			orbsIterator != gameScene->_orbs.end();
 			orbsIterator++) {
 		
@@ -63,7 +63,7 @@ public:
 		
 		_isRestoring = false;
 		
-		float size = (sizeof(Spark)*(_sparksSize > SPARK_INITIAL_MEMORY_ALLOCATION_SIZE ? _sparksSize : SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
+		//float size = (sizeof(Spark)*(_sparksSize > SPARK_INITIAL_MEMORY_ALLOCATION_SIZE ? _sparksSize : SPARK_INITIAL_MEMORY_ALLOCATION_SIZE) + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
 		//CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
 	}
 

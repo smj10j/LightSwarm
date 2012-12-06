@@ -11,7 +11,6 @@
 
 #include "Common.h"
 #include "Orb.h"
-#include <set>
 #include <list>
 #include <queue>
 USING_NS_CC;
@@ -58,9 +57,7 @@ public:
 		_isOnParent = false;
 
 		//this staggers updates - which creates a smoother framerate
-		_updateOffset = Utilities::getRandomDouble()*100;
-		
-		updateCenter();
+		_updateOffset = Utilities::getRandomDouble()*100;		
 	}
 	
 	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
@@ -90,6 +87,8 @@ public:
 		if(reuseDstSprite && dst->_sprite != NULL) {
 			dst->_sprite->setPosition(dst->_position);
 			dst->_sprite->setScale(SCALE_FACTOR*dst->_scaleMultiplier);
+			
+			dst->updateCenter();
 			
 		}else {
 			if(dst->_sprite != NULL) {
@@ -132,7 +131,7 @@ public:
 	bool isNear(const CCPoint& point);
 	bool isNear(const CCPoint& point, const int threshold);
 
-	void setNearestOrb(set<Orb*>& orbs);
+	void setNearestOrb(const list<Orb*>& orbs);
 	
 	int getId() {
 		return _id;

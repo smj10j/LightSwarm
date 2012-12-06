@@ -71,6 +71,7 @@ void Orb::addSpriteToParent() {
 		_isModifyingState = true;
 		_parent->addChild(_sprite, 10);
 		_isOnParent = true;
+		updateCenterAndRadius();
 		_isModifyingState = false;
 	}
 }

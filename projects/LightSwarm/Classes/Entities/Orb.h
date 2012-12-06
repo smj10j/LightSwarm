@@ -43,9 +43,7 @@ public:
 		_isModifyingState = false;
 		_isOnParent = false;
 					
-		_updateOffset = Utilities::getRandomDouble()*100;
-		
-		updateCenterAndRadius();
+		_updateOffset = Utilities::getRandomDouble()*100;		
 	}
 
 	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
@@ -71,6 +69,8 @@ public:
 			dst->_sprite->setPosition(dst->_position);
 			dst->_sprite->setScale(SCALE_FACTOR*dst->_scaleMultiplier);
 			
+			dst->updateCenterAndRadius();
+
 		}else {
 			if(dst->_sprite != NULL) {
 				dst->removeSpriteFromParent();

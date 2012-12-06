@@ -6,7 +6,6 @@
 #include "Orb.h"
 #include "PingLocation.h"
 #include "Command.h"
-#include <set>
 #include <list>
 USING_NS_CC;
 using namespace std;
@@ -36,8 +35,8 @@ public:
 	//making public for saving state
 	int _currentFrame;
 
-	set<Orb*> _orbs;
-	set<Spark*> _sparks;
+	list<Orb*> _orbs;
+	list<Spark*> _sparks;
 
 private:
 	CCSpriteBatchNode* _batchNode;
