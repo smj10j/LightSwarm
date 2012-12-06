@@ -32,6 +32,12 @@ public:
 		_nearestOrb = NULL;
 		_health = _initialHealth;
 		_lifetimeMillis = 0;
+		_lastNearestOrbUpdateMillis = -10000;
+		_lastCenterUpdateMillis = -10000;
+		_lastAtRestJitterMillis = -10000;
+
+		//this staggers updates - which creates a smoother framerate
+		_updateOffset = Utilities::getRandomDouble()*100;
 
 		updateCenter();
 		
@@ -79,6 +85,7 @@ private:
 	bool _isDead;
 	
 	double _lifetimeMillis;
+	float _updateOffset;
 	double _lastNearestOrbUpdateMillis;
 	double _lastCenterUpdateMillis;
 	double _lastAtRestJitterMillis;

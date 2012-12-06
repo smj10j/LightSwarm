@@ -96,11 +96,13 @@ void Spark::update(float dt) {
 		bool isAtRest = Utilities::isNear(_restingPosition, position, NEARBY_DISTANCE);
 		if(isAtRest) {
 			//jitter
-			if(_lifetimeMillis - _lastAtRestJitterMillis > 100) {
+			if(_lifetimeMillis - _lastAtRestJitterMillis > 100+_updateOffset) {
+			
+				_lastAtRestJitterMillis = _lifetimeMillis;
+
 				CCPoint newLocation = this->jitter(position, ccp(0.5,0.5), dt);
 				_sprite->setPosition(newLocation);
 				updateCenter();
-				_lastAtRestJitterMillis = _lifetimeMillis;
 			}
 						
 		}else {
@@ -154,7 +156,10 @@ void Spark::remove() {
 
 void Spark::setNearestOrb(set<Orb*>& orbs) {
 	if(_nearestOrb == NULL ||
-		(!_targetMovePath.empty() && _lifetimeMillis - _lastNearestOrbUpdateMillis > 1000)) {
+		(!_targetMovePath.empty() && _lifetimeMillis - _lastNearestOrbUpdateMillis > 1000+_updateOffset)) {
+		
+		_lastNearestOrbUpdateMillis = _lifetimeMillis;
+
 		float minDistance = 10000000;
 		for(set<Orb*>::iterator orbsIterator = orbs.begin();
 			orbsIterator != orbs.end();
@@ -165,19 +170,20 @@ void Spark::setNearestOrb(set<Orb*>& orbs) {
 				_nearestOrb = (*orbsIterator);
 			}
 		}
-		_lastNearestOrbUpdateMillis = _lifetimeMillis;
 	}
 }
 
 void Spark::updateCenter() {
-	if(_lifetimeMillis - _lastCenterUpdateMillis < 500) return;
-	_lastCenterUpdateMillis = _lifetimeMillis;
-	
-	// This is more accurate point for the node
-	_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
-	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
-								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
-				);
+	if(_lifetimeMillis - _lastCenterUpdateMillis > 500+_updateOffset) {
+		
+		_lastCenterUpdateMillis = _lifetimeMillis;
+			
+		// This is more accurate point for the node
+		_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
+		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+					);
+	}
 }
 
 CCPoint Spark::jitter(const CCPoint& point, const CCPoint weights, const float dt) {

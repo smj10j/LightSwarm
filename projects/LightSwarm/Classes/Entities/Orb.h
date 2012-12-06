@@ -22,8 +22,13 @@ public:
 
 	Orb(CCSprite* sprite):
 		_sprite(sprite){
+
+		_lifetimeMillis = 0;
+		_lastCenterUpdateMillis = -10000;
 		
 		updateCenterAndRadius();
+		
+		_updateOffset = Utilities::getRandomDouble()*100;
 
 		_sprite->retain();
 	}
@@ -50,6 +55,7 @@ private:
 	
 	double _lifetimeMillis;
 	double _lastCenterUpdateMillis;
+	float _updateOffset;
 	
 	void updateCenterAndRadius();
 	

@@ -30,17 +30,18 @@ CCPoint Orb::getPosition() {
 
 
 void Orb::updateCenterAndRadius() {
-	if(_lifetimeMillis - _lastCenterUpdateMillis < 500) return;
-	_lastCenterUpdateMillis = _lifetimeMillis;
+	if(_lifetimeMillis - _lastCenterUpdateMillis > 500+_updateOffset) {
+	
+		_lastCenterUpdateMillis = _lifetimeMillis;
 
-
-	// This is more accurate point for the node
-	_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
-	_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
-								  _sprite->getContentSize().height/2 * _sprite->getScaleY())
-				);
-				
-	_radius = _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
+		// This is more accurate point for the node
+		_center = ccpSub(_sprite->convertToWorldSpace(CCPointZero), _sprite->getParent()->convertToWorldSpace(CCPointZero));
+		_center = ccpAdd(_center, ccp(_sprite->getContentSize().width/2 * _sprite->getScaleX(),
+									  _sprite->getContentSize().height/2 * _sprite->getScaleY())
+					);
+					
+		_radius = _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
+	}
 }
 
 bool Orb::isInShape(const list<CCPoint>& shape) {
