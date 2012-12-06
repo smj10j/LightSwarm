@@ -21,28 +21,75 @@ class Spark
 {
 public:
 
-	Spark(CCSprite* sprite, float speedMultiplier, float strengthMultiplier, float healthMultiplier):
-		_sprite(sprite),
+	Spark(CCNode* parent, CCPoint position, float scaleMultiplier, float speedMultiplier, float strengthMultiplier, float healthMultiplier):
+		_parent(parent),
+		_position(position),
+		_scaleMultiplier(scaleMultiplier),
 		_speedMultiplier(speedMultiplier),
 		_strengthMultiplier(strengthMultiplier),
 		_initialHealth(healthMultiplier*Config::getDoubleForKey(SPARK_BASE_HEALTH)),
 		_isDead(false),
-		_restingPosition(sprite->getPosition()) {
+		_restingPosition(position) {
+		
+		_parent->retain();
 		
 		_nearestOrb = NULL;
+		_sprite = NULL;
 		_health = _initialHealth;
 		_lifetimeMillis = 0;
 		_lastNearestOrbUpdateMillis = -10000;
 		_lastCenterUpdateMillis = -10000;
 		_lastAtRestJitterMillis = -10000;
+		
+		_isModifyingState = false;
+		_isOnParent = false;
 
 		//this staggers updates - which creates a smoother framerate
 		_updateOffset = Utilities::getRandomDouble()*100;
+		
+		loadSprite();
 
 		updateCenter();
-		
-		_sprite->retain();
 	}
+	
+	//copy constructor
+	Spark(Spark& spark) {
+		
+		_parent = spark._parent;
+		_parent->retain();
+
+		_nearestOrb = NULL;
+		_sprite = NULL;
+		_isModifyingState = false;
+		_isOnParent = false;
+		
+		_targetMovePath = spark._targetMovePath;
+		_restingPosition = spark._restingPosition;
+		_position = spark._position;
+		_center = spark._center;
+		_scaleMultiplier = spark._scaleMultiplier;
+		_speedMultiplier = spark._speedMultiplier;
+		_strengthMultiplier = spark._strengthMultiplier;
+
+		_initialHealth = spark._initialHealth;
+		_health = spark._health;
+		_isDead = spark._isDead;
+
+		_lifetimeMillis = spark._lifetimeMillis;
+		_updateOffset = spark._updateOffset;
+
+		_lastNearestOrbUpdateMillis = spark._lastNearestOrbUpdateMillis;
+		_lastCenterUpdateMillis = spark._lastCenterUpdateMillis;
+		_lastAtRestJitterMillis = spark._lastAtRestJitterMillis;
+		
+		loadSprite();
+		
+		//CCLOG("Called sprite copy constructor");
+	};
+	
+	void loadSprite();
+	void addSpriteToParent();
+	void removeSpriteFromParent();
 
 	CCPoint getPosition();
 	
@@ -54,7 +101,6 @@ public:
 	void clearAllEffects();
 	void addSelectionEffect();
 
-	void remove();
 	bool isDead();
 	
 	bool isInShape(const list<CCPoint>& shape);
@@ -69,11 +115,14 @@ public:
 
 private:
 
+	CCNode* _parent;
 	CCSprite* _sprite;
 	
 	queue<CCPoint> _targetMovePath;
 	CCPoint _restingPosition;
-	CCPoint _center;
+	CCPoint _center;	//absolute coords
+	CCPoint _position;	//relative coords
+	float _scaleMultiplier;
 	
 	Orb* _nearestOrb;
 	
@@ -89,6 +138,9 @@ private:
 	double _lastNearestOrbUpdateMillis;
 	double _lastCenterUpdateMillis;
 	double _lastAtRestJitterMillis;
+	
+	bool _isModifyingState;
+	bool _isOnParent;
 	
 	CCPoint jitter(const CCPoint& point, const CCPoint weights, const float dt);
 	void updateCenter();

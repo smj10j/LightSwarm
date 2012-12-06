@@ -1,5 +1,5 @@
 #include "GameScene.h"
-#include "Common.h"
+#include "GameStateSnapshot.h"
 USING_NS_CC;
 
 
@@ -47,24 +47,22 @@ bool GameScene::init() {
 	
 	for(int i = 0; i < 40; i++) {
 		//create an orb
-		CCSprite* sprite = CCSprite::createWithSpriteFrameName("asteroid.png");
-		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
-		sprite->setScale(SCALE_FACTOR*(Utilities::getRandomDouble()*3));
-		_batchNode->addChild(sprite, 1);
+
+		CCPoint position = ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5));
 		
-		Orb* orb = new Orb(sprite);
+		Orb* orb = new Orb(_batchNode, position, Utilities::getRandomDouble()*2+.5);
+		orb->addSpriteToParent();
 		
 		_orbs.insert(orb);
 	}	
 	
 	for(int i = 0; i < 1000; i++) {
 		//create a ship
-		CCSprite* sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
-		sprite->setPosition(ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5)));
-		sprite->setScale(SCALE_FACTOR);
-		_batchNode->addChild(sprite, 1);
 		
-		Spark* spark = new Spark(sprite, 1.0, 1.0, 1.0);
+		CCPoint position = ccp(winSize.width * (3*Utilities::getRandomDouble()-1.5), winSize.height * (3*Utilities::getRandomDouble()-1.5));
+		
+		Spark* spark = new Spark(_batchNode, position, 1.0, 1.0, 1.0, 1.0);
+		spark->addSpriteToParent();
 		
 		_sparks.insert(spark);
 	}
@@ -82,30 +80,57 @@ bool GameScene::init() {
 static bool BLAHBLAH = false;
 static bool BLAHBLAH2 = false;
 
-GameStateSnapshot* GameScene::getGameStateSnapshot() {
-
-
-
-	
-}
-
 void GameScene::restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot) {
+	_isRestoringGameStateSnapshot = true;
+	
+	cleanup();
 
+	_fixedTimestepAccumulator = gameStateSnapshot->_fixedTimestepAccumulator;
+	_currentRunningTime = gameStateSnapshot->_currentRunningTime;
+	
+
+	for(set<Spark*>::iterator sparksIterator = gameStateSnapshot->_sparks.begin();
+		sparksIterator != gameStateSnapshot->_sparks.end();
+		sparksIterator++) {
+		
+		Spark* spark = new Spark(**sparksIterator);
+		spark->addSpriteToParent();
+		
+		_sparks.insert(spark);
+	}
+	
+	for(set<Orb*>::iterator orbsIterator = gameStateSnapshot->_orbs.begin();
+		orbsIterator != gameStateSnapshot->_orbs.end();
+		orbsIterator++) {
+		
+		Orb* orb = new Orb(**orbsIterator);
+		orb->addSpriteToParent();
+
+		_orbs.insert(orb);
+	}		
+	
+	_isRestoringGameStateSnapshot = false;
 }
 
 
 void GameScene::update(float dt) {
 
+	if(_isRestoringGameStateSnapshot) return;
+
 	//TEST CODE to simulate a bit of rollback
-	if(!BLAHBLAH && _currentRunningTime > 10) {
+	if(!BLAHBLAH && _currentRunningTime > 5) {
 		if(_gameStateSnapshot != NULL) {
-			free(_gameStateSnapshot);
+			delete _gameStateSnapshot;
 			_gameStateSnapshot = NULL;
 		}
-		_gameStateSnapshot = getGameStateSnapshot();
+		CCLOG("Taking snapshot at %f", Utilities::getMillis());
+		_gameStateSnapshot = new GameStateSnapshot(this);
 		BLAHBLAH = true;
-	}else if(!BLAHBLAH2 && _currentRunningTime > 20) {
+		CCLOG("Took snapshot at %f", Utilities::getMillis());
+	}else if(!BLAHBLAH2 && _currentRunningTime > 10) {
+		CCLOG("Restoring at %f", Utilities::getMillis());
 		restoreGameStateSnapshot(_gameStateSnapshot);
+		CCLOG("Restored at %f", Utilities::getMillis());
 		BLAHBLAH2 = true;
 	}
 	
@@ -130,9 +155,6 @@ void GameScene::update(float dt) {
 }
 
 
-/* Use a negative step (-dt) on opponents sparks to rollback their position to the time of a command
-then apply the command and turn off rollback - the simulation should catch up automaticaly
-*/
 void GameScene::singleUpdateStep(float dt) {
 
 	//update sparks
@@ -145,8 +167,7 @@ void GameScene::singleUpdateStep(float dt) {
 		if(spark->isDead()) {
 			//TODO: how to handle this with rollback?
 			//make the spark invisible for a few second before finally removing it?
-			(*sparksIterator)->remove();
-			free(*sparksIterator);
+			delete *sparksIterator;
 			_sparks.erase(sparksIterator++);
 			continue;
 		}
@@ -206,7 +227,7 @@ void GameScene::clearPingLocations() {
 		pingLocationsIterator != _pingLocations.end();
 		_pingLocations.erase(pingLocationsIterator++)) {
 		this->removeChild(*pingLocationsIterator, true);
-		free(*pingLocationsIterator);
+		delete *pingLocationsIterator;
 	}
 }
 
@@ -450,24 +471,36 @@ void GameScene::updateSparkSelectionEffects() {
 }
 
 
+void GameScene::cleanup() {
 
-
-GameScene::~GameScene() {
-	
 	clearPingLocations();
+	
+	_selectedSparks.clear();
 	
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
 		sparksIterator++) {
-		free(*sparksIterator);
+		Spark* spark = *sparksIterator;
+		delete spark;
 	}
 	_sparks.clear();
 
 	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
 		orbsIterator != _orbs.end();
 		orbsIterator++) {
-		free(*orbsIterator);
+		Orb* orb = *orbsIterator;
+		delete orb;
 	}
 	_orbs.clear();
+}
+
+
+GameScene::~GameScene() {
 	
+	cleanup();
+	
+	if(_gameStateSnapshot != NULL) {
+		delete _gameStateSnapshot;
+		_gameStateSnapshot = NULL;
+	}
 }

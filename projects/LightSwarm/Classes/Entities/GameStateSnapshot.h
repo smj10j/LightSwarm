@@ -11,6 +11,7 @@
 
 
 #include "Common.h"
+#include "GameScene.h"
 #include <set>
 #include <list>
 #include <queue>
@@ -21,11 +22,39 @@ class GameStateSnapshot
 {
 public:
 
-	GameStateSnapshot() {
+	GameStateSnapshot(GameScene* gameScene):
+		_currentRunningTime(gameScene->_currentRunningTime),
+		_fixedTimestepAccumulator(gameScene->_fixedTimestepAccumulator) {
 	
+		//TODO: copy orbs and sparks
+		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
+			sparksIterator != gameScene->_sparks.end();
+			sparksIterator++) {
+						
+			Spark* spark = new Spark(**sparksIterator);
+						
+			_sparks.insert(spark);
+		}
+		
+		for(set<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
+			orbsIterator != gameScene->_orbs.end();
+			orbsIterator++) {
+			
+			Orb* orb = new Orb(**orbsIterator);
+
+			_orbs.insert(orb);
+		}		
 	}
+	
+
+	double _currentRunningTime;
+	float _fixedTimestepAccumulator;
+
+	set<Orb*> _orbs;
+	set<Spark*> _sparks;
 
 private:
+
 
 };
 

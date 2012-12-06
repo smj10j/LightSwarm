@@ -30,6 +30,7 @@ CCPoint Orb::getPosition() {
 
 
 void Orb::updateCenterAndRadius() {
+	if(!_isOnParent) return;
 	if(_lifetimeMillis - _lastCenterUpdateMillis > 500+_updateOffset) {
 	
 		_lastCenterUpdateMillis = _lifetimeMillis;
@@ -42,6 +43,40 @@ void Orb::updateCenterAndRadius() {
 					
 		_radius = _sprite->getScale()*max(_sprite->getContentSize().width, _sprite->getContentSize().height);
 	}
+}
+
+void Orb::loadSprite() {
+	_isModifyingState = true;
+	if(_sprite != NULL) {
+		removeSpriteFromParent();
+		_sprite->release();
+		_sprite = NULL;
+	}
+	
+	_sprite = CCSprite::createWithSpriteFrameName("asteroid.png");
+	_sprite->setPosition(_position);
+	_sprite->setScale(SCALE_FACTOR*_scaleMultiplier);
+	
+	_sprite->retain();
+	_isModifyingState = false;
+	
+}
+
+
+void Orb::addSpriteToParent() {
+	_isModifyingState = true;
+	_parent->addChild(_sprite);
+	_isOnParent = true;
+	_isModifyingState = false;
+}
+
+void Orb::removeSpriteFromParent() {
+	_isModifyingState = true;
+	if(_isOnParent) {
+		_isOnParent = false;
+		_sprite->removeFromParentAndCleanup(true);
+	}
+	_isModifyingState = false;
 }
 
 bool Orb::isInShape(const list<CCPoint>& shape) {
@@ -57,7 +92,14 @@ void Orb::update(const float dt) {
 }
 
 
-
 Orb::~Orb() {
-	_sprite->release();
+	if(_sprite != NULL) {
+		removeSpriteFromParent();
+		_sprite->release();
+		_sprite = NULL;
+	}
+	if(_parent != NULL) {
+		_parent->release();
+		_parent = NULL;
+	}
 }

@@ -69,6 +69,9 @@ bool Spark::isDead() {
 and for an arbitrary amount of time?*/
 void Spark::update(float dt) {
 
+	//note this block can cause inconsistencies in timestep
+	if(_isModifyingState) return;
+
 	//handle movement
 	if(!_targetMovePath.empty()) {
 		//on the move!
@@ -111,29 +114,31 @@ void Spark::update(float dt) {
 		}
 	}
 	
-	//decrease health if out in space
-	float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
-	float distance = Utilities::getDistance(_center, _nearestOrb->getPosition());
-
-
-	if(distance > nearestOrbAtmosphereRadius) {
-		_health-= Config::getDoubleForKey(SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
-				
-	}else {
-		//heal
-		if(_health < _initialHealth) {
-			//TODO: healRate will also be modified by hospitals
-			float healRate = Config::getDoubleForKey(ORB_BASE_HEAL_RATE_PER_SECOND);
-			_health+= healRate*dt;
-			
-		}else if(_health > _initialHealth) {
-			_health = _initialHealth;
-			
-		}
-	}
 	
-	_sprite->setOpacity(255.0*(_health/_initialHealth));
+	if(_nearestOrb != NULL) {
+		//decrease health if out in space
+		float nearestOrbAtmosphereRadius = _nearestOrb->getRadius()*Config::getIntForKey(ORB_ATMOSPHERE_RADIUS_MULTIPLIER);
+		float distance = Utilities::getDistance(_center, _nearestOrb->getPosition());
 
+
+		if(distance > nearestOrbAtmosphereRadius) {
+			_health-= Config::getDoubleForKey(SPARK_HEALTH_COST_PER_SECOND_WHEN_TRAVELING)*dt;
+					
+		}else {
+			//heal
+			if(_health < _initialHealth) {
+				//TODO: healRate will also be modified by hospitals
+				float healRate = Config::getDoubleForKey(ORB_BASE_HEAL_RATE_PER_SECOND);
+				_health+= healRate*dt;
+				
+			}else if(_health > _initialHealth) {
+				_health = _initialHealth;
+				
+			}
+		}
+
+		_sprite->setOpacity(255.0*(_health/_initialHealth));
+	}
 	
 	
 	if(!_isDead) {
@@ -148,10 +153,6 @@ void Spark::update(float dt) {
 void Spark::die() {
 	_isDead = true;
 	//TODO: play death animation
-}
-
-void Spark::remove() {
-	_sprite->removeFromParentAndCleanup(true);
 }
 
 void Spark::setNearestOrb(set<Orb*>& orbs) {
@@ -174,6 +175,7 @@ void Spark::setNearestOrb(set<Orb*>& orbs) {
 }
 
 void Spark::updateCenter() {
+	if(!_isOnParent) return;
 	if(_lifetimeMillis - _lastCenterUpdateMillis > 500+_updateOffset) {
 		
 		_lastCenterUpdateMillis = _lifetimeMillis;
@@ -191,6 +193,40 @@ CCPoint Spark::jitter(const CCPoint& point, const CCPoint weights, const float d
 	return ccpAdd(point, ccp((Utilities::getRandomDouble()-0.5)*weights.x*ds, (Utilities::getRandomDouble()-0.5)*weights.y*ds));
 }
 
+
+void Spark::loadSprite() {
+	_isModifyingState = true;
+	if(_sprite != NULL) {
+		removeSpriteFromParent();
+		_sprite->release();
+		_sprite = NULL;
+	}
+	
+	_sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
+	_sprite->setPosition(_position);
+	_sprite->setScale(SCALE_FACTOR*_scaleMultiplier);
+	
+	_sprite->retain();
+	_isModifyingState = false;
+
+}
+
+void Spark::addSpriteToParent() {
+	_isModifyingState = true;
+	_parent->addChild(_sprite);
+	_isOnParent = true;
+	_isModifyingState = false;
+}
+
+void Spark::removeSpriteFromParent() {
+	_isModifyingState = true;
+	if(_isOnParent) {
+		_isOnParent = false;
+		_sprite->removeFromParentAndCleanup(true);
+	}
+	_isModifyingState = false;
+}
+
 list<CCPoint> Spark::getPositionList(const set<Spark*> sparks) {
 	list<CCPoint> points;
 	for(set<Spark*>::const_iterator sparksIterator = sparks.begin();
@@ -205,7 +241,12 @@ list<CCPoint> Spark::getPositionList(const set<Spark*> sparks) {
 
 Spark::~Spark() {
 	if(_sprite != NULL) {
+		removeSpriteFromParent();
 		_sprite->release();
 		_sprite = NULL;
+	}
+	if(_parent != NULL) {
+		_parent->release();
+		_parent = NULL;
 	}
 }

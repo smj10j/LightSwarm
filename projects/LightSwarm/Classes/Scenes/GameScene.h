@@ -4,12 +4,13 @@
 #include "Common.h"
 #include "Spark.h"
 #include "Orb.h"
-#include "GameStateSnapshot.h"
 #include "PingLocation.h"
 #include <set>
 #include <list>
 USING_NS_CC;
 using namespace std;
+
+class GameStateSnapshot;
 
 class GameScene : public CCLayer
 {
@@ -27,17 +28,20 @@ public:
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
 	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
-		
-	void clearPingLocations();
-		
+				
 	virtual ~GameScene();
+
+	//making public for saving state
+	double _currentRunningTime;
+	float _fixedTimestepAccumulator;
+
+	set<Orb*> _orbs;
+	set<Spark*> _sparks;
+
 
 private:
 	CCSpriteBatchNode* _batchNode;
-	
-	double _currentRunningTime;
-	double _fixedTimestepAccumulator;
-		
+			
 	bool _isManipulatingViewport;
 	bool _isManipulatingSparks;
 	CCPoint _prevViewporCenter;
@@ -48,27 +52,25 @@ private:
 	list<CCPoint> _prevTouches;
 	list<CCPoint> _currentTouches;
 	
-	set<Orb*> _orbs;
-	
-	set<Spark*> _sparks;
 	set<Spark*> _selectedSparks;
-	
-	
 	list<PingLocation*> _pingLocations;
 	
-	GameStateSnapshot* _gameStateSnapshot;
 	
 	CCLayer* _gameLayer;
 	
 	void updateSparkSelectionEffects();
 	void clearSelectedSparksIfNoAction();
 	
+	void cleanup();
 	
 	void draw();
 	void update(float dt);
 	void singleUpdateStep(float dt);
+
+	void clearPingLocations();
 	
-	GameStateSnapshot* getGameStateSnapshot();
+	GameStateSnapshot* _gameStateSnapshot;
+	bool _isRestoringGameStateSnapshot;
 	void restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot);
 };
 
