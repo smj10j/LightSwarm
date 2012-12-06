@@ -212,19 +212,25 @@ void Spark::loadSprite() {
 }
 
 void Spark::addSpriteToParent() {
+	if(_sprite == NULL) {
+		loadSprite();
+	}
 	_isModifyingState = true;
-	_parent->addChild(_sprite);
+	_parent->addChild(_sprite, 20);
 	_isOnParent = true;
 	_isModifyingState = false;
 }
 
 void Spark::removeSpriteFromParent() {
-	_isModifyingState = true;
-	if(_isOnParent) {
-		_isOnParent = false;
-		_sprite->removeFromParentAndCleanup(true);
+	if(_sprite != NULL) {
+		_isModifyingState = true;
+		if(_isOnParent) {
+			_position = _sprite->getPosition();
+			_isOnParent = false;
+			_sprite->removeFromParentAndCleanup(true);
+		}
+		_isModifyingState = false;
 	}
-	_isModifyingState = false;
 }
 
 list<CCPoint> Spark::getPositionList(const set<Spark*> sparks) {

@@ -33,7 +33,9 @@ const char* CONFIG_STRINGS[] = {
 	
 	
 	stringify(SIMULATION_STEP_SIZE),
-	stringify(SIMULATION_MAX_STEPS)
+	stringify(SIMULATION_MAX_STEPS),
+	stringify(SIMULATION_FRAME_SIZE),
+	stringify(SIMULATION_FRAME_STACK_SIZE)
 	
 };
 

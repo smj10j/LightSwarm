@@ -36,32 +36,28 @@ public:
 					
 		_updateOffset = Utilities::getRandomDouble()*100;
 		
-		loadSprite();
-
 		updateCenterAndRadius();
 	}
 	
 	//copy constructor
-	Orb(Orb& orb) {
+	Orb(Orb* orb) {
 		
-		_parent = orb._parent;
+		_parent = orb->_parent;
 		_parent->retain();
 
 		_sprite = NULL;
 		_isModifyingState = false;
 		_isOnParent = false;
 		
-		_position = orb._position;
-		_center = orb._center;
-		_radius = orb._radius;
-		_scaleMultiplier = orb._scaleMultiplier;
+		_position = (orb->_sprite != NULL && orb->_isOnParent) ? orb->_sprite->getPosition() : orb->_position;
+		_center = orb->_center;
+		_radius = orb->_radius;
+		_scaleMultiplier = orb->_scaleMultiplier;
 
-		_lifetimeMillis = orb._lifetimeMillis;
-		_updateOffset = orb._updateOffset;
+		_lifetimeMillis = orb->_lifetimeMillis;
+		_updateOffset = orb->_updateOffset;
 
-		_lastCenterUpdateMillis = orb._lastCenterUpdateMillis;
-		
-		loadSprite();
+		_lastCenterUpdateMillis = orb->_lastCenterUpdateMillis;		
 	};
 
 	CCPoint getPosition();

@@ -260,8 +260,8 @@
 			isa = PBXGroup;
 			children = (
 				AA8B7DDF167053A70047E264 /* Common.h */,
-				AA8B7DE0167053A70047E264 /* Config.cpp */,
 				AA8B7DE1167053A70047E264 /* Config.h */,
+				AA8B7DE0167053A70047E264 /* Config.cpp */,
 				AA8B7DE3167053A70047E264 /* Utilities.h */,
 				AA8B7DE2167053A70047E264 /* Utilities.cpp */,
 			);

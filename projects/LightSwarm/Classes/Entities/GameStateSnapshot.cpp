@@ -14,14 +14,16 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	if(_isRestoring) return;
 	
 	_isRestoring = true;
+	
 	double startTime = Utilities::getMillis();
 	gameScene->retain();
 	
 	gameScene->cleanup();
 
 	gameScene->_fixedTimestepAccumulator = _fixedTimestepAccumulator;
-	gameScene->_currentRunningTime = _currentRunningTime;
-	Utilities::setRandomSeed(_currentRunningTime);//sync random generators
+	gameScene->_currentRunningTimeMills = _currentRunningTimeMills;
+	gameScene->_randomGeneratorSeed = _randomGeneratorSeed;
+	Utilities::setRandomSeed(_randomGeneratorSeed);//sync random generators
 
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
 		sparksIterator != _sparks.end();
@@ -45,6 +47,25 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	
 	gameScene->release();
 	
-	CCLOG("Restored snapshot in %fms", Utilities::getMillis()-startTime);
 	_isRestoring = false;
+
+	CCLOG("Restored snapshot in %fms", Utilities::getMillis()-startTime);
+}
+
+GameStateSnapshot::~GameStateSnapshot() {
+	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+		sparksIterator != _sparks.end();
+		sparksIterator++) {
+		Spark* spark = *sparksIterator;
+		delete spark;
+	}
+	_sparks.clear();
+
+	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+		orbsIterator != _orbs.end();
+		orbsIterator++) {
+		Orb* orb = *orbsIterator;
+		delete orb;
+	}
+	_orbs.clear();
 }

@@ -64,19 +64,25 @@ void Orb::loadSprite() {
 
 
 void Orb::addSpriteToParent() {
+	if(_sprite == NULL) {
+		loadSprite();
+	}
 	_isModifyingState = true;
-	_parent->addChild(_sprite);
+	_parent->addChild(_sprite, 10);
 	_isOnParent = true;
 	_isModifyingState = false;
 }
 
 void Orb::removeSpriteFromParent() {
-	_isModifyingState = true;
-	if(_isOnParent) {
-		_isOnParent = false;
-		_sprite->removeFromParentAndCleanup(true);
+	if(_sprite != NULL) {
+		_isModifyingState = true;
+		if(_isOnParent) {
+			_position = _sprite->getPosition();
+			_isOnParent = false;
+			_sprite->removeFromParentAndCleanup(true);
+		}
+		_isModifyingState = false;
 	}
-	_isModifyingState = false;
 }
 
 bool Orb::isInShape(const list<CCPoint>& shape) {

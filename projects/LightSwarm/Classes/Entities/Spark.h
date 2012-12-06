@@ -47,15 +47,13 @@ public:
 		//this staggers updates - which creates a smoother framerate
 		_updateOffset = Utilities::getRandomDouble()*100;
 		
-		loadSprite();
-
 		updateCenter();
 	}
 	
 	//copy constructor
-	Spark(Spark& spark) {
+	Spark(Spark* spark) {
 		
-		_parent = spark._parent;
+		_parent = spark->_parent;
 		_parent->retain();
 
 		_nearestOrb = NULL;
@@ -63,27 +61,25 @@ public:
 		_isModifyingState = false;
 		_isOnParent = false;
 		
-		_targetMovePath = spark._targetMovePath;
-		_restingPosition = spark._restingPosition;
-		_position = spark._position;
-		_center = spark._center;
-		_scaleMultiplier = spark._scaleMultiplier;
-		_speedMultiplier = spark._speedMultiplier;
-		_strengthMultiplier = spark._strengthMultiplier;
+		_targetMovePath = spark->_targetMovePath;
+		_restingPosition = spark->_restingPosition;
+		_position = (spark->_sprite != NULL && spark->_isOnParent) ? spark->_sprite->getPosition() : spark->_position;
+		_center = spark->_center;
+		_scaleMultiplier = spark->_scaleMultiplier;
+		_speedMultiplier = spark->_speedMultiplier;
+		_strengthMultiplier = spark->_strengthMultiplier;
 
-		_initialHealth = spark._initialHealth;
-		_health = spark._health;
-		_isDead = spark._isDead;
+		_initialHealth = spark->_initialHealth;
+		_health = spark->_health;
+		_isDead = spark->_isDead;
 
-		_lifetimeMillis = spark._lifetimeMillis;
-		_updateOffset = spark._updateOffset;
+		_lifetimeMillis = spark->_lifetimeMillis;
+		_updateOffset = spark->_updateOffset;
 
-		_lastNearestOrbUpdateMillis = spark._lastNearestOrbUpdateMillis;
-		_lastCenterUpdateMillis = spark._lastCenterUpdateMillis;
-		_lastAtRestJitterMillis = spark._lastAtRestJitterMillis;
-		
-		loadSprite();
-		
+		_lastNearestOrbUpdateMillis = spark->_lastNearestOrbUpdateMillis;
+		_lastCenterUpdateMillis = spark->_lastCenterUpdateMillis;
+		_lastAtRestJitterMillis = spark->_lastAtRestJitterMillis;
+				
 		//CCLOG("Called sprite copy constructor");
 	};
 	

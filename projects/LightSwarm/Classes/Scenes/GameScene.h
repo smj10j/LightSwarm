@@ -31,10 +31,15 @@ public:
 				
 	virtual ~GameScene();
 
+	int getFrameNumber() {
+		const int frameSize = Config::getIntForKey(SIMULATION_FRAME_SIZE);
+		return _currentRunningTimeMills/frameSize;
+	}
 
 	//making public for saving state
-	double _currentRunningTime;
+	double _currentRunningTimeMills;
 	float _fixedTimestepAccumulator;
+	long _randomGeneratorSeed;
 
 	set<Orb*> _orbs;
 	set<Spark*> _sparks;
@@ -70,8 +75,10 @@ private:
 
 	void clearPingLocations();
 	
-	GameStateSnapshot* _gameStateSnapshot;
+	double _lastGameStateSnapshotMillis;
+	list<GameStateSnapshot*> _gameStateSnapshots;
 	bool _isRestoringGameStateSnapshot;
+	void rollbackTo(double runningTimeMillis);
 };
 
 #endif // __GAME_SCENE_H__

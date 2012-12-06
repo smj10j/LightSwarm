@@ -35,6 +35,12 @@ bool GameScene::init() {
 	
 	_prevViewporCenter = _gameLayer->getPosition();
 	_isManipulatingViewport = false;
+	_isManipulatingSparks = false;
+	_isRestoringGameStateSnapshot = false;
+	
+	_currentRunningTimeMills = 0;
+	_lastGameStateSnapshotMillis = -10000;
+	
 	
 	//create a batch node
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
@@ -42,7 +48,8 @@ bool GameScene::init() {
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
 	//TODO: seed this with the value we get from the server
-	Utilities::setRandomSeed(450);
+	_randomGeneratorSeed = 450;
+	Utilities::setRandomSeed(_randomGeneratorSeed);
 	
 	
 	for(int i = 0; i < 40; i++) {
@@ -77,31 +84,12 @@ bool GameScene::init() {
 }
 
 
-static bool BLAHBLAH = false;
-static bool BLAHBLAH2 = false;
-
 
 void GameScene::update(float dt) {
 
 	if(_isRestoringGameStateSnapshot) return;
-
-	//TEST CODE to simulate a bit of rollback
-	if(!BLAHBLAH && _currentRunningTime > 5) {
-		if(_gameStateSnapshot != NULL) {
-			delete _gameStateSnapshot;
-			_gameStateSnapshot = NULL;
-		}
-		_gameStateSnapshot = new GameStateSnapshot(this);
-		BLAHBLAH = true;
-		
-	}else if(!BLAHBLAH2 && _currentRunningTime > 10) {
-		_isRestoringGameStateSnapshot = true;
-		_gameStateSnapshot->restoreTo(this);
-		_isRestoringGameStateSnapshot = false;
-		BLAHBLAH2 = true;
-	}
 	
-	_currentRunningTime+= dt;
+	_currentRunningTimeMills+= dt*1000;
 	_fixedTimestepAccumulator+= dt;
 	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
@@ -122,7 +110,51 @@ void GameScene::update(float dt) {
 }
 
 
+
+void GameScene::rollbackTo(double runningTimeMillis) {
+
+	_isRestoringGameStateSnapshot = true;
+
+	CCLOG("Received command to rollback to %f (we're at %f - diff = %f)", runningTimeMillis, _currentRunningTimeMills, (_currentRunningTimeMills - runningTimeMillis));
+	
+	if(runningTimeMillis > _currentRunningTimeMills) {
+		CCLOG("Rollback time is in the future - ignoring");
+		return;
+	}
+	
+	//find the best match snapshot to rollback to
+	GameStateSnapshot* gameStateSnapshot = NULL;
+	while(!_gameStateSnapshots.empty()) {
+		gameStateSnapshot = _gameStateSnapshots.front();
+		_gameStateSnapshots.pop_front();
+		CCLOG("Examining if we should rollback to %f", gameStateSnapshot->_currentRunningTimeMills);
+		if(gameStateSnapshot->_currentRunningTimeMills < runningTimeMillis) {
+			CCLOG("ROLLBACK MATCH!");
+			break;
+		}
+	}
+	if(gameStateSnapshot != NULL) {
+		gameStateSnapshot->restoreTo(this);
+	}
+	
+	_isRestoringGameStateSnapshot = false;
+}
+
+
+static bool BLAHBLAH = false;
+
 void GameScene::singleUpdateStep(float dt) {
+
+	//TEST CODE to simulate a bit of rollback
+	if(!_gameStateSnapshots.empty() && !BLAHBLAH && _currentRunningTimeMills > 10000) {
+
+		double restoreToMillis = _currentRunningTimeMills-300;
+		rollbackTo(restoreToMillis);
+
+		BLAHBLAH = true;
+	}
+	
+	
 
 	//update sparks
 	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
@@ -162,6 +194,18 @@ void GameScene::singleUpdateStep(float dt) {
 		pingLocationsIterator != _pingLocations.end();
 		pingLocationsIterator++) {
 		(*pingLocationsIterator)->update(dt);
+	}
+	
+	
+	
+	if(_currentRunningTimeMills - _lastGameStateSnapshotMillis > Config::getIntForKey(SIMULATION_FRAME_SIZE)) {
+		if(_gameStateSnapshots.size() >= Config::getIntForKey(SIMULATION_FRAME_STACK_SIZE)) {
+			GameStateSnapshot* gameStateSnapshot = _gameStateSnapshots.back();
+			_gameStateSnapshots.pop_back();
+			delete gameStateSnapshot;
+		}
+		_gameStateSnapshots.push_front(new GameStateSnapshot(this));
+		_lastGameStateSnapshotMillis = _currentRunningTimeMills;
 	}
 }
 
@@ -465,9 +509,11 @@ void GameScene::cleanup() {
 GameScene::~GameScene() {
 	
 	cleanup();
-	
-	if(_gameStateSnapshot != NULL) {
-		delete _gameStateSnapshot;
-		_gameStateSnapshot = NULL;
+
+	for(list<GameStateSnapshot*>::iterator gameStateSnapshotsIterator = _gameStateSnapshots.begin();
+		gameStateSnapshotsIterator != _gameStateSnapshots.end();
+		gameStateSnapshotsIterator++) {
+		delete (*gameStateSnapshotsIterator);
 	}
+	_gameStateSnapshots.clear();
 }
