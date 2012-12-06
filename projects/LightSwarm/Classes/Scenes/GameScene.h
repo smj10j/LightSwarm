@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Spark.h"
 #include "Orb.h"
+#include "GameStateSnapshot.h"
 #include "PingLocation.h"
 #include <set>
 #include <list>
@@ -36,7 +37,6 @@ private:
 	
 	double _currentRunningTime;
 	double _fixedTimestepAccumulator;
-	bool _isRollingBack;
 		
 	bool _isManipulatingViewport;
 	bool _isManipulatingSparks;
@@ -56,6 +56,8 @@ private:
 	
 	list<PingLocation*> _pingLocations;
 	
+	GameStateSnapshot* _gameStateSnapshot;
+	
 	CCLayer* _gameLayer;
 	
 	void updateSparkSelectionEffects();
@@ -65,6 +67,9 @@ private:
 	void draw();
 	void update(float dt);
 	void singleUpdateStep(float dt);
+	
+	GameStateSnapshot* getGameStateSnapshot();
+	void restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot);
 };
 
 #endif // __GAME_SCENE_H__

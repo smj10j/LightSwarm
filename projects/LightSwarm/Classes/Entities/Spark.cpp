@@ -137,7 +137,7 @@ void Spark::update(float dt) {
 	if(!_isDead) {
 		if(_health < 0) {
 			die();
-		}else if(dt > 0) {
+		}else {
 			_lifetimeMillis+= dt*1000.0;
 		}
 	}

@@ -3,8 +3,7 @@
 USING_NS_CC;
 
 
-CCScene* GameScene::scene()
-{
+CCScene* GameScene::scene() {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
@@ -19,10 +18,8 @@ CCScene* GameScene::scene()
 }
 
 // on "init" you need to initialize your instance
-bool GameScene::init()
-{
-    if ( !CCLayer::init() )
-    {
+bool GameScene::init() {
+    if ( !CCLayer::init() ) {
         return false;
     }
 
@@ -82,24 +79,38 @@ bool GameScene::init()
 }
 
 
+static bool BLAHBLAH = false;
+static bool BLAHBLAH2 = false;
+
+GameStateSnapshot* GameScene::getGameStateSnapshot() {
+
+
+
+	
+}
+
+void GameScene::restoreGameStateSnapshot(GameStateSnapshot* gameStateSnapshot) {
+
+}
+
 
 void GameScene::update(float dt) {
 
-	/*
 	//TEST CODE to simulate a bit of rollback
-	if(_currentRunningTime > 10) {
-		singleUpdateStep(-dt);
-		return;
+	if(!BLAHBLAH && _currentRunningTime > 10) {
+		if(_gameStateSnapshot != NULL) {
+			free(_gameStateSnapshot);
+			_gameStateSnapshot = NULL;
+		}
+		_gameStateSnapshot = getGameStateSnapshot();
+		BLAHBLAH = true;
+	}else if(!BLAHBLAH2 && _currentRunningTime > 20) {
+		restoreGameStateSnapshot(_gameStateSnapshot);
+		BLAHBLAH2 = true;
 	}
-	*/
 	
 	_currentRunningTime+= dt;
 	_fixedTimestepAccumulator+= dt;
-
-	if(_isRollingBack) {
-		//new command was received from network player - adding it in
-		return;
-	}
 	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
 	const int maxSteps = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
@@ -135,6 +146,7 @@ void GameScene::singleUpdateStep(float dt) {
 			//TODO: how to handle this with rollback?
 			//make the spark invisible for a few second before finally removing it?
 			(*sparksIterator)->remove();
+			free(*sparksIterator);
 			_sparks.erase(sparksIterator++);
 			continue;
 		}
@@ -157,15 +169,11 @@ void GameScene::singleUpdateStep(float dt) {
 	
 	
 	
-	if(dt > 0) {
-		
-		//things in here don't need to listen to rollback
 	
-		for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
-			pingLocationsIterator != _pingLocations.end();
-			pingLocationsIterator++) {
-			(*pingLocationsIterator)->update(dt);
-		}
+	for(list<PingLocation*>::iterator pingLocationsIterator = _pingLocations.begin();
+		pingLocationsIterator != _pingLocations.end();
+		pingLocationsIterator++) {
+		(*pingLocationsIterator)->update(dt);
 	}
 }
 
@@ -198,6 +206,7 @@ void GameScene::clearPingLocations() {
 		pingLocationsIterator != _pingLocations.end();
 		_pingLocations.erase(pingLocationsIterator++)) {
 		this->removeChild(*pingLocationsIterator, true);
+		free(*pingLocationsIterator);
 	}
 }
 
@@ -348,6 +357,7 @@ void GameScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 		
 		_isManipulatingViewport = false;
 		_isManipulatingSparks = false;
+		
 		return;
 		
 	}else if(!_selectedSparks.empty() && !_currentTouches.empty()){
@@ -443,5 +453,21 @@ void GameScene::updateSparkSelectionEffects() {
 
 
 GameScene::~GameScene() {
+	
 	clearPingLocations();
+	
+	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
+		sparksIterator != _sparks.end();
+		sparksIterator++) {
+		free(*sparksIterator);
+	}
+	_sparks.clear();
+
+	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
+		orbsIterator != _orbs.end();
+		orbsIterator++) {
+		free(*orbsIterator);
+	}
+	_orbs.clear();
+	
 }
