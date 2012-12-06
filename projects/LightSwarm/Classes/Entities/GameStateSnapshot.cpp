@@ -23,21 +23,17 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 	gameScene->_currentFrame = _frame;
 	Utilities::setRandomSeed(_frame);//sync random generators
 
-	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
-		sparksIterator != _sparks.end();
-		sparksIterator++) {
+	for(int i = 0; i < _sparksSize; i++) {
 		
-		Spark* spark = new Spark(**sparksIterator);
+		Spark* spark = new Spark(_sparks[i]);
 		spark->addSpriteToParent();
 				
 		gameScene->_sparks.insert(spark);
 	}
 	
-	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
-		orbsIterator != _orbs.end();
-		orbsIterator++) {
+	for(int i = 0; i < _orbsSize; i++) {
 		
-		Orb* orb = new Orb(**orbsIterator);
+		Orb* orb = new Orb(_orbs[i]);
 		orb->addSpriteToParent();
 
 		gameScene->_orbs.insert(orb);
@@ -51,19 +47,13 @@ void GameStateSnapshot::restoreTo(GameScene* gameScene) {
 }
 
 GameStateSnapshot::~GameStateSnapshot() {
-	for(set<Spark*>::iterator sparksIterator = _sparks.begin();
-		sparksIterator != _sparks.end();
-		sparksIterator++) {
-		Spark* spark = *sparksIterator;
-		delete spark;
+	if(_sparks != NULL) {
+		delete[] _sparks;
+		_sparks = NULL;
 	}
-	_sparks.clear();
 
-	for(set<Orb*>::iterator orbsIterator = _orbs.begin();
-		orbsIterator != _orbs.end();
-		orbsIterator++) {
-		Orb* orb = *orbsIterator;
-		delete orb;
+	if(_orbs != NULL) {
+		delete[] _orbs;
+		_orbs = NULL;
 	}
-	_orbs.clear();
 }

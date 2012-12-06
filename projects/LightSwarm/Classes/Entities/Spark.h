@@ -21,6 +21,15 @@ class Spark
 {
 public:
 
+	//used by clone()
+	Spark() {
+		_nearestOrb = NULL;
+		_sprite = NULL;
+		_isModifyingState = false;
+		_isOnParent = false;		
+		_isSelected = false;
+	}
+
 	Spark(CCNode* parent, CCPoint position, float scaleMultiplier, float speedMultiplier, float strengthMultiplier, float healthMultiplier):
 		_parent(parent),
 		_position(position),
@@ -53,42 +62,36 @@ public:
 		updateCenter();
 	}
 	
-	//copy constructor
-	Spark(Spark* spark) {
+	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
+	static void copy(Spark* dst, Spark* src) {
+				
+		dst->_id = src->_id;
 		
-		_id = spark->_id;
+		dst->_parent = src->_parent;
+		dst->_parent->retain();
 		
-		_parent = spark->_parent;
-		_parent->retain();
+		dst->_targetMovePath = src->_targetMovePath;
+		dst->_restingPosition = src->_restingPosition;
+		dst->_position = (src->_sprite != NULL && src->_isOnParent) ? src->_sprite->getPosition() : src->_position;
+		dst->_center = src->_center;
+		dst->_scaleMultiplier = src->_scaleMultiplier;
+		dst->_speedMultiplier = src->_speedMultiplier;
+		dst->_strengthMultiplier = src->_strengthMultiplier;
 
-		_nearestOrb = NULL;
-		_sprite = NULL;
-		_isModifyingState = false;
-		_isOnParent = false;
+		dst->_initialHealth = src->_initialHealth;
+		dst->_health = src->_health;
+		dst->_isDead = src->_isDead;
+
+		dst->_lifetimeMillis = src->_lifetimeMillis;
+		dst->_updateOffset = src->_updateOffset;
+
+		dst->_lastNearestOrbUpdateMillis = src->_lastNearestOrbUpdateMillis;
+		dst->_lastCenterUpdateMillis = src->_lastCenterUpdateMillis;
+		dst->_lastAtRestJitterMillis = src->_lastAtRestJitterMillis;
 		
-		_targetMovePath = spark->_targetMovePath;
-		_restingPosition = spark->_restingPosition;
-		_position = (spark->_sprite != NULL && spark->_isOnParent) ? spark->_sprite->getPosition() : spark->_position;
-		_center = spark->_center;
-		_scaleMultiplier = spark->_scaleMultiplier;
-		_speedMultiplier = spark->_speedMultiplier;
-		_strengthMultiplier = spark->_strengthMultiplier;
-
-		_initialHealth = spark->_initialHealth;
-		_health = spark->_health;
-		_isDead = spark->_isDead;
-		_isSelected = false;
-
-		_lifetimeMillis = spark->_lifetimeMillis;
-		_updateOffset = spark->_updateOffset;
-
-		_lastNearestOrbUpdateMillis = spark->_lastNearestOrbUpdateMillis;
-		_lastCenterUpdateMillis = spark->_lastCenterUpdateMillis;
-		_lastAtRestJitterMillis = spark->_lastAtRestJitterMillis;
-		
-		//CCLOG("Called sprite copy constructor");
+		//CCLOG("Called sprite copy constructor");		
 	};
-	
+		
 	void loadSprite();
 	void addSpriteToParent();
 	void removeSpriteFromParent();

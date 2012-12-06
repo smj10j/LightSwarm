@@ -20,6 +20,12 @@ class Orb
 {
 public:
 
+	Orb() {
+		_sprite = NULL;
+		_isModifyingState = false;
+		_isOnParent = false;
+	}
+
 	Orb(CCNode* parent, CCPoint position, float scaleMultiplier):
 		_parent(parent),
 		_position(position),
@@ -40,29 +46,25 @@ public:
 		
 		updateCenterAndRadius();
 	}
-	
-	//copy constructor
-	Orb(Orb* orb) {
-		
-		_id = orb->_id;
-		
-		_parent = orb->_parent;
-		_parent->retain();
 
-		_sprite = NULL;
-		_isModifyingState = false;
-		_isOnParent = false;
+	//MY copy constructor - this will grab a big chunk off the heap and allocate it manually
+	static void copy(Orb* dst, Orb* src) {
 		
-		_position = (orb->_sprite != NULL && orb->_isOnParent) ? orb->_sprite->getPosition() : orb->_position;
-		_center = orb->_center;
-		_radius = orb->_radius;
-		_scaleMultiplier = orb->_scaleMultiplier;
+		dst->_id = src->_id;
+		
+		dst->_parent = src->_parent;
+		dst->_parent->retain();
+		
+		dst->_position = (src->_sprite != NULL && src->_isOnParent) ? src->_sprite->getPosition() : src->_position;
+		dst->_center = src->_center;
+		dst->_radius = src->_radius;
+		dst->_scaleMultiplier = src->_scaleMultiplier;
 
-		_lifetimeMillis = orb->_lifetimeMillis;
-		_updateOffset = orb->_updateOffset;
+		dst->_lifetimeMillis = src->_lifetimeMillis;
+		dst->_updateOffset = src->_updateOffset;
 
-		_lastCenterUpdateMillis = orb->_lastCenterUpdateMillis;		
-	};
+		dst->_lastCenterUpdateMillis = src->_lastCenterUpdateMillis;
+	}
 
 	CCPoint getPosition();
 	

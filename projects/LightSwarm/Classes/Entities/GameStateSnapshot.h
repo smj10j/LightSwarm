@@ -27,6 +27,14 @@ public:
 		double startTime = Utilities::getMillis();
 				
 		//copy orbs and sparks
+		
+		_sparksSize = gameScene->_sparks.size();
+		_sparks = new Spark[_sparksSize];
+
+		_orbsSize = gameScene->_orbs.size();
+		_orbs = new Orb[_orbsSize];
+		
+		int i = 0;
 		for(set<Spark*>::iterator sparksIterator = gameScene->_sparks.begin();
 			sparksIterator != gameScene->_sparks.end();
 			sparksIterator++) {
@@ -38,19 +46,21 @@ public:
 			//total of about 33ms
 			//BIG WIN COMES FROM FIGURING OUT HOW TO CREATE ITEMS ON THE HEAP EFFICIENTLY
 			
-			_sparks.insert(new Spark(*sparksIterator));
+			Spark::copy(&_sparks[i++], *sparksIterator);
+			//_sparks.insert(new Spark(*sparksIterator));
 		}
 		
+		i = 0;
 		for(set<Orb*>::iterator orbsIterator = gameScene->_orbs.begin();
 			orbsIterator != gameScene->_orbs.end();
 			orbsIterator++) {
 		
-			_orbs.insert(new Orb(*orbsIterator));
+			Orb::copy(&_orbs[i++], *orbsIterator);
 		}
 		
 		_isRestoring = false;
 		
-		float size = (sizeof(Spark)*_sparks.size() + sizeof(Orb)*_orbs.size() + sizeof(this))/1024.0;
+		float size = (sizeof(Spark)*_sparksSize + sizeof(Orb)*_orbsSize + sizeof(this))/1024.0;
 		CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
 	}
 
@@ -60,10 +70,11 @@ public:
 
 	int _frame;
 
-	set<Orb*> _orbs;
-	set<Spark*> _sparks;
+	Spark* _sparks;
+	int _sparksSize;
 	
-
+	Orb* _orbs;
+	int _orbsSize;
 
 private:
 
