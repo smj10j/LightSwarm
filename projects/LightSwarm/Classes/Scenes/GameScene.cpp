@@ -37,6 +37,7 @@ bool GameScene::init() {
 	_isManipulatingViewport = false;
 	_isManipulatingSparks = false;
 	_isRestoringGameStateSnapshot = false;
+	_isCreatingGameStateSnapshot = false;
 	
 	_currentRunningTimeMills = 0;
 	_lastGameStateSnapshotMillis = -10000;
@@ -111,7 +112,7 @@ void GameScene::update(float dt) {
 
 
 
-void GameScene::rollbackTo(double runningTimeMillis) {
+void GameScene::restoreToRunningTime(double runningTimeMillis) {
 
 	_isRestoringGameStateSnapshot = true;
 
@@ -174,8 +175,8 @@ void GameScene::singleUpdateStep(float dt) {
 	//TEST CODE to simulate a bit of rollback
 	if(!_gameStateSnapshots.empty() && !BLAHBLAH && _currentRunningTimeMills > 10000) {
 
-		double restoreToMillis = _currentRunningTimeMills-300;
-		rollbackTo(restoreToMillis);
+		double restoreToMillis = _currentRunningTimeMills-100;
+		restoreToRunningTime(restoreToMillis);
 
 		BLAHBLAH = true;
 	}
@@ -223,15 +224,21 @@ void GameScene::singleUpdateStep(float dt) {
 	
 	
 	
-	if(_currentRunningTimeMills - _lastGameStateSnapshotMillis > Config::getIntForKey(SIMULATION_FRAME_SIZE)) {
-		if(_gameStateSnapshots.size() >= Config::getIntForKey(SIMULATION_FRAME_STACK_SIZE)) {
-			GameStateSnapshot* gameStateSnapshot = _gameStateSnapshots.back();
-			_gameStateSnapshots.pop_back();
-			delete gameStateSnapshot;
-		}
-		_gameStateSnapshots.push_front(new GameStateSnapshot(this));
-		_lastGameStateSnapshotMillis = _currentRunningTimeMills;
+	if(_currentRunningTimeMills - _lastGameStateSnapshotMillis > Config::getIntForKey(SIMULATION_FRAME_SIZE) && !_isCreatingGameStateSnapshot) {
+		_isCreatingGameStateSnapshot = true;
+		this->scheduleOnce(schedule_selector(GameScene::createGameStateSnapshot), 10);
 	}
+}
+
+void GameScene::createGameStateSnapshot() {
+	if(_gameStateSnapshots.size() >= Config::getIntForKey(SIMULATION_FRAME_STACK_SIZE)) {
+		GameStateSnapshot* gameStateSnapshot = _gameStateSnapshots.back();
+		_gameStateSnapshots.pop_back();
+		delete gameStateSnapshot;
+	}
+	_gameStateSnapshots.push_front(new GameStateSnapshot(this));
+	_lastGameStateSnapshotMillis = _currentRunningTimeMills;
+	_isCreatingGameStateSnapshot = false;
 }
 
 
@@ -317,7 +324,7 @@ void GameScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 			this->addChild(pingLocation);
 		}
 		
-		this->scheduleOnce(schedule_selector(GameScene::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)/1000.0+0.100);
+		//this->scheduleOnce(schedule_selector(GameScene::clearSelectedSparksIfNoAction), Config::getIntForKey(TOUCH_DOUBLE_TAP_DELAY_MILLIS)/1000.0+0.100);
 	}
 	
 	_lastTouchBeganMillis = now;

@@ -80,7 +80,9 @@ private:
 	double _lastGameStateSnapshotMillis;
 	list<GameStateSnapshot*> _gameStateSnapshots;
 	bool _isRestoringGameStateSnapshot;
-	void rollbackTo(double runningTimeMillis);
+	bool _isCreatingGameStateSnapshot;
+	void restoreToRunningTime(double runningTimeMillis);
+	void createGameStateSnapshot();
 	
 	list<Command*> _commandHistory;
 };

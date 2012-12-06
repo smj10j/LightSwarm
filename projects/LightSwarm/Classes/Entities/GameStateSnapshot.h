@@ -48,7 +48,7 @@ public:
 		_isRestoring = false;
 		
 		float size = (sizeof(Spark)*_sparks.size() + sizeof(Orb)*_orbs.size() + sizeof(this))/1024.0;
-		//CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
+		CCLOG("Created a game state snapshot in %f of approx size %fkb", Utilities::getMillis() - startTime, size);
 	}
 
 	virtual ~GameStateSnapshot();
