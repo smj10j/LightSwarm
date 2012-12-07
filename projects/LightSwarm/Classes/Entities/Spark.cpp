@@ -253,6 +253,16 @@ list<CCPoint> Spark::getPositionList(const set<Spark*> sparks) {
 	return points;
 }
 
+list<int> Spark::getIdList(const set<Spark*> sparks) {
+	list<int> ids;
+	for(set<Spark*>::const_iterator sparksIterator = sparks.begin();
+		sparksIterator != sparks.end();
+		sparksIterator++) {
+		ids.push_back((*sparksIterator)->getId());
+	}
+	return ids;
+}
+
 
 
 Spark::~Spark() {

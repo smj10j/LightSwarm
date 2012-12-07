@@ -140,6 +140,7 @@ public:
 	}	
 	
 	static list<CCPoint> getPositionList(const set<Spark*> sparks);
+	static list<int> getIdList(const set<Spark*> sparks);
 	
 	virtual ~Spark();
 

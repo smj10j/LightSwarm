@@ -549,13 +549,10 @@ void GameScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 					}
 				}
 			}
-															
-			for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
-				selectedSparksIterator != _selectedSparks.end();
-				selectedSparksIterator++) {
-				
-				(*selectedSparksIterator)->setTargetMovePath(_currentTouches);
-			}
+
+			//schedule MOVE command for the next frame
+			list<int> ids = Spark::getIdList(_selectedSparks);
+			_commandQueue.push_back(new Command(MOVE, _currentFrame+1, SPARK, ids, _currentTouches));
 				
 			_prevTouches = _currentTouches;
 			_currentTouches.clear();
