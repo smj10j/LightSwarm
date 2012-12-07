@@ -112,11 +112,13 @@ void GameScene::restoreToFrame(int targetFrame) {
 
 	_isRestoringGameStateSnapshot = true;
 
-	CCLOG("Received command to rollback to frame %d (we're at %d - diff = %d frames, which is about %fms)", targetFrame, _currentFrame, (_currentFrame - targetFrame), (_currentFrame - targetFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000);
+	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
+
+	CCLOG("Received command to restore to frame %d (we're at %d - diff = %d frames, which is about %fms)", targetFrame, _currentFrame, (_currentFrame - targetFrame), (_currentFrame - targetFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000);
 	
-	if(targetFrame >= _currentFrame) {
-		CCLOG("Rollback time is in the future or now - ignoring");
-		return;
+	//target frame is in the future - let's catch up!
+	while(_currentFrame < targetFrame) {
+		singleUpdateStep(stepSize);
 	}
 	
 	//find the best match snapshot to rollback to
@@ -140,14 +142,18 @@ void GameScene::restoreToFrame(int targetFrame) {
 			selectedSparksIterator++) {
 			selectedSparkIds.insert((*selectedSparksIterator)->getId());
 		}
+
+		//setting this will allow us to return to the frame we were on
+		_fixedTimestepAccumulator+= (_currentFrame - targetFrame) * stepSize;
 		
-		//restore
+		//restore to a snapshot
 		gameStateSnapshot->restoreTo(this);
 		
-		//add rollback state different to accumulator
-		//TODO: add in sender accumulator as well
-		_fixedTimestepAccumulator = (targetFrame - gameStateSnapshot->_frame) * Config::getDoubleForKey(SIMULATION_STEP_SIZE);
-				
+		//catch up to our target frame
+		while(_currentFrame < targetFrame) {
+			singleUpdateStep(stepSize);
+		}
+								
 		//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
 		//reselect sparks
 		_selectedSparks.clear();
@@ -166,8 +172,25 @@ void GameScene::restoreToFrame(int targetFrame) {
 		updateSparkSelectionEffects();
 	}
 	
+	CCLOG("Applying commands at frame %d with %d frames in the accumulator", _currentFrame, (int)(_fixedTimestepAccumulator/stepSize));
+	
+	
+	//TODO: apply commands and update this method name
+	
+
+
+	//catch up to our previous frame
+	while(_fixedTimestepAccumulator >= stepSize) {
+		_fixedTimestepAccumulator-= stepSize;
+		singleUpdateStep(stepSize);
+	}
+				
+	CCLOG("We are now at frame %d with %d frames in the accumulator", _currentFrame, (int)(_fixedTimestepAccumulator/stepSize));
+				
+	
 	_isRestoringGameStateSnapshot = false;
 }
+
 
 static bool ROLLBACK_TESTED = false;
 
@@ -177,11 +200,11 @@ void GameScene::singleUpdateStep(float dt) {
 
 	//TEST CODE to simulate a bit of rollback
 	if(!ROLLBACK_TESTED && !_gameStateSnapshots.empty() && _currentFrame == 500) {
+		ROLLBACK_TESTED = true;
 
-		int targetFrame = _currentFrame-155;
+		int targetFrame = _currentFrame+155;
 		restoreToFrame(targetFrame);
 
-		ROLLBACK_TESTED = true;
 	}
 	
 	
