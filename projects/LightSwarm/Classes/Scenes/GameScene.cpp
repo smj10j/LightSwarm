@@ -98,13 +98,17 @@ void GameScene::update(float dt) {
 		}
 		list<CCPoint> path;
 		path.push_back(ccp(400,400));
-		_commandQueue.push_back(new Command(MOVE, _currentFrame-5, SPARK, ids, path));
+		_commandQueue.push_back(new Command(MOVE, _currentFrame-100, SPARK, ids, path));
 	}
 		
 	_fixedTimestepAccumulator+= dt;
 	
+	//dynamically set this guy
+	const int BASELINE_MAX_STEPS = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
+	static int maxSteps = BASELINE_MAX_STEPS;
+	static float lastFixedTimestepAccumulator = _fixedTimestepAccumulator;
+	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
-	const int maxSteps = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
 	const int steps = _fixedTimestepAccumulator / stepSize;
 		
 	if (steps > 0) {
@@ -118,6 +122,15 @@ void GameScene::update(float dt) {
 	}else {
 		//no step - we're just too dang fast!
 	}
+	
+	//dynamically adjust maxSteps
+	if(_fixedTimestepAccumulator > lastFixedTimestepAccumulator) {
+		maxSteps = MIN(maxSteps+1, BASELINE_MAX_STEPS);
+	}else if(_fixedTimestepAccumulator < lastFixedTimestepAccumulator) {
+		maxSteps = MAX(maxSteps-1, 2);
+	}
+	//CCLOG("maxSteps = %d, lastFixedTimestepAccumulator = %f, _fixedTimestepAccumulator = %f", maxSteps, lastFixedTimestepAccumulator, _fixedTimestepAccumulator);
+	lastFixedTimestepAccumulator = _fixedTimestepAccumulator;
 	
 	processCommandQueue();
 }
