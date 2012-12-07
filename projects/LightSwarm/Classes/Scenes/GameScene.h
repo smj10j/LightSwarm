@@ -5,13 +5,13 @@
 #include "Spark.h"
 #include "Orb.h"
 #include "PingLocation.h"
-#include "Command.h"
 #include <list>
 USING_NS_CC;
 using namespace std;
 
 //forward declaration and GameStateSnapshot needs GameScene defined
 class GameStateSnapshot;
+class Command;
 
 class GameScene : public CCLayer
 {
@@ -34,10 +34,9 @@ public:
 
 	//making public for saving state
 	int _currentFrame;
-
 	list<Orb*> _orbs;
 	list<Spark*> _sparks;
-
+	
 private:
 	CCSpriteBatchNode* _batchNode;
 			
@@ -73,10 +72,13 @@ private:
 	list<GameStateSnapshot*> _gameStateSnapshots;
 	bool _isRestoringGameStateSnapshot;
 	bool _isCreatingGameStateSnapshot;
-	void restoreToFrame(int targetFrame);
 	void createGameStateSnapshot();
+	void restoreToFrameAndExecuteCommand(int targetFrame, Command* command);
 	
-	list<Command*> _commandHistory;
+	list<Command*> _commandQueue;
+	void processCommandQueue();
+	void processCommand(Command* command);	//sets the current frame ready for execution of the command
+	void executeCommand(Command* command);	//actually performs the action
 };
 
 #endif // __GAME_SCENE_H__
