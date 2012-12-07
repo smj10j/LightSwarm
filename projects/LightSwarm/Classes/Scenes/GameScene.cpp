@@ -114,65 +114,67 @@ void GameScene::restoreToFrame(int targetFrame) {
 
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
 
-	CCLOG("Received command to restore to frame %d (we're at %d - diff = %d frames, which is about %fms)", targetFrame, _currentFrame, (_currentFrame - targetFrame), (_currentFrame - targetFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000);
+	//store state
+	const int prevFrame = _currentFrame;
+	set<int> selectedSparkIds;
+	for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
+		selectedSparksIterator != _selectedSparks.end();
+		selectedSparksIterator++) {
+		selectedSparkIds.insert((*selectedSparksIterator)->getId());
+	}
+
+	CCLOG("Received command to restore to frame %d (we're at %d - diff = %d frames, which is about %fms in the %s)", targetFrame, _currentFrame, (targetFrame - _currentFrame), abs(targetFrame - _currentFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000, targetFrame > _currentFrame ? "future" : "past");
 	
 	//target frame is in the future - let's catch up!
 	while(_currentFrame < targetFrame) {
 		singleUpdateStep(stepSize);
 	}
-	
-	//find the best match snapshot to rollback to
-	GameStateSnapshot* gameStateSnapshot = NULL;
-	while(!_gameStateSnapshots.empty()) {
-		gameStateSnapshot = _gameStateSnapshots.front();
-		_gameStateSnapshots.pop_front();
-		CCLOG("Examining if we should rollback to frame %d", gameStateSnapshot->_frame);
-		if(gameStateSnapshot->_frame <= targetFrame) {
-			CCLOG("ROLLBACK MATCH!");
-			break;
-		}
-	}
-	if(gameStateSnapshot != NULL) {
-	
-		clearPingLocations();
 
-		set<int> selectedSparkIds;
-		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
-			selectedSparksIterator != _selectedSparks.end();
-			selectedSparksIterator++) {
-			selectedSparkIds.insert((*selectedSparksIterator)->getId());
-		}
-
-		//setting this will allow us to return to the frame we were on
-		_fixedTimestepAccumulator+= (_currentFrame - targetFrame) * stepSize;
-		
-		//restore to a snapshot
-		gameStateSnapshot->restoreTo(this);
-		
-		//catch up to our target frame
-		while(_currentFrame < targetFrame) {
-			singleUpdateStep(stepSize);
-		}
-								
-		//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
-		//reselect sparks
-		_selectedSparks.clear();
-		for(set<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
-			selectedSparkIdsIterator != selectedSparkIds.end();
-			selectedSparkIdsIterator++) {
-			for(list<Spark*>::iterator sparksIterator = _sparks.begin();
-				sparksIterator != _sparks.end();
-				sparksIterator++) {
-				if((*selectedSparkIdsIterator) == (*sparksIterator)->getId()) {				
-					_selectedSparks.insert(*sparksIterator);
-					break;
-				}
+	//target frame is in the past
+	if(targetFrame < _currentFrame) {
+		GameStateSnapshot* gameStateSnapshot = NULL;
+		while(!_gameStateSnapshots.empty()) {
+			gameStateSnapshot = _gameStateSnapshots.front();
+			_gameStateSnapshots.pop_front();
+			CCLOG("Examining if we should rollback to frame %d", gameStateSnapshot->_frame);
+			if(gameStateSnapshot->_frame <= targetFrame) {
+				CCLOG("ROLLBACK MATCH!");
+				break;
 			}
 		}
-		updateSparkSelectionEffects();
+		
+		if(gameStateSnapshot != NULL) {
+		
+			clearPingLocations();
+
+			//restore to a snapshot
+			gameStateSnapshot->restoreTo(this);
+			
+			//catch up to our target frame
+			while(_currentFrame < targetFrame) {
+				singleUpdateStep(stepSize);
+			}
+		}
 	}
+
+	//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
+	//reselect sparks
+	_selectedSparks.clear();
+	for(set<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
+		selectedSparkIdsIterator != selectedSparkIds.end();
+		selectedSparkIdsIterator++) {
+		for(list<Spark*>::iterator sparksIterator = _sparks.begin();
+			sparksIterator != _sparks.end();
+			sparksIterator++) {
+			if((*selectedSparkIdsIterator) == (*sparksIterator)->getId()) {				
+				_selectedSparks.insert(*sparksIterator);
+				break;
+			}
+		}
+	}
+	updateSparkSelectionEffects();	
 	
-	CCLOG("Applying commands at frame %d with %d frames in the accumulator", _currentFrame, (int)(_fixedTimestepAccumulator/stepSize));
+	CCLOG("Applying commands at frame %d with %d frames to fast-forward through", _currentFrame, (prevFrame - _currentFrame));
 	
 	
 	//TODO: apply commands and update this method name
@@ -180,12 +182,11 @@ void GameScene::restoreToFrame(int targetFrame) {
 
 
 	//catch up to our previous frame
-	while(_fixedTimestepAccumulator >= stepSize) {
-		_fixedTimestepAccumulator-= stepSize;
+	while(_currentFrame < prevFrame) {
 		singleUpdateStep(stepSize);
 	}
 				
-	CCLOG("We are now at frame %d with %d frames in the accumulator", _currentFrame, (int)(_fixedTimestepAccumulator/stepSize));
+	CCLOG("We are now at frame %d", _currentFrame);
 				
 	
 	_isRestoringGameStateSnapshot = false;
@@ -202,9 +203,10 @@ void GameScene::singleUpdateStep(float dt) {
 	if(!ROLLBACK_TESTED && !_gameStateSnapshots.empty() && _currentFrame == 500) {
 		ROLLBACK_TESTED = true;
 
-		int targetFrame = _currentFrame+155;
+		int targetFrame = _currentFrame-155;
 		restoreToFrame(targetFrame);
 
+		return;
 	}
 	
 	

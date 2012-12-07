@@ -11,6 +11,8 @@
 
 
 #include "Common.h"
+#include "Spark.h"
+#include "Orb.h"
 #include <set>
 #include <list>
 USING_NS_CC;
@@ -30,6 +32,10 @@ public:
 
 private:
 
+	string _command;
+	int _frame;
+	list<Spark*> _sparks;
+	list<Orb*> _orbs;
 
 };
 #endif /* defined(__LightSwarm__Command__) */
