@@ -20,13 +20,14 @@ class Spark
 {
 public:
 
-	//used by clone()
+	//Sparks should ONLY be created with this constructor when they will be filled
+	//by using Spark::copy 
 	Spark() {
 		_nearestOrb = NULL;
 		_parent = NULL;
 		_sprite = NULL;
 		_isModifyingState = false;
-		_isOnParent = false;		
+		_isOnParent = false;
 		_isSelected = false;
 	}
 
@@ -40,7 +41,8 @@ public:
 		_isDead(false),
 		_restingPosition(position) {
 		
-		_id = 10000*Utilities::getRandomDouble() + 10000*Utilities::getRandomDouble();
+		static int ID_COUNTER = 0;
+		_id = ID_COUNTER++;
 		
 		_parent->retain();
 		
@@ -175,6 +177,7 @@ private:
 	CCPoint jitter(const CCPoint& point, const CCPoint weights, const float dt);
 	void updateCenter();
 	void die();
+	
 };
 
 

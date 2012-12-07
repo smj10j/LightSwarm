@@ -10,9 +10,7 @@
 #define __LightSwarm__Orb__
 
 #include "Common.h"
-#include <set>
 #include <list>
-#include <queue>
 USING_NS_CC;
 using namespace std;
 
@@ -20,6 +18,8 @@ class Orb
 {
 public:
 
+	//Orbs should ONLY be created with this constructor when they will be filled
+	//by using Orb::copy 
 	Orb() {
 		_parent = NULL;
 		_sprite = NULL;
@@ -32,7 +32,8 @@ public:
 		_position(position),
 		_scaleMultiplier(scaleMultiplier) {
 
-		_id = 10000*Utilities::getRandomDouble() + 10000*Utilities::getRandomDouble();
+		static int ID_COUNTER = 0;
+		_id = ID_COUNTER++;
 
 		_parent->retain();
 
@@ -128,8 +129,7 @@ private:
 	bool _isModifyingState;
 	bool _isOnParent;
 	
-	void updateCenterAndRadius();
-	
+	void updateCenterAndRadius();	
 };
 
 
