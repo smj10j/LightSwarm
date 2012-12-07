@@ -19,8 +19,14 @@
 		AA8B7DE4167053A70047E264 /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7DE0167053A70047E264 /* Config.cpp */; };
 		AA8B7DE5167053A70047E264 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7DE2167053A70047E264 /* Utilities.cpp */; };
 		AA8B7DE9167053C70047E264 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7DE7167053C70047E264 /* GameScene.cpp */; };
-		AA8B7DEC1670661A0047E264 /* GameStateSnapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7DEA1670661A0047E264 /* GameStateSnapshot.cpp */; };
-		AA8B7E0A1670ADC50047E264 /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7E081670ADC50047E264 /* Command.cpp */; };
+		AAC00C711671F2820015815C /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C6F1671F2820015815C /* LobbyScene.cpp */; };
+		AAC00C7C1671F8350015815C /* NetworkedOpponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C761671F8350015815C /* NetworkedOpponent.cpp */; };
+		AAC00C7D1671F8350015815C /* Opponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C781671F8350015815C /* Opponent.cpp */; };
+		AAC00C7E1671F8350015815C /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C7A1671F8350015815C /* Player.cpp */; };
+		AAC00C811671F8700015815C /* ComputerOpponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C7F1671F8700015815C /* ComputerOpponent.cpp */; };
+		AAC00C871671FC950015815C /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C831671FC950015815C /* Command.cpp */; };
+		AAC00C881671FC950015815C /* GameStateSnapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C851671FC950015815C /* GameStateSnapshot.cpp */; };
+		AAC00C8B1671FCCF0015815C /* LobbyManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C891671FCCF0015815C /* LobbyManager.cpp */; };
 		AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B5F166CB6CE00CC263A /* GameConfig.json */; };
 		AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B74166CB98B00CC263A /* json_internalarray.inl */; };
 		AACD6B7C166CB98B00CC263A /* json_internalmap.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B75166CB98B00CC263A /* json_internalmap.inl */; };
@@ -92,10 +98,22 @@
 		AA8B7DE3167053A70047E264 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		AA8B7DE7167053C70047E264 /* GameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameScene.cpp; sourceTree = "<group>"; };
 		AA8B7DE8167053C70047E264 /* GameScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameScene.h; sourceTree = "<group>"; };
-		AA8B7DEA1670661A0047E264 /* GameStateSnapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameStateSnapshot.cpp; sourceTree = "<group>"; };
-		AA8B7DEB1670661A0047E264 /* GameStateSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStateSnapshot.h; sourceTree = "<group>"; };
-		AA8B7E081670ADC50047E264 /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command.cpp; sourceTree = "<group>"; };
-		AA8B7E091670ADC50047E264 /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		AAC00C6F1671F2820015815C /* LobbyScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LobbyScene.cpp; sourceTree = "<group>"; };
+		AAC00C701671F2820015815C /* LobbyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyScene.h; sourceTree = "<group>"; };
+		AAC00C761671F8350015815C /* NetworkedOpponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkedOpponent.cpp; sourceTree = "<group>"; };
+		AAC00C771671F8350015815C /* NetworkedOpponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkedOpponent.h; sourceTree = "<group>"; };
+		AAC00C781671F8350015815C /* Opponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Opponent.cpp; sourceTree = "<group>"; };
+		AAC00C791671F8350015815C /* Opponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Opponent.h; sourceTree = "<group>"; };
+		AAC00C7A1671F8350015815C /* Player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
+		AAC00C7B1671F8350015815C /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Player.h; sourceTree = "<group>"; };
+		AAC00C7F1671F8700015815C /* ComputerOpponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ComputerOpponent.cpp; sourceTree = "<group>"; };
+		AAC00C801671F8700015815C /* ComputerOpponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerOpponent.h; sourceTree = "<group>"; };
+		AAC00C831671FC950015815C /* Command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Command.cpp; sourceTree = "<group>"; };
+		AAC00C841671FC950015815C /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		AAC00C851671FC950015815C /* GameStateSnapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameStateSnapshot.cpp; sourceTree = "<group>"; };
+		AAC00C861671FC950015815C /* GameStateSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStateSnapshot.h; sourceTree = "<group>"; };
+		AAC00C891671FCCF0015815C /* LobbyManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LobbyManager.cpp; sourceTree = "<group>"; };
+		AAC00C8A1671FCCF0015815C /* LobbyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyManager.h; sourceTree = "<group>"; };
 		AACD6B5F166CB6CE00CC263A /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
 		AACD6B6A166CB98B00CC263A /* autolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autolink.h; sourceTree = "<group>"; };
 		AACD6B6B166CB98B00CC263A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -252,13 +270,6 @@
 			path = DrawNodes;
 			sourceTree = "<group>";
 		};
-		AA8B7DDD1670536D0047E264 /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Networking;
-			sourceTree = "<group>";
-		};
 		AA8B7DDE167053A60047E264 /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -276,8 +287,38 @@
 			children = (
 				AA8B7DE8167053C70047E264 /* GameScene.h */,
 				AA8B7DE7167053C70047E264 /* GameScene.cpp */,
+				AAC00C701671F2820015815C /* LobbyScene.h */,
+				AAC00C6F1671F2820015815C /* LobbyScene.cpp */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		AAC00C751671F8350015815C /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				AAC00C7B1671F8350015815C /* Player.h */,
+				AAC00C7A1671F8350015815C /* Player.cpp */,
+				AAC00C791671F8350015815C /* Opponent.h */,
+				AAC00C781671F8350015815C /* Opponent.cpp */,
+				AAC00C771671F8350015815C /* NetworkedOpponent.h */,
+				AAC00C761671F8350015815C /* NetworkedOpponent.cpp */,
+				AAC00C801671F8700015815C /* ComputerOpponent.h */,
+				AAC00C7F1671F8700015815C /* ComputerOpponent.cpp */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		AAC00C821671FC940015815C /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				AAC00C841671FC950015815C /* Command.h */,
+				AAC00C831671FC950015815C /* Command.cpp */,
+				AAC00C861671FC950015815C /* GameStateSnapshot.h */,
+				AAC00C851671FC950015815C /* GameStateSnapshot.cpp */,
+				AAC00C8A1671FCCF0015815C /* LobbyManager.h */,
+				AAC00C891671FCCF0015815C /* LobbyManager.cpp */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		AACD6B68166CB98B00CC263A /* jsoncpp */ = {
@@ -326,10 +367,6 @@
 				AAD06D7016685C66004C8E78 /* Spark.cpp */,
 				AA315EB9166DEDFE006D5409 /* Orb.h */,
 				AA315EB8166DEDFE006D5409 /* Orb.cpp */,
-				AA8B7DEB1670661A0047E264 /* GameStateSnapshot.h */,
-				AA8B7DEA1670661A0047E264 /* GameStateSnapshot.cpp */,
-				AA8B7E091670ADC50047E264 /* Command.h */,
-				AA8B7E081670ADC50047E264 /* Command.cpp */,
 			);
 			path = Entities;
 			sourceTree = "<group>";
@@ -356,7 +393,8 @@
 			isa = PBXGroup;
 			children = (
 				AA8B7DDE167053A60047E264 /* Common */,
-				AA8B7DDD1670536D0047E264 /* Networking */,
+				AAC00C821671FC940015815C /* Networking */,
+				AAC00C751671F8350015815C /* Player */,
 				AA315EC1166E5866006D5409 /* DrawNodes */,
 				AAD06D6F16685C66004C8E78 /* Entities */,
 				AA8B7DE6167053C70047E264 /* Scenes */,
@@ -508,8 +546,14 @@
 				AA8B7DE4167053A70047E264 /* Config.cpp in Sources */,
 				AA8B7DE5167053A70047E264 /* Utilities.cpp in Sources */,
 				AA8B7DE9167053C70047E264 /* GameScene.cpp in Sources */,
-				AA8B7DEC1670661A0047E264 /* GameStateSnapshot.cpp in Sources */,
-				AA8B7E0A1670ADC50047E264 /* Command.cpp in Sources */,
+				AAC00C711671F2820015815C /* LobbyScene.cpp in Sources */,
+				AAC00C7C1671F8350015815C /* NetworkedOpponent.cpp in Sources */,
+				AAC00C7D1671F8350015815C /* Opponent.cpp in Sources */,
+				AAC00C7E1671F8350015815C /* Player.cpp in Sources */,
+				AAC00C811671F8700015815C /* ComputerOpponent.cpp in Sources */,
+				AAC00C871671FC950015815C /* Command.cpp in Sources */,
+				AAC00C881671FC950015815C /* GameStateSnapshot.cpp in Sources */,
+				AAC00C8B1671FCCF0015815C /* LobbyManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

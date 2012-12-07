@@ -549,7 +549,7 @@ static EAGLView *view = 0;
 @synthesize inputDelegate;
 @synthesize markedTextRange;
 @synthesize markedTextStyle;
-// @synthesize selectedTextRange;       // must implement
+//@synthesize selectedTextRange;       // must implement
 @synthesize tokenizer;
 
 /* Text may have a selection, either zero-length (a caret) or ranged.  Editing operations are
@@ -557,6 +557,11 @@ static EAGLView *view = 0;
 - (void)setSelectedTextRange:(UITextRange *)aSelectedTextRange;
 {
     CCLOG("UITextRange:setSelectedTextRange");
+}
+- (NSArray *)selectionRectsForRange:(UITextRange *)range;
+{
+    CCLOG("(return empty) - selectionRectsForRange:");
+	return [NSArray arrayWithObject:nil];
 }
 - (UITextRange *)selectedTextRange;
 {

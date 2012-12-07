@@ -82,7 +82,15 @@ bool GameScene::init() {
 	return true;
 }
 
+void GameScene::onEnter() {
+	this->CCLayer::onEnter();
+	CCLOG("On Enter GameScene");
+}
 
+void GameScene::onExit() {
+	this->CCLayer::onExit();
+	CCLOG("On Exit GameScene");
+}
 
 void GameScene::update(float dt) {
 
@@ -125,9 +133,9 @@ void GameScene::update(float dt) {
 	
 	//dynamically adjust maxSteps
 	if(_fixedTimestepAccumulator > lastFixedTimestepAccumulator) {
-		maxSteps = MIN(maxSteps+.025, BASELINE_MAX_STEPS);
+		maxSteps = MIN(maxSteps+.1, BASELINE_MAX_STEPS);
 	}else if(_fixedTimestepAccumulator < lastFixedTimestepAccumulator) {
-		maxSteps = MAX(maxSteps-.025, 2);
+		maxSteps = MAX(maxSteps-.5, 2);
 	}
 	//CCLOG("maxSteps = %d, lastFixedTimestepAccumulator = %f, _fixedTimestepAccumulator = %f", maxSteps, lastFixedTimestepAccumulator, _fixedTimestepAccumulator);
 	lastFixedTimestepAccumulator = _fixedTimestepAccumulator;
@@ -249,7 +257,7 @@ void GameScene::processCommand(Command* command) {
 
 void GameScene::executeCommand(Command* command) {
 	
-	CCLOG("Executing command %s on %d %s with target frame %d current frame %d",
+	CCLOG("Executing command %s on %d %ss with target frame %d current frame %d",
 		command->_command == MOVE ? "MOVE" : "UNKNOWN",
 		command->_ids.size(),
 		command->_idType == SPARK ? "SPARK" : "ORB",

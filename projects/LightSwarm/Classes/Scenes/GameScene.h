@@ -1,9 +1,7 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
-#include "Common.h"
-#include "Spark.h"
-#include "Orb.h"
+#include "NetworkedOpponent.h"
 #include "PingLocation.h"
 #include <list>
 USING_NS_CC;
@@ -29,6 +27,9 @@ public:
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
 	virtual void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	virtual void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
+		
+	virtual void onEnter();
+	virtual void onExit();
 				
 	virtual ~GameScene();
 
