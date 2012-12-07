@@ -105,7 +105,7 @@ void GameScene::update(float dt) {
 	
 	//dynamically set this guy
 	const int BASELINE_MAX_STEPS = Config::getDoubleForKey(SIMULATION_MAX_STEPS);
-	static int maxSteps = BASELINE_MAX_STEPS;
+	static float maxSteps = BASELINE_MAX_STEPS;
 	static float lastFixedTimestepAccumulator = _fixedTimestepAccumulator;
 	
 	const double stepSize = Config::getDoubleForKey(SIMULATION_STEP_SIZE);
@@ -113,7 +113,7 @@ void GameScene::update(float dt) {
 		
 	if (steps > 0) {
 
-		const int stepsClamped = MIN(steps, maxSteps);
+		const int stepsClamped = MIN(steps, (int)maxSteps);
         _fixedTimestepAccumulator-= (stepsClamped * stepSize);
 	 
 		for (int i = 0; i < stepsClamped; i++) {
@@ -125,9 +125,9 @@ void GameScene::update(float dt) {
 	
 	//dynamically adjust maxSteps
 	if(_fixedTimestepAccumulator > lastFixedTimestepAccumulator) {
-		maxSteps = MIN(maxSteps+1, BASELINE_MAX_STEPS);
+		maxSteps = MIN(maxSteps+.025, BASELINE_MAX_STEPS);
 	}else if(_fixedTimestepAccumulator < lastFixedTimestepAccumulator) {
-		maxSteps = MAX(maxSteps-1, 2);
+		maxSteps = MAX(maxSteps-.025, 2);
 	}
 	//CCLOG("maxSteps = %d, lastFixedTimestepAccumulator = %f, _fixedTimestepAccumulator = %f", maxSteps, lastFixedTimestepAccumulator, _fixedTimestepAccumulator);
 	lastFixedTimestepAccumulator = _fixedTimestepAccumulator;
