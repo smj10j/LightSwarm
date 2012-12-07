@@ -89,14 +89,16 @@ void GameScene::update(float dt) {
 	if(_isRestoringGameStateSnapshot) return;
 	
 	//NOTICE: TEST CODE to simulate a bit of rollback
-	if(_currentFrame == 500) {
+	static bool HAS_TESTED_ROLLBACK = false;
+	if(!HAS_TESTED_ROLLBACK && _currentFrame == 500) {
+		HAS_TESTED_ROLLBACK = true;
 		list<int> ids;
 		for(int i = 0; i < 200; i++) {
 			ids.push_back(i);
 		}
 		list<CCPoint> path;
 		path.push_back(ccp(400,400));
-		_commandQueue.push_back(new Command(MOVE, _currentFrame-20, SPARK, ids, path));
+		_commandQueue.push_back(new Command(MOVE, _currentFrame-5, SPARK, ids, path));
 	}
 		
 	_fixedTimestepAccumulator+= dt;
@@ -106,9 +108,9 @@ void GameScene::update(float dt) {
 	const int steps = _fixedTimestepAccumulator / stepSize;
 		
 	if (steps > 0) {
-        _fixedTimestepAccumulator-= (steps * stepSize);
 
 		const int stepsClamped = MIN(steps, maxSteps);
+        _fixedTimestepAccumulator-= (stepsClamped * stepSize);
 	 
 		for (int i = 0; i < stepsClamped; i++) {
 			singleUpdateStep(stepSize);
@@ -133,6 +135,9 @@ void GameScene::processCommandQueue() {
 
 }
 
+//TODO: can we lose commands if we receive 2 in rapid succession?
+//will the second rollback erase any changes made by the first command?
+//should we take a snapshot after every command?
 void GameScene::processCommand(Command* command) {
 
 	CCLOG("_currentFrame = %d command frame = %d", _currentFrame, command->_frame);
@@ -147,11 +152,11 @@ void GameScene::processCommand(Command* command) {
 
 		//store state
 		const int prevFrame = _currentFrame;
-		set<int> selectedSparkIds;
+		list<int> selectedSparkIds;
 		for(set<Spark*>::iterator selectedSparksIterator = _selectedSparks.begin();
 			selectedSparksIterator != _selectedSparks.end();
 			selectedSparksIterator++) {
-			selectedSparkIds.insert((*selectedSparksIterator)->getId());
+			selectedSparkIds.push_back((*selectedSparksIterator)->getId());
 		}
 
 		CCLOG("Received command to restore to frame %d (we're at %d - diff = %d frames, which is about %fms in the %s)", command->_frame, _currentFrame, (command->_frame - _currentFrame), abs(command->_frame - _currentFrame)*Config::getDoubleForKey(SIMULATION_STEP_SIZE)*1000, command->_frame > _currentFrame ? "future" : "past");
@@ -191,7 +196,7 @@ void GameScene::processCommand(Command* command) {
 		//TODO: some sparks that are already moving are not showing a selection effect but are actually selected???
 		//reselect sparks
 		_selectedSparks.clear();
-		for(set<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
+		for(list<int>::iterator selectedSparkIdsIterator = selectedSparkIds.begin();
 			selectedSparkIdsIterator != selectedSparkIds.end();
 			selectedSparkIdsIterator++) {
 			for(list<Spark*>::iterator sparksIterator = _sparks.begin();
@@ -210,10 +215,15 @@ void GameScene::processCommand(Command* command) {
 		executeCommand(command);
 
 		//catch up to our previous frame
+		/*
 		while(_currentFrame < prevFrame) {
 			singleUpdateStep(stepSize);
 		}
 		CCLOG("We are now at frame %d", _currentFrame);
+		*/
+		if(_currentFrame < prevFrame) {
+			_fixedTimestepAccumulator = (prevFrame - _currentFrame) * stepSize;
+		}
 					
 		_isRestoringGameStateSnapshot = false;
 		
@@ -234,7 +244,7 @@ void GameScene::executeCommand(Command* command) {
 		_currentFrame
 	);
 	
-	//TODO: apply command!
+	//TODO: handle more than just the MOVE SPARK command
 	
 	if(command->_idType == SPARK) {
 		for(list<int>::iterator idsIteratore = command->_ids.begin();
@@ -552,7 +562,10 @@ void GameScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 
 			//schedule MOVE command for the next frame
 			list<int> ids = Spark::getIdList(_selectedSparks);
-			_commandQueue.push_back(new Command(MOVE, _currentFrame+1, SPARK, ids, _currentTouches));
+			Command* command = new Command(MOVE, _currentFrame+1, SPARK, ids, _currentTouches);
+			_commandQueue.push_back(command);
+			
+			//TODO: send command to network layer to send to oppoonent
 				
 			_prevTouches = _currentTouches;
 			_currentTouches.clear();
