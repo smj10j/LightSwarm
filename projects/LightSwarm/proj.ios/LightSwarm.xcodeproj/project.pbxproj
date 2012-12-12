@@ -26,7 +26,6 @@
 		AAC00C811671F8700015815C /* ComputerOpponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C7F1671F8700015815C /* ComputerOpponent.cpp */; };
 		AAC00C871671FC950015815C /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C831671FC950015815C /* Command.cpp */; };
 		AAC00C881671FC950015815C /* GameStateSnapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C851671FC950015815C /* GameStateSnapshot.cpp */; };
-		AAC00C8B1671FCCF0015815C /* LobbyManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC00C891671FCCF0015815C /* LobbyManager.cpp */; };
 		AACD6B60166CB6CE00CC263A /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B5F166CB6CE00CC263A /* GameConfig.json */; };
 		AACD6B7B166CB98B00CC263A /* json_internalarray.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B74166CB98B00CC263A /* json_internalarray.inl */; };
 		AACD6B7C166CB98B00CC263A /* json_internalmap.inl in Resources */ = {isa = PBXBuildFile; fileRef = AACD6B75166CB98B00CC263A /* json_internalmap.inl */; };
@@ -112,8 +111,6 @@
 		AAC00C841671FC950015815C /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
 		AAC00C851671FC950015815C /* GameStateSnapshot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameStateSnapshot.cpp; sourceTree = "<group>"; };
 		AAC00C861671FC950015815C /* GameStateSnapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameStateSnapshot.h; sourceTree = "<group>"; };
-		AAC00C891671FCCF0015815C /* LobbyManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LobbyManager.cpp; sourceTree = "<group>"; };
-		AAC00C8A1671FCCF0015815C /* LobbyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyManager.h; sourceTree = "<group>"; };
 		AACD6B5F166CB6CE00CC263A /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
 		AACD6B6A166CB98B00CC263A /* autolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autolink.h; sourceTree = "<group>"; };
 		AACD6B6B166CB98B00CC263A /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
@@ -315,8 +312,6 @@
 				AAC00C831671FC950015815C /* Command.cpp */,
 				AAC00C861671FC950015815C /* GameStateSnapshot.h */,
 				AAC00C851671FC950015815C /* GameStateSnapshot.cpp */,
-				AAC00C8A1671FCCF0015815C /* LobbyManager.h */,
-				AAC00C891671FCCF0015815C /* LobbyManager.cpp */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -553,7 +548,6 @@
 				AAC00C811671F8700015815C /* ComputerOpponent.cpp in Sources */,
 				AAC00C871671FC950015815C /* Command.cpp in Sources */,
 				AAC00C881671FC950015815C /* GameStateSnapshot.cpp in Sources */,
-				AAC00C8B1671FCCF0015815C /* LobbyManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,10 +596,13 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/libs/TestFlightSDK1.1\"",
 				);
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = LightSwarm;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
 				VALID_ARCHS = "armv6 armv7 i386";
 			};
 			name = Debug;
@@ -642,11 +639,14 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/libs/TestFlightSDK1.1\"",
 				);
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = LightSwarm;
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_HEADER_SEARCH_PATHS = "";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv6 armv7 i386";
 			};

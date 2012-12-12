@@ -579,6 +579,10 @@ var eventDisconnect = function(socket) {
 	if(socket.forceDisconnect) {
 		return;
 	}
+	
+	if(!socket.user) {
+		return;
+	}
 
 	if(disconnectTimers[socket.user.userId]) {
 		//already handling

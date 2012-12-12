@@ -36,7 +36,9 @@ bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2) {
 }
 
 bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2, const int threshold) {
-	return getDistance(p1, p2) <= threshold;
+	float x = p2.x-p1.x;
+	float y = p2.y-p1.y;
+	return (x*x + y*y) <= (threshold*threshold);
 }
 
 bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points) {
@@ -105,6 +107,14 @@ double Utilities::getRandomDouble() {
 }
 
 
+
+
+string Utilities::HMAC_SHA1(const string& key, const string& secret) {
+
+	//TODO: IMPLEMENT
+
+	return "";
+}
 
 
 

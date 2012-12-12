@@ -41,6 +41,9 @@ public:
 
 	static void setRandomSeed(const int seed);
 	static double getRandomDouble();
+	
+	
+	static string HMAC_SHA1(const string& key, const string& secret);
 };
 
 

@@ -61,6 +61,8 @@
 
 
 
+#define SECRET_KEY "()Q*#&5-8q9274-YSDGP89h2qp98"
+
 
 
 #if DEVICE_BUILD
