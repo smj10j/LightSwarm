@@ -8,11 +8,9 @@
 
 #include "ClientSocket.h"
 
+void ClientSocket::disconnect(bool notifyDelegate) {
 
-//TODO: add ability to detect graceful and forced disconnected (so we can alert the delegate when we receivied an unexpected disconnect)
-void ClientSocket::disconnect() {
-
-	CCLOG("Disconnecting");
+	CCLOG("%s Disconnect", (notifyDelegate ? "Forced" : "Manual"));
 
 	if(_sockfd != 0) {
 		close(_sockfd);
@@ -23,13 +21,17 @@ void ClientSocket::disconnect() {
 		delete _messageReceiverData;
 		_messageReceiverData = NULL;
 	}
+	
+	if(notifyDelegate && _delegate != NULL) {
+		_delegate->onDisconnect();
+	}
 }
 
 bool ClientSocket::connectTo(const string &hostname, const int &port) {
 
 	CCLOG("Connecting...");
 	
-	disconnect();
+	disconnect(false);
 	
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
@@ -73,8 +75,12 @@ bool ClientSocket::connectTo(const string &hostname, const int &port) {
 	
 	if(waitCounter >= 100) {
 		CCLOGERROR("Connected successfully but failed to setup reading from socket in time");
-		disconnect();
+		disconnect(false);
 		return false;
+	}
+	
+	if(_delegate != NULL) {
+		_delegate->onConnect();
 	}
 	
 	return true;
@@ -82,16 +88,23 @@ bool ClientSocket::connectTo(const string &hostname, const int &port) {
 
 
 
+void ClientSocket::sendMessage(const Json::Value& message) {
+	Json::FastWriter writer;
+	string messageStr = writer.write(message);
+	sendMessage(messageStr);
+}
+
 void ClientSocket::sendMessage(const string& message) {
 
 	if(_sockfd == 0) {
 		return;
 	}
-
+	
 	//TODO: handle the case when n < the sent data size (buffer!)
 	int n = write(_sockfd, message.c_str(), message.length());
 	if (n < 0) {
 		CCLOGERROR("ERROR writing to socket");
+		disconnect(true);
 	}
 }
 
@@ -125,7 +138,7 @@ void* messageReceiver(void* threadData) {
 			CCLOGERROR("ERROR reading from socket");
 			messageReceiverData->isSocketReady = false;
 			if(messageReceiverData->clientSocket != NULL) {
-				messageReceiverData->clientSocket->disconnect();
+				messageReceiverData->clientSocket->disconnect(true);
 			}
 			break;
 			
@@ -134,7 +147,7 @@ void* messageReceiver(void* threadData) {
 				CCLOGERROR("ERROR reading from socket (numFailedReads=%d)", numFailedReads);
 				messageReceiverData->isSocketReady = false;
 				if(messageReceiverData->clientSocket != NULL) {
-					messageReceiverData->clientSocket->disconnect();
+					messageReceiverData->clientSocket->disconnect(true);
 				}
 				break;
 			}
@@ -173,7 +186,7 @@ void* messageReceiver(void* threadData) {
 
 
 ClientSocket::~ClientSocket() {
-	disconnect();
+	disconnect(false);
 }
 
 

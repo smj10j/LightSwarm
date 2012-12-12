@@ -36,6 +36,8 @@ public:
 	virtual void onEnter();
 	virtual void onExit();
 	
+	virtual void onConnect();
+	virtual void onDisconnect();
 	virtual void onMessage(const Json::Value& message);
 		
 	virtual ~LobbyScene();

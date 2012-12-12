@@ -29,6 +29,8 @@ void* messageReceiver(void* threadData);
 class ClientSocketDelegate {
 public:
 	virtual void onMessage(const Json::Value& message) {};
+	virtual void onConnect() {};
+	virtual void onDisconnect() {};
 };
 
 class ClientSocket {
@@ -43,19 +45,19 @@ public:
 		
 	}
 
-	ClientSocket(ClientSocketDelegate* delegate, const string& hostname, const int& port):
+	ClientSocket(ClientSocketDelegate* delegate):
 		_sockfd(0),
 		_isConnected(false),
 		_delegate(delegate),
 		_messageReceiverData(NULL) {
 		
-		connectTo(hostname, port);
 	}
 	
 	bool isConnected() { return _isConnected; };
 
 	bool connectTo(const string& hostname, const int& port);
-	void disconnect();
+	void disconnect(bool notifyDelegate);
+	void sendMessage(const Json::Value& message);
 	void sendMessage(const string& message);
 	
 	void onMessage(const Json::Value message);
@@ -69,6 +71,9 @@ private:
 	MessageReceiverData* _messageReceiverData;
 	
 	ClientSocketDelegate* _delegate;
+	
+	
+
 };
 
 

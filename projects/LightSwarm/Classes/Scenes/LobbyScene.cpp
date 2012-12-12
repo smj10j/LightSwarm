@@ -44,22 +44,31 @@ bool LobbyScene::init() {
 	
 	this->setTouchEnabled(true);
 	
-	_clientSocket = new ClientSocket(this, LOBBY_SERVER, LOBBY_PORT);
-	if(_clientSocket->isConnected()) {
-		CCLOG("Connected to Lobby Server");
-		string message = "{}";
-		_clientSocket->sendMessage(message);
-		
-	}else {
+	_clientSocket = new ClientSocket(this);
+	if(!_clientSocket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
 		CCLOGERROR("FAILED to Connect to Lobby Server");
-	
 	}
 		
 	return true;
 }
 
 void LobbyScene::onMessage(const Json::Value& message) {
-	CCLOG("LobbyScene got message: %s", message.toStyledString().c_str());
+	CCLOG("LobbyScene received message: %s", message.toStyledString().c_str());
+}
+
+void LobbyScene::onConnect() {
+	CCLOG("Connected to Lobby Server");
+	
+	//TODO: identify
+	string message = "{}";
+	_clientSocket->sendMessage(message);
+}
+
+void LobbyScene::onDisconnect() {
+	CCLOG("Disconnected from Lobby Server");		
+
+	//TODO: notify user of lost connection
+	
 }
 
 

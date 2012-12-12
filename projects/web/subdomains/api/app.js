@@ -274,14 +274,11 @@ var onMessage = function(socket, message) {
 		
 	}finally {
 		//respond
-		response = JSON.stringify(response) + "~|~{\"abc";
+		response = JSON.stringify(response) + "~|~";
 		if(response.forceDisconnect) {
 			socket.end(response);
 		}else {
 			socket.write(response);	
-			setTimeout(function() {
-				socket.write('":123}~|~');
-			}, 100);
 		}		
 	}
 				
