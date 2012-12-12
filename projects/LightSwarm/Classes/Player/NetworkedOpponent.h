@@ -10,6 +10,7 @@
 #define __LightSwarm__NetworkedOpponent__
 
 
+#include "ClientSocket.h"
 #include "Opponent.h"
 USING_NS_CC;
 using namespace std;

@@ -274,11 +274,14 @@ var onMessage = function(socket, message) {
 		
 	}finally {
 		//respond
-		response = (message._mid ? message._mid : '-1') + "|" + JSON.stringify(response);
+		response = JSON.stringify(response) + "~|~{\"abc";
 		if(response.forceDisconnect) {
 			socket.end(response);
 		}else {
 			socket.write(response);	
+			setTimeout(function() {
+				socket.write('":123}~|~');
+			}, 100);
 		}		
 	}
 				
@@ -427,8 +430,8 @@ var stateStartGame = function(game) {
 			startTime: game.startTime
 		}
 	};
-	player1.write('-1|'+JSON.stringify(response));
-	player2.write('-1|'+JSON.stringify(response));
+	player1.write(JSON.stringify(response));
+	player2.write(JSON.stringify(response));
 	 
 	//start the command flush queue	
 	game.lastFlushTimestamp = 0;
@@ -470,8 +473,8 @@ var actionFlushCommandQueue = function(game) {
 			commandQueue: commandQueue
 		}
 	};
-	player1.write('-1|'+JSON.stringify(response));
-	player2.write('-1|'+JSON.stringify(response));	
+	player1.write(JSON.stringify(response));
+	player2.write(JSON.stringify(response));	
 	
 };
 
@@ -611,7 +614,7 @@ var eventDisconnect = function(socket) {
 				message:"Opponent has disconnected"
 			}
 		};
-		opponentSocket.write(response);
+		opponentSocket.write(response+'~|~');
 		
 	}else {
 		//game may not be started yet
@@ -682,8 +685,8 @@ var actionQuitGame = function(socket, reason) {
 			loser: loser
 		}
 	};
-	socket && socket.end('-1|'+JSON.stringify(response));
-	opponentSocket && opponentSocket.end('-1|'+JSON.stringify(response));
+	socket && socket.end(JSON.stringify(response)+'~|~');
+	opponentSocket && opponentSocket.end(JSON.stringify(response)+'~|~');
 		
 	
 	//TODO: log the information to database somewhwere

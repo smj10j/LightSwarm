@@ -13,16 +13,10 @@
 USING_NS_CC;
 using namespace std;
 
-enum RESPONSE_TYPE {
-	CONNECT,
-	DISCONNECT,
-	MESSAGE
-};
-
 #define LOBBY_SERVER	"localhost"
 #define LOBBY_PORT		3001
 
-class LobbyScene : public CCLayer
+class LobbyScene : public CCLayer, public ClientSocketDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -41,12 +35,9 @@ public:
 	
 	virtual void onEnter();
 	virtual void onExit();
-				
 	
-	void onConnect();
-	void onSuccess(RESPONSE_TYPE type, string message);
-	void onError(RESPONSE_TYPE type, string error);
-	
+	virtual void onMessage(const Json::Value& message);
+		
 	virtual ~LobbyScene();
 	
 private:
@@ -56,12 +47,7 @@ private:
 	void loadGameScene();
 	
 	
-	int _sockfd;
-		
-	bool connectToLobbyServer();
-	void disconnectFromLobbyServer();
-	void sendMessage(const string& message);
-
+	ClientSocket* _clientSocket;
 };
 			
 #endif /* defined(__LightSwarm__LobbyScene__) */

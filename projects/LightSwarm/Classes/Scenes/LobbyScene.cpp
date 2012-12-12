@@ -9,17 +9,6 @@
 #include "LobbyScene.h"
 #include "GameScene.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h> 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h> 
-
-void* messageReceiver(void* threadData);
-
-
 
 CCScene* LobbyScene::scene() {
     // 'scene' is an autorelease object
@@ -44,44 +33,35 @@ bool LobbyScene::init() {
 	//default blend function
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
-	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-
+	CCSize winSize = CCDirector::sharedDirector()->getWinSize();	
 
 	//create a batch node
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
 	this->addChild(_batchNode);
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
-	_sockfd = 0;
-	connectToLobbyServer();
-
 	CCLog("Lobby loaded at %f", Utilities::getMillis());
 	
-	this->setTouchEnabled(true);		
+	this->setTouchEnabled(true);
+	
+	_clientSocket = new ClientSocket(this, LOBBY_SERVER, LOBBY_PORT);
+	if(_clientSocket->isConnected()) {
+		CCLOG("Connected to Lobby Server");
+		string message = "{}";
+		_clientSocket->sendMessage(message);
+		
+	}else {
+		CCLOGERROR("FAILED to Connect to Lobby Server");
+	
+	}
 		
 	return true;
 }
 
-void LobbyScene::onConnect() {
-	CCLOG("LobbyScene:onConnect()");
-	
-	string message = "{}";
-	sendMessage(message);
+void LobbyScene::onMessage(const Json::Value& message) {
+	CCLOG("LobbyScene got message: %s", message.toStyledString().c_str());
 }
 
-void LobbyScene::onSuccess(RESPONSE_TYPE type, string message) {
-	CCLOG("Got success response with message %s", message.c_str());
-	
-	//TODO:test hmac
-	CCLOG("testing hmac...");
-	//Utilities::hmac_sha1("bubba", "gump");
-}
-
-
-
-void LobbyScene::onError(RESPONSE_TYPE type, string error) {
-	CCLOG("Got error response with message %s", error.c_str());
-}
 
 
 void LobbyScene::onEnter() {
@@ -139,115 +119,6 @@ void LobbyScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 
 
-void LobbyScene::disconnectFromLobbyServer() {
-
-	if(_sockfd != 0) {
-		close(_sockfd);
-		_sockfd = 0;
-	}
-
-}
-
-bool LobbyScene::connectToLobbyServer() {
-
-	CCLOG("Connecting...");
-	
-	disconnectFromLobbyServer();
-	
-	struct sockaddr_in serv_addr;
-	struct hostent *server;
-	
-	_sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (_sockfd < 0) {
-		CCLOGERROR("ERROR opening socket");
-		return false;
-	}
-	
-	server = gethostbyname(LOBBY_SERVER);
-	if (server == NULL) {
-		CCLOGERROR("ERROR, no such host \"%s\"", LOBBY_SERVER);
-		return false;
-	}
-	
-	bzero((char *) &serv_addr, sizeof(serv_addr));
-	serv_addr.sin_family = AF_INET;
-	bcopy((char *)server->h_addr, 
-	(char *)&serv_addr.sin_addr.s_addr,
-	server->h_length);
-	serv_addr.sin_port = htons(LOBBY_PORT);
-	if (connect(_sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-		CCLOGERROR("ERROR connecting");
-		return false;
-	}
-
-	//start our message receiver;
-	pthread_t messageReceiverThread;
-	pthread_create(&messageReceiverThread, NULL, &messageReceiver, &_sockfd);
-	
-	scheduleOnce(schedule_selector(LobbyScene::onConnect), .05);
-
-	return false;
-}
-
-
-
-void LobbyScene::sendMessage(const string& message) {
-
-	if(_sockfd == 0) {
-		return;
-	}
-
-	//TODO: handle the case when n < the sent data size (buffer!)
-	int n = write(_sockfd, message.c_str(), message.length());
-	if (n < 0) {
-		CCLOGERROR("ERROR writing to socket");
-	}
-}
-
-void* messageReceiver(void* threadData) {
-
-	int* sockfd = (int*)(threadData);
-
-	if(*sockfd == 0) {
-		return NULL;
-	}
-
-	int numFailedReads = 0;
-	int n;
-	char buffer[256];
-	bzero(buffer, 256);
-	
-	CCLOG("Waiting for data from socket %d...", *sockfd);
-	while(sockfd > 0) {
-		n = read(*sockfd, buffer, 255);
-		if (n < 0) {
-			CCLOGERROR("ERROR reading from socket");
-			close(*sockfd);
-			*sockfd = 0;
-			break;
-		}else if(n == 0) {
-			if(numFailedReads++ > 100) {
-				CCLOGERROR("ERROR reading from socket (numFailedReads=%d)", numFailedReads);
-				close(*sockfd);
-				*sockfd = 0;
-				break;
-			}
-		}else {
-			CCLOG("Received: %s",buffer);
-			numFailedReads = 0;
-		}
-	}
-	pthread_exit(0);
-}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -265,7 +136,10 @@ void* messageReceiver(void* threadData) {
 
 
 LobbyScene::~LobbyScene() {
-	disconnectFromLobbyServer();
+	if(_clientSocket != NULL) {
+		delete _clientSocket;
+		_clientSocket = NULL;
+	}
 }
 
 
