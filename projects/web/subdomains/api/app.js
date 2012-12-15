@@ -411,8 +411,8 @@ var stateStartGame = function(game) {
 	//choose a start time (5 seconds from now)
 	game.startTime = (new Date()).getTime() + 5000;
 
-	//TODO: test udp-hole punching and set isServer appropriately
-	//TODO: set connectToPeer to false for both if isServer is false for player1 and player2
+	//TODO: test udp-hole punching and set canBeServer appropriately
+	//TODO: set connectToPeer to false for both if canBeServer is false for player1 and player2
 	var connectToPeer = true;
 	
 	//notify players of the start time, and the seed
@@ -426,7 +426,7 @@ var stateStartGame = function(game) {
 				publicPort: player1.publicPort,
 				privateIP: player1.privateIP,
 				privatePort: player1.privatePort,
-				isServer: false,
+				canBeServer: true,
 				connectToPeer: connectToPeer
 			},
 			player2: {
@@ -435,7 +435,7 @@ var stateStartGame = function(game) {
 				publicPort: player2.publicPort,
 				privateIP: player2.privateIP,
 				privatePort: player2.privatePort,
-				isServer: true,
+				canBeServer: true,
 				connectToPeer: connectToPeer
 			}
 		}

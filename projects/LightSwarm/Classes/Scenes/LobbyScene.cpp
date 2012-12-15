@@ -43,17 +43,14 @@ bool LobbyScene::init() {
 	
 	//TODO: get this from the UI
 	_userId = "steve2";
-	_friendUserId = "steve";
+	_friendUserId = "steve1";
 	
-	_gameSocket = new Socket(this);
-	if(!_gameSocket->listenOn(GAME_PORT)) {
-		CCLOGERROR("FAILED to Listen on Game Server port");
-	}
-
-	_lobbySocket = new Socket(this);
-	if(!_lobbySocket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
+	_socket = new Socket(this);
+	if(!_socket->connectTo(LOBBY_SERVER, GAME_PORT)) {
 		CCLOGERROR("FAILED to Connect to Lobby Server");
 	}
+	_localPort = _socket->getLocalPort();
+	CCLOG("Bound on local port %d", _localPort);
 		
 	return true;
 }
@@ -76,45 +73,81 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				//TODO: hole punch and connect!!
 				//unless player1 cannot be the server, player1 is always the server
 				
+				//TODO:
+					//gameScene init with:
+					//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
+					
+				
 				if(player1["userId"].asString() == _userId) {
 					//we are player1 - connect to player2
 
-					if(player1["isServer"].asBool() == true) {
-						CCLOG("Waiting for connection from %s on port ", player2["publicIP"].asCString(), player1["privatePort"].asInt());
-						
-						//gameScene init with:
-						//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
-						
-					
-					}else {
-						_gameSocket->disconnect(false);
+					_socket->disconnect(false);
 
-						//TODO: try to connect to both public and private ips in a while loop
-					
+					CCLOG("Waiting for connection from %s on port %d", player2["publicIP"].asCString(), _localPort);
+
+					while(!_socket->listenOn(_localPort)) {
+						CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						usleep(100000);
+					}
+
+					//try to connect to both public and private ips in a while loop
+					for(int i = 0; i < 50; i++) {
+											
 						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
 						
-						_gameSocket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
+						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
+						
+						if(_socket->isConnected()) {
+							break;
+						}
+						
+						CCLOG("Connecting to %s:%d", player2["publicIP"].asCString(), player2["publicPort"].asInt());
+						
+						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt());
+						
+						if(_socket->isConnected()) {
+							break;
+						}
+					
+						usleep(500000);							
+						
 					}
 					
 					
 				}else {
 					//we are player2 - connect to player1
 
-					if(player2["isServer"].asBool() == true) {
-						CCLOG("Waiting for connection from %s on port ", player1["publicIP"].asCString(), player2["privatePort"].asInt());
-						
-						//gameScene init with:
-						//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
-						
+					_socket->disconnect(false);
+
+					CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
 					
-					}else {
-						_gameSocket->disconnect(false);
+					while(!_socket->listenOn(_localPort)) {
+						CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						usleep(100000);
+					}
+					
+										
+					//try to connect to both public and private ips in a while loop
 
-						//TODO: try to connect to both public and private ips in a while loop
-
+					for(int i = 0; i < 50; i++) {
+					
 						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
 						
-						_gameSocket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
+						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
+						
+						if(_socket->isConnected()) {
+							break;
+						}
+						
+						CCLOG("Connecting to %s:%d", player1["publicIP"].asCString(), player1["publicPort"].asInt());
+						
+						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt());
+					
+						if(_socket->isConnected()) {
+							break;
+						}
+					
+						usleep(500000);
 					}
 				
 				}
@@ -143,7 +176,7 @@ void LobbyScene::onConnect() {
 	identifyMessage["privateIP"] = Socket::getLocalIPAddress();
 	identifyMessage["privatePort"] = GAME_PORT;
 	
-	_lobbySocket->sendMessage(identifyMessage);
+	_socket->sendMessage(identifyMessage);
 	
 	//TEST CODE
 	//set pref that we're creating a game
@@ -155,7 +188,7 @@ void LobbyScene::onConnect() {
 	setPrefsMessage["action"] = "setPrefs";
 	setPrefsMessage["prefs"] = prefs;
 	
-	_lobbySocket->sendMessage(setPrefsMessage);
+	_socket->sendMessage(setPrefsMessage);
 		
 }
 
@@ -251,9 +284,9 @@ void LobbyScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 
 LobbyScene::~LobbyScene() {
-	if(_lobbySocket != NULL) {
-		delete _lobbySocket;
-		_lobbySocket = NULL;
+	if(_socket != NULL) {
+		delete _socket;
+		_socket = NULL;
 	}
 }
 

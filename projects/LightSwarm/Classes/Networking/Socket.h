@@ -66,6 +66,7 @@ public:
 	
 	int getId() { return _id; };
 	int getSockFd() { return _sockfd; };
+	int getLocalPort();
 	
 	bool isConnected() { return _isConnected; };
 

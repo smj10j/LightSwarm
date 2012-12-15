@@ -53,6 +53,19 @@ void Socket::disconnectChild(MessageReceiverData* messageReceiverData) {
 	}	
 }
 
+int Socket::getLocalPort() {
+	struct sockaddr_in sin;
+	socklen_t addrlen = sizeof(sin);
+	if(getsockname(_sockfd, (struct sockaddr *)&sin, &addrlen) == 0 &&
+	   sin.sin_family == AF_INET &&
+	   addrlen == sizeof(sin)) {
+		return ntohs(sin.sin_port);
+	} else {
+		CCLOGERROR("Failed to get local port");
+		return 0;
+	}
+}
+
 bool Socket::connectTo(const string &hostname, const int &port) {
 
 	CCLOG("Connecting with socket id %d...", _id);

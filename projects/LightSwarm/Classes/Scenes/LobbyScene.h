@@ -14,8 +14,7 @@ USING_NS_CC;
 using namespace std;
 
 #define LOBBY_SERVER	"192.168.1.107"
-#define LOBBY_PORT		3001
-#define GAME_PORT		25785
+#define GAME_PORT		3001
 
 class LobbyScene : public CCLayer, public SocketDelegate
 {
@@ -52,8 +51,8 @@ private:
 	
 	string _userId;
 	string _friendUserId;
-	Socket* _lobbySocket;
-	Socket* _gameSocket;
+	Socket* _socket;
+	int _localPort;
 };
 			
 #endif /* defined(__LightSwarm__LobbyScene__) */
