@@ -14,7 +14,7 @@ USING_NS_CC;
 using namespace std;
 
 #define LOBBY_SERVER	"192.168.1.107"
-#define GAME_PORT		3001
+#define LOBBY_PORT		3001
 
 class LobbyScene : public CCLayer, public SocketDelegate
 {

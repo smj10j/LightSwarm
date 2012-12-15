@@ -42,11 +42,11 @@ bool LobbyScene::init() {
 	this->setTouchEnabled(true);
 	
 	//TODO: get this from the UI
-	_userId = "steve2";
-	_friendUserId = "steve1";
+	_userId = "steve1";
+	_friendUserId = "steve2";
 	
 	_socket = new Socket(this);
-	if(!_socket->connectTo(LOBBY_SERVER, GAME_PORT)) {
+	if(!_socket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
 		CCLOGERROR("FAILED to Connect to Lobby Server");
 	}
 	_localPort = _socket->getLocalPort();
@@ -83,20 +83,26 @@ void LobbyScene::onMessage(const Json::Value& message) {
 
 					_socket->disconnect(false);
 
-					CCLOG("Waiting for connection from %s on port %d", player2["publicIP"].asCString(), _localPort);
-
-					while(!_socket->listenOn(_localPort)) {
-						CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
-						usleep(100000);
-					}
 
 					//try to connect to both public and private ips in a while loop
 					for(int i = 0; i < 50; i++) {
-											
+						
+						CCLOG("Waiting for connection from %s on port %d", player2["publicIP"].asCString(), _localPort);
+
+						if(!_socket->listenOn(_localPort)) {
+							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						}
+						usleep(500000);
+						if(_socket->hasChildren()) {
+							break;
+						}
+						_socket->disconnect(false);					
+																								
 						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
 						
 						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
 						
+						usleep(250000);
 						if(_socket->isConnected()) {
 							break;
 						}
@@ -105,12 +111,11 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt());
 						
+						usleep(250000);
 						if(_socket->isConnected()) {
 							break;
 						}
-					
-						usleep(500000);							
-						
+											
 					}
 					
 					
@@ -119,22 +124,26 @@ void LobbyScene::onMessage(const Json::Value& message) {
 
 					_socket->disconnect(false);
 
-					CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
-					
-					while(!_socket->listenOn(_localPort)) {
-						CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
-						usleep(100000);
-					}
-					
-										
 					//try to connect to both public and private ips in a while loop
 
 					for(int i = 0; i < 50; i++) {
+					
+						CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
+
+						if(!_socket->listenOn(_localPort)) {
+							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						}
+						usleep(500000);
+						if(_socket->hasChildren()) {
+							break;
+						}
+						_socket->disconnect(false);
 					
 						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
 						
 						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
 						
+						usleep(250000);
 						if(_socket->isConnected()) {
 							break;
 						}
@@ -143,11 +152,11 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt());
 					
+						usleep(250000);
 						if(_socket->isConnected()) {
 							break;
 						}
 					
-						usleep(500000);
 					}
 				
 				}
@@ -164,7 +173,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 }
 
 void LobbyScene::onConnect() {
-	CCLOG("Connected to Lobby Server");
+	CCLOG("Connected to Server");
 	
 	//identify
 	Json::Value user;
@@ -174,7 +183,7 @@ void LobbyScene::onConnect() {
 	identifyMessage["action"] = "identify";
 	identifyMessage["user"] = user;
 	identifyMessage["privateIP"] = Socket::getLocalIPAddress();
-	identifyMessage["privatePort"] = GAME_PORT;
+	identifyMessage["privatePort"] = _socket->getLocalPort();
 	
 	_socket->sendMessage(identifyMessage);
 	
@@ -193,7 +202,7 @@ void LobbyScene::onConnect() {
 }
 
 void LobbyScene::onDisconnect() {
-	CCLOG("Disconnected from Lobby Server");		
+	CCLOG("Disconnected from Server");		
 
 	//TODO: notify user of lost connection
 	
@@ -201,7 +210,7 @@ void LobbyScene::onDisconnect() {
 
 
 void LobbyScene::onDisconnectChild() {
-	CCLOG("Disconnected from Game Server");		
+	CCLOG("Disconnected Peer");		
 
 	//TODO: notify user of lost connection
 	

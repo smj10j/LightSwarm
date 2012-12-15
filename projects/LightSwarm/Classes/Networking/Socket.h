@@ -50,8 +50,10 @@ public:
 		_id(SOCKET_ID++),
 		_sockfd(0),
 		_isConnected(false),
+		_isBound(false),
 		_delegate(NULL),
-		_messageReceiverData(NULL) {
+		_messageReceiverData(NULL),
+		_messageAcceptorData(NULL) {
 		
 	}
 
@@ -59,8 +61,10 @@ public:
 		_id(SOCKET_ID++),
 		_sockfd(0),
 		_isConnected(false),
+		_isBound(false),
 		_delegate(delegate),
-		_messageReceiverData(NULL) {
+		_messageReceiverData(NULL),
+		_messageAcceptorData(NULL) {
 		
 	}
 	
@@ -69,7 +73,9 @@ public:
 	int getLocalPort();
 	
 	bool isConnected() { return _isConnected; };
-
+	bool isBound() { return _isBound; };
+	bool hasChildren();
+	
 	bool listenOn(const int& port);
 	bool connectTo(const string& hostname, const int& port);
 	void disconnect(bool notifyDelegate);
@@ -88,7 +94,9 @@ private:
 
 	int _sockfd;
 	bool _isConnected;
+	bool _isBound;
 	MessageReceiverData* _messageReceiverData;
+	MessageReceiverData* _messageAcceptorData;
 	
 	SocketDelegate* _delegate;
 	
