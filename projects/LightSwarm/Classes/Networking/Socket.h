@@ -72,6 +72,7 @@ public:
 	int getSockFd() { return _sockfd; };
 	int getLocalPort();
 	
+	void setDelegate(SocketDelegate* delegate) { _delegate = delegate; };
 	bool isConnected() { return _isConnected; };
 	bool isBound() { return _isBound; };
 	bool hasChildren();

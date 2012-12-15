@@ -42,8 +42,8 @@ bool LobbyScene::init() {
 	this->setTouchEnabled(true);
 	
 	//TODO: get this from the UI
-	_userId = "steve1";
-	_friendUserId = "steve2";
+	_userId = "steve2";
+	_friendUserId = "steve1";
 	
 	_socket = new Socket(this);
 	if(!_socket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
@@ -81,6 +81,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				if(player1["userId"].asString() == _userId) {
 					//we are player1 - connect to player2
 
+					_socket->setDelegate(NULL);
 					_socket->disconnect(false);
 
 
@@ -92,7 +93,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						if(!_socket->listenOn(_localPort)) {
 							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
 						}
-						usleep(500000);
+						usleep(arc4random()%500000);
 						if(_socket->hasChildren()) {
 							break;
 						}
@@ -102,7 +103,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
 						
-						usleep(250000);
+						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
 							break;
 						}
@@ -111,7 +112,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt());
 						
-						usleep(250000);
+						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
 							break;
 						}
@@ -122,6 +123,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				}else {
 					//we are player2 - connect to player1
 
+					_socket->setDelegate(NULL);
 					_socket->disconnect(false);
 
 					//try to connect to both public and private ips in a while loop
@@ -133,7 +135,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						if(!_socket->listenOn(_localPort)) {
 							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
 						}
-						usleep(500000);
+						usleep(arc4random()%500000);
 						if(_socket->hasChildren()) {
 							break;
 						}
@@ -143,7 +145,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
 						
-						usleep(250000);
+						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
 							break;
 						}
@@ -152,7 +154,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt());
 					
-						usleep(250000);
+						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
 							break;
 						}

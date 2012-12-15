@@ -23,9 +23,13 @@ void Socket::disconnect(bool notifyDelegate) {
 	_isConnected = false;
 	_isBound = false;
 	if(_messageAcceptorData != NULL) {
+
+		//pthread_kill(_messageAcceptorData->thread, 0);
+		close(*_messageAcceptorData->sockfd);
 	
 		while(!_messageAcceptorData->children.empty()) {
 			MessageReceiverData* childMessageReceiverData = _messageAcceptorData->children.front();
+			//pthread_kill(childMessageReceiverData->thread, 0);
 			close(*childMessageReceiverData->sockfd);
 			delete childMessageReceiverData->sockfd;
 			delete childMessageReceiverData;
@@ -37,6 +41,8 @@ void Socket::disconnect(bool notifyDelegate) {
 	}
 	
 	if(_messageReceiverData != NULL) {
+		//pthread_kill(_messageReceiverData->thread, 0);
+		close(*_messageReceiverData->sockfd);
 		delete _messageReceiverData;
 		_messageReceiverData = NULL;
 	}	
@@ -80,7 +86,15 @@ bool Socket::hasChildren() {
 bool Socket::connectTo(const string &hostname, const int &port) {
 
 	CCLOG("Connecting with socket id %d...", _id);
-			
+
+	if(_messageReceiverData != NULL) {
+		//pthread_kill(_messageReceiverData->thread, 0);
+		close(*_messageReceiverData->sockfd);
+		*_messageReceiverData->sockfd = 0;
+		delete _messageReceiverData;
+		_messageReceiverData = NULL;
+	}
+	
 	if(!Socket::createSocket(&_sockfd)) {
 		return false;
 	}
@@ -104,11 +118,6 @@ bool Socket::connectTo(const string &hostname, const int &port) {
 	}
 	_isConnected = true;
 
-	if(_messageReceiverData != NULL) {
-		delete _messageReceiverData;
-		_messageReceiverData = NULL;
-	}
-
 	//start our message receiver;
 	_messageReceiverData = new MessageReceiverData();
 	_messageReceiverData->socket = this;
@@ -118,7 +127,7 @@ bool Socket::connectTo(const string &hostname, const int &port) {
 	pthread_create(&_messageReceiverData->thread, NULL, &messageReceiver, _messageReceiverData);
 	
 	int waitCounter = 0;
-	while(waitCounter++ < 500 && !_messageReceiverData->isSocketReady) {
+	while(waitCounter++ < 500 && _messageReceiverData != NULL && !_messageReceiverData->isSocketReady) {
 		usleep(1000);
 	}
 	
@@ -149,11 +158,11 @@ bool Socket::createSocket(int* sockfd) {
 		tv.tv_usec = 0;
 		int yes = 1;
 
-		if (setsockopt(*sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+		if (setsockopt(*sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
 			CCLOGERROR("ERROR failed to enable socket address reuse");
 			return false;
 		}
-		if (setsockopt(*sockfd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1) {
+		if (setsockopt(*sockfd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)) == -1) {
 			CCLOGERROR("ERROR failed to enable socket port reuse");
 			return false;
 		}
@@ -172,7 +181,9 @@ bool Socket::createSocket(int* sockfd) {
 
 bool Socket::listenOn(const int& port) {
 	CCLOG("Binding with socket id %d...", _id);
-					
+
+	this->disconnect(false);
+
 	if(!Socket::createSocket(&_sockfd)) {
 		return false;
 	}
@@ -192,20 +203,6 @@ bool Socket::listenOn(const int& port) {
 	CCLOG("Bound to port %d", port);
 	
 	_isBound = true;
-	
-	if(_messageAcceptorData != NULL) {
-	
-		while(!_messageAcceptorData->children.empty()) {
-			MessageReceiverData* childMessageReceiverData = _messageAcceptorData->children.front();
-			close(*childMessageReceiverData->sockfd);
-			delete childMessageReceiverData->sockfd;
-			delete childMessageReceiverData;
-			_messageAcceptorData->children.pop_front();
-		}
-	
-		delete _messageAcceptorData;
-		_messageAcceptorData = NULL;
-	}
 	
 	//start our connection accepter
 	_messageAcceptorData = new MessageReceiverData();
@@ -254,7 +251,12 @@ void* connectionAccepter(void* threadData) {
 	clilen = sizeof(cli_addr);
 	
 	while(messageReceiverData->socket != NULL && *messageReceiverData->sockfd > 0) {
-		int newsockfd = accept(*messageReceiverData->sockfd, (struct sockaddr *) &cli_addr, &clilen);
+		int sockfd = *messageReceiverData->sockfd;
+		int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+		if(messageReceiverData == NULL || messageReceiverData->sockfd == NULL) {
+			break;
+		}
+		
 		if (newsockfd < 0) {
 			CCLOGERROR("ERROR on accept");
 			return false;
@@ -276,7 +278,7 @@ void* connectionAccepter(void* threadData) {
 		
 		if(waitCounter >= 500) {
 			CCLOGERROR("Accepted successfully but failed to setup reading from socket from socket id %d in time", messageReceiverData->socket->getId());
-			close(*messageReceiverData->sockfd);
+			close(*messageReceiverDataCopy->sockfd);
 			delete messageReceiverDataCopy->sockfd;
 			delete messageReceiverDataCopy;
 			return false;
@@ -306,13 +308,17 @@ void* messageReceiver(void* threadData) {
 		bzero(buffer, 1024);
 		messageReceiverData->isSocketReady = true;
 		
-		bytesRecv = read(*messageReceiverData->sockfd, buffer, 1023);
+		int sockfd = *messageReceiverData->sockfd;
+		bytesRecv = read(sockfd, buffer, 1023);
+		if(messageReceiverData == NULL || messageReceiverData->sockfd == NULL) {
+			break;
+		}
 		
 		if (bytesRecv < 0) {
 			CCLOGERROR("ERROR reading from socket");
 			messageReceiverData->isSocketReady = false;
 			if(messageReceiverData->socket != NULL) {
-				if(messageReceiverData->socket->getSockFd() == *messageReceiverData->sockfd) {
+				if(messageReceiverData->socket->getSockFd() == sockfd) {
 					messageReceiverData->socket->disconnect(true);
 				}else {
 					messageReceiverData->socket->disconnectChild(messageReceiverData);
@@ -325,7 +331,7 @@ void* messageReceiver(void* threadData) {
 				CCLOGERROR("ERROR reading from socket (numFailedReads=%d)", numFailedReads);
 				messageReceiverData->isSocketReady = false;
 				if(messageReceiverData->socket != NULL) {
-					if(messageReceiverData->socket->getSockFd() == *messageReceiverData->sockfd) {
+					if(messageReceiverData->socket->getSockFd() == sockfd) {
 						messageReceiverData->socket->disconnect(true);
 					}else {
 						messageReceiverData->socket->disconnectChild(messageReceiverData);
