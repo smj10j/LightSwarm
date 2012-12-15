@@ -13,10 +13,11 @@
 USING_NS_CC;
 using namespace std;
 
-#define LOBBY_SERVER	"localhost"
+#define LOBBY_SERVER	"192.168.1.107"
 #define LOBBY_PORT		3001
+#define GAME_PORT		25785
 
-class LobbyScene : public CCLayer, public ClientSocketDelegate
+class LobbyScene : public CCLayer, public SocketDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -38,6 +39,7 @@ public:
 	
 	virtual void onConnect();
 	virtual void onDisconnect();
+	virtual void onDisconnectChild();
 	virtual void onMessage(const Json::Value& message);
 		
 	virtual ~LobbyScene();
@@ -48,8 +50,10 @@ private:
 	
 	void loadGameScene();
 	
-	
-	ClientSocket* _clientSocket;
+	string _userId;
+	string _friendUserId;
+	Socket* _lobbySocket;
+	Socket* _gameSocket;
 };
 			
 #endif /* defined(__LightSwarm__LobbyScene__) */

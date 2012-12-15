@@ -1,13 +1,13 @@
 //
-//  ClientSocket.h
+//  Socket.h
 //  LightSwarm
 //
 //  Created by Stephen Johnson on 12/12/12.
 //
 //
 
-#ifndef __LightSwarm__ClientSocket__
-#define __LightSwarm__ClientSocket__
+#ifndef __LightSwarm__Socket__
+#define __LightSwarm__Socket__
 
 #include "Common.h"
 #include <stdlib.h>
@@ -18,6 +18,11 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 #include "json.h"
+#include <list>
+
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+
 
 USING_NS_CC;
 
@@ -25,19 +30,24 @@ USING_NS_CC;
 
 struct MessageReceiverData;
 void* messageReceiver(void* threadData);
+void* connectionAccepter(void* threadData);
 
-class ClientSocketDelegate {
+class SocketDelegate {
 public:
 	virtual void onMessage(const Json::Value& message) {};
 	virtual void onConnect() {};
 	virtual void onDisconnect() {};
+	virtual void onDisconnectChild() {};
 };
 
-class ClientSocket {
+static int SOCKET_ID = 1;
+
+class Socket {
 
 public:
 
-	ClientSocket():
+	Socket():
+		_id(SOCKET_ID++),
 		_sockfd(0),
 		_isConnected(false),
 		_delegate(NULL),
@@ -45,7 +55,8 @@ public:
 		
 	}
 
-	ClientSocket(ClientSocketDelegate* delegate):
+	Socket(SocketDelegate* delegate):
+		_id(SOCKET_ID++),
 		_sockfd(0),
 		_isConnected(false),
 		_delegate(delegate),
@@ -53,16 +64,24 @@ public:
 		
 	}
 	
+	int getId() { return _id; };
+	int getSockFd() { return _sockfd; };
+	
 	bool isConnected() { return _isConnected; };
 
+	bool listenOn(const int& port);
 	bool connectTo(const string& hostname, const int& port);
 	void disconnect(bool notifyDelegate);
+	void disconnectChild(MessageReceiverData* messageReceiverData);
 	void sendMessage(const Json::Value& message);
 	void sendMessage(const string& message);
 	
 	void onMessage(const Json::Value message);
 	
-	virtual ~ClientSocket();
+	static string getLocalIPAddress();
+	static bool createSocket(int* sockfd);
+		
+	virtual ~Socket();
 
 private:
 
@@ -70,20 +89,23 @@ private:
 	bool _isConnected;
 	MessageReceiverData* _messageReceiverData;
 	
-	ClientSocketDelegate* _delegate;
+	SocketDelegate* _delegate;
 	
-	
-
+	int _id;
 };
 
 
 struct MessageReceiverData {
+	pthread_t thread;
 	bool isSocketReady;
 	string buffer;
 	int* sockfd;
-	ClientSocket* clientSocket;
+	Socket* socket;
+	list<MessageReceiverData*> children;
 };
+
+
 
 #define MESSAGE_TERMINATOR "~|~"
 
-#endif /* defined(__LightSwarm__ClientSocket__) */
+#endif /* defined(__LightSwarm__Socket__) */

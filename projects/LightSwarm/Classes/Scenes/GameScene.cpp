@@ -4,13 +4,18 @@
 USING_NS_CC;
 
 
-CCScene* GameScene::scene() {
+CCScene* GameScene::scene(Player* player, Opponent* opponent, bool isServer, sockaddr_in* _opponentAddress) {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
     // 'layer' is an autorelease object
     GameScene *layer = GameScene::create();
-
+	
+	layer->_player = player;
+	layer->_opponent = opponent;
+	layer->_opponentAddress = _opponentAddress;
+	layer->isServer = isServer;
+	
     // add layer as a child to scene
     scene->addChild(layer);
 
@@ -24,11 +29,6 @@ bool GameScene::init() {
         return false;
     }
 
-
-	//default blend function
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	
 	_gameLayer = CCLayer::create();
 	this->addChild(_gameLayer);
 
@@ -46,6 +46,9 @@ bool GameScene::init() {
 	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
 	_gameLayer->addChild(_batchNode);
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
+	
+	
+	//TODO: create a clientSocket or serverSocket depending on isServer variable
 	
 	//TODO: seed this with the value we get from the server
 	Utilities::setRandomSeed(450);
@@ -674,4 +677,21 @@ GameScene::~GameScene() {
 		delete (*commandQueueIterator);
 	}	
 
+
+	if(_player != NULL) {
+		delete _player;
+		_player = NULL;
+	}
+	if(_opponent != NULL) {
+		delete _opponent;
+		_opponent = NULL;
+	}
+	if(_opponentAddress != NULL) {
+		delete _opponentAddress;
+		_opponentAddress = NULL;
+	}
+	if(_socket != NULL) {
+		delete _socket;
+		_socket = NULL;
+	}
 }

@@ -29,9 +29,6 @@ bool LobbyScene::init() {
     if ( !CCLayer::init() ) {
         return false;
     }
-
-	//default blend function
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();	
 
@@ -44,8 +41,17 @@ bool LobbyScene::init() {
 	
 	this->setTouchEnabled(true);
 	
-	_clientSocket = new ClientSocket(this);
-	if(!_clientSocket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
+	//TODO: get this from the UI
+	_userId = "steve2";
+	_friendUserId = "steve";
+	
+	_gameSocket = new Socket(this);
+	if(!_gameSocket->listenOn(GAME_PORT)) {
+		CCLOGERROR("FAILED to Listen on Game Server port");
+	}
+
+	_lobbySocket = new Socket(this);
+	if(!_lobbySocket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
 		CCLOGERROR("FAILED to Connect to Lobby Server");
 	}
 		
@@ -54,14 +60,103 @@ bool LobbyScene::init() {
 
 void LobbyScene::onMessage(const Json::Value& message) {
 	CCLOG("LobbyScene received message: %s", message.toStyledString().c_str());
+	
+		
+	Json::Value status = message["status"];
+	if(status != NULL) {
+	
+		if(status.asString() == "ok") {
+
+			Json::Value gameInit = message["gameInit"];
+			if(gameInit != NULL && !gameInit.empty()) {
+
+				Json::Value player1 = gameInit["player1"];
+				Json::Value player2 = gameInit["player2"];
+				
+				//TODO: hole punch and connect!!
+				//unless player1 cannot be the server, player1 is always the server
+				
+				if(player1["userId"].asString() == _userId) {
+					//we are player1 - connect to player2
+
+					if(player1["isServer"].asBool() == true) {
+						CCLOG("Waiting for connection from %s on port ", player2["publicIP"].asCString(), player1["privatePort"].asInt());
+						
+						//gameScene init with:
+						//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
+						
+					
+					}else {
+						_gameSocket->disconnect(false);
+
+						//TODO: try to connect to both public and private ips in a while loop
+					
+						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
+						
+						_gameSocket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
+					}
+					
+					
+				}else {
+					//we are player2 - connect to player1
+
+					if(player2["isServer"].asBool() == true) {
+						CCLOG("Waiting for connection from %s on port ", player1["publicIP"].asCString(), player2["privatePort"].asInt());
+						
+						//gameScene init with:
+						//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
+						
+					
+					}else {
+						_gameSocket->disconnect(false);
+
+						//TODO: try to connect to both public and private ips in a while loop
+
+						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
+						
+						_gameSocket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
+					}
+				
+				}
+				
+			}
+		}else {
+			//TODO: handle errors
+			CCLOG("Received messge is an error - ignoring");
+			
+		}
+	}else {
+		CCLOG("Recevied message has no 'status' element - ignoring");
+	}
 }
 
 void LobbyScene::onConnect() {
 	CCLOG("Connected to Lobby Server");
 	
-	//TODO: identify
-	string message = "{}";
-	_clientSocket->sendMessage(message);
+	//identify
+	Json::Value user;
+	user["userId"] = _userId;
+	
+	Json::Value identifyMessage;
+	identifyMessage["action"] = "identify";
+	identifyMessage["user"] = user;
+	identifyMessage["privateIP"] = Socket::getLocalIPAddress();
+	identifyMessage["privatePort"] = GAME_PORT;
+	
+	_lobbySocket->sendMessage(identifyMessage);
+	
+	//TEST CODE
+	//set pref that we're creating a game
+		
+	Json::Value prefs;
+	prefs["playWithFriend"] = _friendUserId;
+	
+	Json::Value setPrefsMessage;
+	setPrefsMessage["action"] = "setPrefs";
+	setPrefsMessage["prefs"] = prefs;
+	
+	_lobbySocket->sendMessage(setPrefsMessage);
+		
 }
 
 void LobbyScene::onDisconnect() {
@@ -71,6 +166,13 @@ void LobbyScene::onDisconnect() {
 	
 }
 
+
+void LobbyScene::onDisconnectChild() {
+	CCLOG("Disconnected from Game Server");		
+
+	//TODO: notify user of lost connection
+	
+}
 
 
 void LobbyScene::onEnter() {
@@ -85,10 +187,14 @@ void LobbyScene::onEnter() {
 }
 
 void LobbyScene::loadGameScene() {
+	//TODO: set player, opponentSocket, etc. appropriately
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFadeBL::create(
 		0.5,
 		GameScene::scene(
-			
+			new Player(),
+			(Opponent*)new NetworkedOpponent(),
+			true,
+			new sockaddr_in()
 		)
 	));
 }
@@ -145,9 +251,9 @@ void LobbyScene::ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event
 
 
 LobbyScene::~LobbyScene() {
-	if(_clientSocket != NULL) {
-		delete _clientSocket;
-		_clientSocket = NULL;
+	if(_lobbySocket != NULL) {
+		delete _lobbySocket;
+		_lobbySocket = NULL;
 	}
 }
 

@@ -54,6 +54,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 		pDirector->setDisplayStats(true);
 	}
 	
+	//default blend function
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / TARGET_FPS);
 

@@ -18,10 +18,11 @@ public:
     virtual bool init();  
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static CCScene* scene();
+    static CCScene* scene(Player* player, Opponent* opponent, bool isServer, sockaddr_in* opponentAaddress);
     
     // implement the "static node()" method manually
-    CREATE_FUNC(GameScene);	
+    CREATE_FUNC(GameScene);
+	
 	
 	//touch handlers
 	virtual void ccTouchesMoved(CCSet* touches, CCEvent* event);
@@ -37,6 +38,15 @@ public:
 	int _currentFrame;
 	list<Orb*> _orbs;
 	list<Spark*> _sparks;
+	
+protected:
+	Player* _player;
+	Opponent* _opponent;
+	
+	bool isServer;
+	sockaddr_in* _opponentAddress;
+	
+	Socket* _socket;
 	
 private:
 	CCSpriteBatchNode* _batchNode;

@@ -14,7 +14,7 @@
 		AA0B1D221664C0EC0011F556 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0B1D1E1664C0EC0011F556 /* libTestFlight.a */; };
 		AA0B1D231664C0EC0011F556 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D1F1664C0EC0011F556 /* README.md */; };
 		AA0B1D241664C0EC0011F556 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D201664C0EC0011F556 /* release_notes.md */; };
-		AA2181C4167883A200047D90 /* ClientSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2181C2167883A200047D90 /* ClientSocket.cpp */; };
+		AA2181C4167883A200047D90 /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA2181C2167883A200047D90 /* Socket.cpp */; };
 		AA315EBA166DEDFE006D5409 /* Orb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315EB8166DEDFE006D5409 /* Orb.cpp */; };
 		AA315EC8166E5DFD006D5409 /* PingLocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315EC6166E5DFD006D5409 /* PingLocation.cpp */; };
 		AA8B7DE4167053A70047E264 /* Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA8B7DE0167053A70047E264 /* Config.cpp */; };
@@ -87,8 +87,8 @@
 		AA0B1D1F1664C0EC0011F556 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		AA0B1D201664C0EC0011F556 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		AA0B1D211664C0EC0011F556 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
-		AA2181C2167883A200047D90 /* ClientSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientSocket.cpp; sourceTree = "<group>"; };
-		AA2181C3167883A200047D90 /* ClientSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSocket.h; sourceTree = "<group>"; };
+		AA2181C2167883A200047D90 /* Socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Socket.cpp; sourceTree = "<group>"; };
+		AA2181C3167883A200047D90 /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
 		AA315EB8166DEDFE006D5409 /* Orb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orb.cpp; sourceTree = "<group>"; };
 		AA315EB9166DEDFE006D5409 /* Orb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orb.h; sourceTree = "<group>"; };
 		AA315EC6166E5DFD006D5409 /* PingLocation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PingLocation.cpp; sourceTree = "<group>"; };
@@ -315,8 +315,8 @@
 				AAC00C831671FC950015815C /* Command.cpp */,
 				AAC00C861671FC950015815C /* GameStateSnapshot.h */,
 				AAC00C851671FC950015815C /* GameStateSnapshot.cpp */,
-				AA2181C3167883A200047D90 /* ClientSocket.h */,
-				AA2181C2167883A200047D90 /* ClientSocket.cpp */,
+				AA2181C3167883A200047D90 /* Socket.h */,
+				AA2181C2167883A200047D90 /* Socket.cpp */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -553,7 +553,7 @@
 				AAC00C811671F8700015815C /* ComputerOpponent.cpp in Sources */,
 				AAC00C871671FC950015815C /* Command.cpp in Sources */,
 				AAC00C881671FC950015815C /* GameStateSnapshot.cpp in Sources */,
-				AA2181C4167883A200047D90 /* ClientSocket.cpp in Sources */,
+				AA2181C4167883A200047D90 /* Socket.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
