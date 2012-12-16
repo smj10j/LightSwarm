@@ -11,14 +11,14 @@ using namespace std;
 class GameStateSnapshot;
 class Command;
 
-class GameScene : public CCLayer
+class GameScene : public CCLayer, public SocketDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static CCScene* scene(Player* player, Opponent* opponent, bool isServer, sockaddr_in* opponentAaddress);
+    static CCScene* scene(Player* player, Opponent* opponent);
     
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
@@ -31,6 +31,12 @@ public:
 		
 	virtual void onEnter();
 	virtual void onExit();
+	
+	virtual void onConnect();
+	virtual void onDisconnect();
+	virtual void onDisconnectChild();
+	virtual void onMessage(const Json::Value& message);
+
 				
 	virtual ~GameScene();
 
@@ -42,12 +48,7 @@ public:
 protected:
 	Player* _player;
 	Opponent* _opponent;
-	
-	bool isServer;
-	sockaddr_in* _opponentAddress;
-	
-	Socket* _socket;
-	
+		
 private:
 	CCSpriteBatchNode* _batchNode;
 			

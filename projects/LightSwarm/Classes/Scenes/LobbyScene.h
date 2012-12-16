@@ -13,7 +13,7 @@
 USING_NS_CC;
 using namespace std;
 
-#define LOBBY_SERVER	"192.168.1.107"
+#define LOBBY_SERVER	"192.168.5.162"
 #define LOBBY_PORT		3001
 
 class LobbyScene : public CCLayer, public SocketDelegate
@@ -45,6 +45,8 @@ public:
 	
 private:
 	CCSpriteBatchNode* _batchNode;
+	
+	CCScene* _gameScene;
 	
 	
 	void loadGameScene();

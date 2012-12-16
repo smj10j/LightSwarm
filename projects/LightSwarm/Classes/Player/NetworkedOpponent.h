@@ -19,12 +19,20 @@ class NetworkedOpponent : Opponent
 {
 public:
 
+	NetworkedOpponent(Socket* socket):
+		_socket(socket) {
+		
+	}
+	
+	
+	virtual ~NetworkedOpponent();
 
 protected:
 
 
 private:
 
+	Socket* _socket;
 };
 
 

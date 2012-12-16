@@ -42,8 +42,8 @@ bool LobbyScene::init() {
 	this->setTouchEnabled(true);
 	
 	//TODO: get this from the UI
-	_userId = "steve2";
-	_friendUserId = "steve1";
+	_userId = "steve1";
+	_friendUserId = "steve2";
 	
 	_socket = new Socket(this);
 	if(!_socket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
@@ -51,6 +51,11 @@ bool LobbyScene::init() {
 	}
 	_localPort = _socket->getLocalPort();
 	CCLOG("Bound on local port %d", _localPort);
+		
+	_gameScene = GameScene::scene(
+		new Player(),
+		(Opponent*)new NetworkedOpponent(_socket)
+	);		
 		
 	return true;
 }
@@ -81,7 +86,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				if(player1["userId"].asString() == _userId) {
 					//we are player1 - connect to player2
 
-					_socket->setDelegate(NULL);
+					_socket->setDelegate((SocketDelegate*)_gameScene);
 					_socket->disconnect(false);
 
 
@@ -95,9 +100,10 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						}
 						usleep(arc4random()%500000);
 						if(_socket->hasChildren()) {
+							loadGameScene();
 							break;
 						}
-						_socket->disconnect(false);					
+						_socket->disconnect(false);
 																								
 						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
 						
@@ -105,6 +111,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
+							loadGameScene();
 							break;
 						}
 						
@@ -114,6 +121,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
+							loadGameScene();
 							break;
 						}
 											
@@ -123,7 +131,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				}else {
 					//we are player2 - connect to player1
 
-					_socket->setDelegate(NULL);
+					_socket->setDelegate((SocketDelegate*)_gameScene);
 					_socket->disconnect(false);
 
 					//try to connect to both public and private ips in a while loop
@@ -137,6 +145,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						}
 						usleep(arc4random()%500000);
 						if(_socket->hasChildren()) {
+							loadGameScene();
 							break;
 						}
 						_socket->disconnect(false);
@@ -147,6 +156,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
+							loadGameScene();
 							break;
 						}
 						
@@ -156,6 +166,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 					
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
+							loadGameScene();
 							break;
 						}
 					
@@ -222,24 +233,17 @@ void LobbyScene::onDisconnectChild() {
 void LobbyScene::onEnter() {
 	CCLOG("On Enter LobbyScene");
 	this->CCLayer::onEnter();
-	
-	//loadGameScene();
-	
-	
-	
-	
 }
 
 void LobbyScene::loadGameScene() {
 	//TODO: set player, opponentSocket, etc. appropriately
+	
+	//let the NetworkedOpponent manage the socket now
+	_socket = NULL;
+	
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFadeBL::create(
 		0.5,
-		GameScene::scene(
-			new Player(),
-			(Opponent*)new NetworkedOpponent(),
-			true,
-			new sockaddr_in()
-		)
+		_gameScene
 	));
 }
 

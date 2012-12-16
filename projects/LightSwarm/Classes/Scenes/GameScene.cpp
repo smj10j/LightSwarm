@@ -4,7 +4,7 @@
 USING_NS_CC;
 
 
-CCScene* GameScene::scene(Player* player, Opponent* opponent, bool isServer, sockaddr_in* _opponentAddress) {
+CCScene* GameScene::scene(Player* player, Opponent* opponent) {
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
@@ -13,8 +13,6 @@ CCScene* GameScene::scene(Player* player, Opponent* opponent, bool isServer, soc
 	
 	layer->_player = player;
 	layer->_opponent = opponent;
-	layer->_opponentAddress = _opponentAddress;
-	layer->isServer = isServer;
 	
     // add layer as a child to scene
     scene->addChild(layer);
@@ -643,6 +641,73 @@ void GameScene::deselectSpark(Spark* spark) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void GameScene::onMessage(const Json::Value& message) {
+	CCLOG("GameScene received message: %s", message.toStyledString().c_str());
+	
+		
+	Json::Value status = message["status"];
+	if(status != NULL) {
+	
+		if(status.asString() == "ok") {
+
+		}else {
+			//TODO: handle errors
+			CCLOG("Received messge is an error - ignoring");
+			
+		}
+	}else {
+		CCLOG("Recevied message has no 'status' element - ignoring");
+	}
+}
+
+void GameScene::onConnect() {
+	CCLOG("Connected to Peer");
+;
+		
+}
+
+void GameScene::onDisconnect() {
+	CCLOG("Disconnected from Peer");		
+
+	//TODO: notify user of lost connection
+	
+}
+
+
+void GameScene::onDisconnectChild() {
+	CCLOG("Peer disconnected");		
+
+	//TODO: notify user of lost connection
+	
+}
+
+
+
+
+
+
+
+
+
+
 void GameScene::cleanup() {
 			
 	for(list<Spark*>::iterator sparksIterator = _sparks.begin();
@@ -685,13 +750,5 @@ GameScene::~GameScene() {
 	if(_opponent != NULL) {
 		delete _opponent;
 		_opponent = NULL;
-	}
-	if(_opponentAddress != NULL) {
-		delete _opponentAddress;
-		_opponentAddress = NULL;
-	}
-	if(_socket != NULL) {
-		delete _socket;
-		_socket = NULL;
 	}
 }

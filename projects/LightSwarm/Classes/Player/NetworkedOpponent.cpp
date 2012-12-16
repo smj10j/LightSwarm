@@ -7,3 +7,18 @@
 //
 
 #include "NetworkedOpponent.h"
+
+
+
+
+
+
+
+
+
+NetworkedOpponent::~NetworkedOpponent() {
+	if(_socket != NULL) {
+		delete _socket;
+		_socket = NULL;
+	}
+}
