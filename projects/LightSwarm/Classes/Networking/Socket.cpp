@@ -83,7 +83,7 @@ bool Socket::hasChildren() {
 }
 
 
-bool Socket::connectTo(const string &hostname, const int &port) {
+bool Socket::connectTo(const string &hostname, const int &port, int timeout) {
 
 	CCLOG("Connecting with socket id %d...", _id);
 
@@ -99,6 +99,11 @@ bool Socket::connectTo(const string &hostname, const int &port) {
 		return false;
 	}
 	
+	//set socket to nonblocking
+    int origSocketFlags = fcntl(_sockfd, F_GETFL, 0);
+    assert(origSocketFlags != -1);
+    fcntl(_sockfd, F_SETFL, origSocketFlags | O_NONBLOCK);
+	
 	struct hostent *server;
 	server = gethostbyname(hostname.c_str());
 	if (server == NULL) {
@@ -112,10 +117,42 @@ bool Socket::connectTo(const string &hostname, const int &port) {
 	bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
 	serv_addr.sin_port = htons(port);
 	
-	if (connect(_sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
-		CCLOGERROR("ERROR connecting");
+	//perform a select to do a timeout
+	connect(_sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr));
+
+	fd_set rfd;
+	FD_ZERO(&rfd);
+	FD_SET(_sockfd, &rfd);
+	struct timeval tv;
+	tv.tv_sec = timeout;	//X second timeout
+	tv.tv_usec = 0;
+	int retVal = select(_sockfd+1, NULL, &rfd, NULL, &tv);
+    CCLOG("select retVal: %d", retVal);
+
+	bool success = false;
+	if (retVal == 1) {
+		int so_error;
+        socklen_t slen = sizeof so_error;
+        getsockopt(_sockfd, SOL_SOCKET, SO_ERROR, &so_error, &slen);
+        if (so_error == 0) {
+            CCLOG("Successfully connected");
+            success = true;
+        } else {
+            CCLOGERROR("Failed to connect");
+            success = false;
+        }
+    } else {     
+        CCLOGERROR("No socket??"); 
+    }
+	
+	
+	if(!success) {
 		return false;
 	}
+	
+	//re-enable blocking
+    fcntl(_sockfd, F_SETFL, origSocketFlags);
+		
 	_isConnected = true;
 
 	//start our message receiver;
@@ -391,6 +428,8 @@ string Socket::getLocalIPAddress() {
 		while(targetInterface != "" && address == "") {
 			while(temp_addr != NULL) {
 				if(temp_addr->ifa_addr->sa_family == AF_INET) {
+					//CCLOG("temp_addr->ifa_name = %s", string(temp_addr->ifa_name).c_str());
+					//CCLOG("address = %s", string(inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)).c_str());
 					// Check if interface is en0 which is the wifi connection on the iPhone
 					if(string(temp_addr->ifa_name) == targetInterface) {
 						// Get string from C String
@@ -403,6 +442,8 @@ string Socket::getLocalIPAddress() {
 			}
 			if(targetInterface == "en0") {
 				targetInterface = "en1";
+			}else if(targetInterface == "en1") {
+				targetInterface = "pdp_ip0";	//3G
 			}else {
 				targetInterface = "";
 			}

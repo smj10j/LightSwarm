@@ -9,7 +9,9 @@
 #ifndef LightSwarm_Constants_h
 #define LightSwarm_Constants_h
 
-
+#ifdef __APPLE__
+   #include "TargetConditionals.h"
+#endif
 
 /******************* USER-DEFINABLE ******************/
 

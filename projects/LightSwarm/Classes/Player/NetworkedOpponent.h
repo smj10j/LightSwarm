@@ -24,6 +24,8 @@ public:
 		
 	}
 	
+	const Socket* getSocket() { return (const Socket*)_socket; };
+	
 	
 	virtual ~NetworkedOpponent();
 

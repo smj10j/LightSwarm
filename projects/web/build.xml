@@ -19,11 +19,11 @@
 		
 		<!-- Send over the static assets -->
 		<ant target="deploy-static-remote" >
-			<property name="server" value="www.lightswarm.com" />
+			<property name="server" value="www.savepenguin.com" />
 			<!--<property name="file.key" value="keys/LightSwarm.pem" />-->
-			<property name="dir.local" value="projects/web/subdomains" />
-			<property name="dir.remote" value="/usr/share/nginx/html/subdomains" />
-		</ant>		
+			<property name="dir.local" value="subdomains" />
+			<property name="dir.remote" value="/usr/share/nginx/html/LightSwarm/subdomains" />
+		</ant>
 	</target>	
 	
 	<!-- ====================================== -->	

@@ -13,7 +13,7 @@
 USING_NS_CC;
 using namespace std;
 
-#define LOBBY_SERVER	"192.168.5.162"
+#define LOBBY_SERVER	"lightswarm-api.savepenguin.com"
 #define LOBBY_PORT		3001
 
 class LobbyScene : public CCLayer, public SocketDelegate

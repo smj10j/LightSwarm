@@ -16,6 +16,7 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <fcntl.h>
 #include <netdb.h> 
 #include "json.h"
 #include <list>
@@ -78,7 +79,7 @@ public:
 	bool hasChildren();
 	
 	bool listenOn(const int& port);
-	bool connectTo(const string& hostname, const int& port);
+	bool connectTo(const string& hostname, const int& port, int timeout);
 	void disconnect(bool notifyDelegate);
 	void disconnectChild(MessageReceiverData* messageReceiverData);
 	void sendMessage(const Json::Value& message);

@@ -42,15 +42,15 @@ bool LobbyScene::init() {
 	this->setTouchEnabled(true);
 	
 	//TODO: get this from the UI
+#if TARGET_IPHONE_SIMULATOR
 	_userId = "steve1";
 	_friendUserId = "steve2";
-	
+#else
+	_userId = "steve2";
+	_friendUserId = "steve1";
+#endif
+
 	_socket = new Socket(this);
-	if(!_socket->connectTo(LOBBY_SERVER, LOBBY_PORT)) {
-		CCLOGERROR("FAILED to Connect to Lobby Server");
-	}
-	_localPort = _socket->getLocalPort();
-	CCLOG("Bound on local port %d", _localPort);
 		
 	_gameScene = GameScene::scene(
 		new Player(),
@@ -107,7 +107,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 																								
 						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
 						
-						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt());
+						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt(), 2);
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
@@ -117,7 +117,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						CCLOG("Connecting to %s:%d", player2["publicIP"].asCString(), player2["publicPort"].asInt());
 						
-						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt());
+						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt(), 2);
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
@@ -152,7 +152,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 					
 						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
 						
-						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt());
+						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt(), 2);
 						
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
@@ -162,7 +162,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 						
 						CCLOG("Connecting to %s:%d", player1["publicIP"].asCString(), player1["publicPort"].asInt());
 						
-						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt());
+						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt(), 2);
 					
 						usleep(arc4random()%200000);
 						if(_socket->isConnected()) {
@@ -197,7 +197,7 @@ void LobbyScene::onConnect() {
 	identifyMessage["user"] = user;
 	identifyMessage["privateIP"] = Socket::getLocalIPAddress();
 	identifyMessage["privatePort"] = _socket->getLocalPort();
-	
+		
 	_socket->sendMessage(identifyMessage);
 	
 	//TEST CODE
@@ -233,11 +233,19 @@ void LobbyScene::onDisconnectChild() {
 void LobbyScene::onEnter() {
 	CCLOG("On Enter LobbyScene");
 	this->CCLayer::onEnter();
+	
+	if(!_socket->connectTo(LOBBY_SERVER, LOBBY_PORT, 5)) {
+		//TODO: notify the user
+		CCLOGERROR("FAILED to Connect to Lobby Server");
+		
+	}else {
+		_localPort = _socket->getLocalPort();
+		CCLOG("Bound on local port %d", _localPort);
+		
+	}
 }
 
-void LobbyScene::loadGameScene() {
-	//TODO: set player, opponentSocket, etc. appropriately
-	
+void LobbyScene::loadGameScene() {	
 	//let the NetworkedOpponent manage the socket now
 	_socket = NULL;
 	
