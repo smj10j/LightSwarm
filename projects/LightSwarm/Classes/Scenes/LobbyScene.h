@@ -10,6 +10,8 @@
 #define __LightSwarm__LobbyScene__
 
 #include "NetworkedOpponent.h"
+#include "GameScene.h"
+
 USING_NS_CC;
 using namespace std;
 
@@ -46,7 +48,7 @@ public:
 private:
 	CCSpriteBatchNode* _batchNode;
 	
-	CCScene* _gameScene;
+	GameScene* _gameScene;
 	
 	
 	void loadGameScene();

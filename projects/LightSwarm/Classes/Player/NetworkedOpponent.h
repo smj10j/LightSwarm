@@ -24,17 +24,16 @@ public:
 		
 	}
 	
-	const Socket* getSocket() { return (const Socket*)_socket; };
-	
-	
 	virtual ~NetworkedOpponent();
+
+
+	Socket* _socket;
 
 protected:
 
 
 private:
 
-	Socket* _socket;
 };
 
 

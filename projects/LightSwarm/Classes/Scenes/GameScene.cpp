@@ -21,6 +21,17 @@ CCScene* GameScene::scene(Player* player, Opponent* opponent) {
     return scene;
 }
 
+CCScene* GameScene::scene(GameScene *layer) {
+    // 'scene' is an autorelease object
+    CCScene *scene = CCScene::create();
+	
+    // add layer as a child to scene
+    scene->addChild(layer);
+
+    // return the scene
+    return scene;
+}
+
 // on "init" you need to initialize your instance
 bool GameScene::init() {
     if ( !CCLayer::init() ) {
@@ -86,6 +97,19 @@ bool GameScene::init() {
 void GameScene::onEnter() {
 	this->CCLayer::onEnter();
 	CCLOG("On Enter GameScene");
+	
+	
+	for(int i = 0; i < 15; i++) {
+		sleep(3);
+
+		//TODO: test message on connect
+		Json::Value supMessage;
+		supMessage["action"] = "say sup";
+		supMessage["message"] = "sup" + i;
+		
+		//TODO: WHY IS THIS NEVER RECEIVED???
+		((NetworkedOpponent*)_opponent)->_socket->sendMessage(supMessage);
+	}
 }
 
 void GameScene::onExit() {
@@ -668,6 +692,7 @@ void GameScene::onMessage(const Json::Value& message) {
 	
 		if(status.asString() == "ok") {
 
+
 		}else {
 			//TODO: handle errors
 			CCLOG("Received messge is an error - ignoring");
@@ -680,8 +705,7 @@ void GameScene::onMessage(const Json::Value& message) {
 
 void GameScene::onConnect() {
 	CCLOG("Connected to Peer");
-;
-		
+			
 }
 
 void GameScene::onDisconnect() {

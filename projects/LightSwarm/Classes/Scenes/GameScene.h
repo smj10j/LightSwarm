@@ -19,7 +19,8 @@ public:
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static CCScene* scene(Player* player, Opponent* opponent);
-    
+    static CCScene* scene(GameScene *layer);
+
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
 	
@@ -44,10 +45,12 @@ public:
 	int _currentFrame;
 	list<Orb*> _orbs;
 	list<Spark*> _sparks;
-	
-protected:
+
+
 	Player* _player;
 	Opponent* _opponent;
+	
+protected:
 		
 private:
 	CCSpriteBatchNode* _batchNode;

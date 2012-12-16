@@ -23,6 +23,7 @@
 
 #include <ifaddrs.h>
 #include <arpa/inet.h>
+#include <poll.h>
 
 
 USING_NS_CC;
@@ -50,6 +51,7 @@ public:
 	Socket():
 		_id(SOCKET_ID++),
 		_sockfd(0),
+		_sockfdFlags(-1),
 		_isConnected(false),
 		_isBound(false),
 		_delegate(NULL),
@@ -61,6 +63,7 @@ public:
 	Socket(SocketDelegate* delegate):
 		_id(SOCKET_ID++),
 		_sockfd(0),
+		_sockfdFlags(-1),
 		_isConnected(false),
 		_isBound(false),
 		_delegate(delegate),
@@ -75,8 +78,8 @@ public:
 	
 	void setDelegate(SocketDelegate* delegate) { _delegate = delegate; };
 	bool isConnected() { return _isConnected; };
+	void setConnected(bool connected) { _isConnected = connected; };
 	bool isBound() { return _isBound; };
-	bool hasChildren();
 	
 	bool listenOn(const int& port);
 	bool connectTo(const string& hostname, const int& port, int timeout);
@@ -89,12 +92,13 @@ public:
 	
 	static string getLocalIPAddress();
 	static bool createSocket(int* sockfd);
-		
+				
 	virtual ~Socket();
 
 private:
 
 	int _sockfd;
+	int _sockfdFlags;
 	bool _isConnected;
 	bool _isBound;
 	MessageReceiverData* _messageReceiverData;
@@ -103,6 +107,7 @@ private:
 	SocketDelegate* _delegate;
 	
 	int _id;
+	
 };
 
 
@@ -111,6 +116,7 @@ struct MessageReceiverData {
 	bool isSocketReady;
 	string buffer;
 	int* sockfd;
+	int* sockFdFlags;
 	Socket* socket;
 	list<MessageReceiverData*> children;
 };

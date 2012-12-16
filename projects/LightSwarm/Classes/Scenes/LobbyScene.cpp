@@ -7,7 +7,6 @@
 //
 
 #include "LobbyScene.h"
-#include "GameScene.h"
 
 
 CCScene* LobbyScene::scene() {
@@ -52,10 +51,10 @@ bool LobbyScene::init() {
 
 	_socket = new Socket(this);
 		
-	_gameScene = GameScene::scene(
-		new Player(),
-		(Opponent*)new NetworkedOpponent(_socket)
-	);		
+    _gameScene = GameScene::create();
+	_gameScene->_player = new Player();
+	_gameScene->_opponent = (Opponent*)new NetworkedOpponent(_socket);
+	
 		
 	return true;
 }
@@ -99,7 +98,7 @@ void LobbyScene::onMessage(const Json::Value& message) {
 							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
 						}
 						usleep(arc4random()%500000);
-						if(_socket->hasChildren()) {
+						if(_socket->isConnected()) {
 							loadGameScene();
 							break;
 						}
@@ -138,18 +137,6 @@ void LobbyScene::onMessage(const Json::Value& message) {
 
 					for(int i = 0; i < 50; i++) {
 					
-						CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
-
-						if(!_socket->listenOn(_localPort)) {
-							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
-						}
-						usleep(arc4random()%500000);
-						if(_socket->hasChildren()) {
-							loadGameScene();
-							break;
-						}
-						_socket->disconnect(false);
-					
 						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
 						
 						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt(), 2);
@@ -159,6 +146,18 @@ void LobbyScene::onMessage(const Json::Value& message) {
 							loadGameScene();
 							break;
 						}
+						
+						CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
+
+						if(!_socket->listenOn(_localPort)) {
+							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						}
+						usleep(arc4random()%500000);
+						if(_socket->isConnected()) {
+							loadGameScene();
+							break;
+						}
+						_socket->disconnect(false);
 						
 						CCLOG("Connecting to %s:%d", player1["publicIP"].asCString(), player1["publicPort"].asInt());
 						
@@ -251,7 +250,7 @@ void LobbyScene::loadGameScene() {
 	
 	CCDirector::sharedDirector()->replaceScene(CCTransitionFadeBL::create(
 		0.5,
-		_gameScene
+		GameScene::scene(_gameScene)
 	));
 }
 
