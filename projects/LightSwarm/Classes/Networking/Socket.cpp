@@ -16,6 +16,7 @@ void Socket::disconnect(bool notifyDelegate) {
 
 	close(_sockfd);
 	_sockfd = 0;
+	CCLOG("Set sockfd=0 in disconnect");
 	
 	CCLOG("%s Disconnect socket id %d", (notifyDelegate ? "Forced" : "Manual"), _id);
 
@@ -58,9 +59,10 @@ void Socket::disconnect(bool notifyDelegate) {
 void Socket::disconnectChild(MessageReceiverData* messageReceiverData) {
 
 	if(messageReceiverData != NULL) {
-		if(*_messageReceiverData->sockfd > 0) {
+		if(*messageReceiverData->sockfd > 0) {
 			close(*messageReceiverData->sockfd);
 			*messageReceiverData->sockfd = 0;
+			CCLOG("Set sockfd=0 in disconnectChild");
 		}
 		messageReceiverData = NULL;
 	}
@@ -92,6 +94,7 @@ bool Socket::connectTo(const string &hostname, const int &port, int timeout) {
 			//pthread_kill(_messageReceiverData->thread, 0);
 			close(*_messageReceiverData->sockfd);
 			*_messageReceiverData->sockfd = 0;
+			CCLOG("Set sockfd=0 in connectTo");
 		}
 		_messageReceiverData = NULL;
 	}
@@ -252,7 +255,7 @@ bool Socket::listenOn(const int& port) {
 	}
 	
 	listen(_sockfd, 5);
-	CCLOG("Bound to port %d", port);
+	CCLOG("Bound to port %d with socket %d", port, _sockfd);
 	
 	fcntl(_sockfd, F_SETFL, _sockfdFlags | O_NONBLOCK);
 	
@@ -271,11 +274,14 @@ bool Socket::listenOn(const int& port) {
 }
 
 
-
 void Socket::sendMessage(const Json::Value& message) {
+	sendMessage(message, true);
+}
+
+void Socket::sendMessage(const Json::Value& message, bool addTerminator) {
 	Json::FastWriter writer;
 	string messageStr = writer.write(message);
-	sendMessage(messageStr);
+	sendMessage(messageStr + (addTerminator ? MESSAGE_TERMINATOR : ""));
 }
 
 void Socket::sendMessage(const string& message) {
@@ -283,9 +289,9 @@ void Socket::sendMessage(const string& message) {
 	if(_sockfd == 0) {
 		return;
 	}
-	
+		
 	//TODO: handle the case when n < the sent data size (buffer!)
-	int n = write(_sockfd, message.c_str(), message.length());
+	int n = send(_sockfd, message.c_str(), message.length(), 0);
 	if (n < 0) {
 		CCLOGERROR("ERROR writing to socket");
 		disconnect(true);
@@ -304,8 +310,8 @@ void* connectionAccepter(void* threadData) {
 	socklen_t clilen;
 	struct sockaddr_in cli_addr;
 	clilen = sizeof(cli_addr);
-	
-	while(messageReceiverData->socket != NULL && *messageReceiverData->sockfd > 0) {
+		
+	while(messageReceiverData->socket != NULL && *messageReceiverData->sockfd > 0 && messageReceiverData->socket->isBound()) {
 		int sockfd = *messageReceiverData->sockfd;
 
 		fcntl(sockfd, F_SETFL, *messageReceiverData->sockFdFlags | O_NONBLOCK);
@@ -317,47 +323,51 @@ void* connectionAccepter(void* threadData) {
 		tv.tv_sec = 0;
 		tv.tv_usec = 20000;	//20ms read timeout
 		int retVal = select(sockfd+1, &rfd, NULL, NULL, &tv);
-		//CCLOG("read select retVal: %d", retVal);
+		//CCLOG("read accept select retVal: %d", retVal);
 
 		if (retVal > 0) {		
 		
-			int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
-			if(messageReceiverData == NULL || messageReceiverData->sockfd == NULL) {
-				break;
-			}
-			
-			if (newsockfd < 0) {
-				CCLOGERROR("ERROR on accept - newsockfd=%d", newsockfd);
-				return false;
-			}
-			CCLOG("Accepted new socket connection on socket %d", newsockfd);
+			if(FD_ISSET(sockfd, &rfd)) {
+				int newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+				if(*messageReceiverData->sockfd <= 0) {
+					break;
+				}
+				
+				if (newsockfd < 0) {
+					CCLOGERROR("ERROR on accept - newsockfd=%d", newsockfd);
+					return false;
+				}
+				CCLOG("Accepted new socket connection on socket %d", newsockfd);
 
-			fcntl(newsockfd, F_SETFL, *messageReceiverData->sockFdFlags | O_NONBLOCK);
-						
-			//start our message receiver;
-			MessageReceiverData* messageReceiverDataCopy = new MessageReceiverData();
-			messageReceiverDataCopy->socket = messageReceiverData->socket;
-			messageReceiverDataCopy->sockfd = new int(newsockfd);
-			messageReceiverDataCopy->sockFdFlags = messageReceiverData->sockFdFlags;
-			messageReceiverDataCopy->buffer = "";
-			messageReceiverDataCopy->isSocketReady = false;
-			pthread_create(&messageReceiverDataCopy->thread, NULL, &messageReceiver, messageReceiverDataCopy);
+				fcntl(newsockfd, F_SETFL, *messageReceiverData->sockFdFlags | O_NONBLOCK);
+							
+				//start our message receiver;
+				MessageReceiverData* messageReceiverDataCopy = new MessageReceiverData();
+				messageReceiverDataCopy->socket = messageReceiverData->socket;
+				messageReceiverDataCopy->sockfd = new int(newsockfd);
+				messageReceiverDataCopy->sockFdFlags = messageReceiverData->sockFdFlags;
+				messageReceiverDataCopy->buffer = "";
+				messageReceiverDataCopy->isSocketReady = false;
+				pthread_create(&messageReceiverDataCopy->thread, NULL, &messageReceiver, messageReceiverDataCopy);
 
-			int waitCounter = 0;
-			while(waitCounter++ < 500 && !messageReceiverDataCopy->isSocketReady) {
-				usleep(1000);
-			}
-			
-			if(waitCounter >= 500) {
-				CCLOGERROR("Accepted successfully but failed to setup reading from socket from socket id %d in time", messageReceiverData->socket->getId());
-				close(*messageReceiverDataCopy->sockfd);
-				delete messageReceiverDataCopy->sockfd;
-				delete messageReceiverDataCopy;
-				return false;
+				int waitCounter = 0;
+				while(waitCounter++ < 500 && !messageReceiverDataCopy->isSocketReady) {
+					usleep(1000);
+				}
+				
+				if(waitCounter >= 500) {
+					CCLOGERROR("Accepted successfully but failed to setup reading from socket from socket id %d in time", messageReceiverData->socket->getId());
+					close(*messageReceiverDataCopy->sockfd);
+					*messageReceiverDataCopy->sockfd = 0;
+					return false;
+				}else {
+					messageReceiverData->socket->setConnected(true);
+					messageReceiverData->children.push_back(messageReceiverDataCopy);
+				}
 			}else {
-				messageReceiverData->socket->setConnected(true);
-				messageReceiverData->children.push_back(messageReceiverDataCopy);
+				CCLOGERROR("Select socket doesn't match accepted rfd?");
 			}
+			
 		}else if (retVal == 0) {
 			//CCLOGERROR("Timeout on accept");
 			
@@ -366,6 +376,8 @@ void* connectionAccepter(void* threadData) {
 			
 		}
 	}
+
+	CCLOG("Left connection accepting thread with sockfd=%d", *messageReceiverData->sockfd);
 
 	close(*messageReceiverData->sockfd);
 	*messageReceiverData->sockfd = 0;
@@ -386,14 +398,17 @@ void* messageReceiver(void* threadData) {
 	char buffer[1024];
 	bool isParent = true;
 	
-	CCLOG("Waiting for data from socket %d...", *messageReceiverData->sockfd);
-	while(*messageReceiverData->sockfd > 0 && messageReceiverData->socket != NULL) {
+	CCLOG("Waiting for data from socket %d... %f", *messageReceiverData->sockfd, Utilities::getMillis());
+	while(*messageReceiverData->sockfd > 0 && messageReceiverData->socket != NULL &&
+		(!messageReceiverData->isSocketReady || messageReceiverData->socket->isConnected())) {
 
 		bzero(buffer, 1024);
 		messageReceiverData->isSocketReady = true;
 		
 		int sockfd = *messageReceiverData->sockfd;
 		isParent = messageReceiverData->socket->getSockFd() == sockfd;
+
+		//CCLOG("Waiting for data from from socket %d - %f", sockfd, Utilities::getMillis());
 		
 		fd_set rfd;
 		FD_ZERO(&rfd);
@@ -415,7 +430,7 @@ void* messageReceiver(void* threadData) {
 			}
 			
 			if (bytesRecv < 0) {
-				CCLOGERROR("ERROR reading from socket");
+				CCLOGERROR("ERROR reading from socket %d - %f", sockfd, Utilities::getMillis());
 				messageReceiverData->isSocketReady = false;
 				if(isParent) {
 					messageReceiverData->socket->disconnect(true);
@@ -424,9 +439,9 @@ void* messageReceiver(void* threadData) {
 				}
 				break;
 				
-			}/*else if(bytesRecv == 0) {
+			}else if(bytesRecv == 0) {
 				if(numFailedReads++ >= 100) {
-					CCLOGERROR("ERROR reading from socket (numFailedReads=%d)", numFailedReads);
+					CCLOGERROR("ERROR reading from socket %d (numFailedReads=%d)", sockfd, numFailedReads);
 					messageReceiverData->isSocketReady = false;
 					if(isParent) {
 						messageReceiverData->socket->disconnect(true);
@@ -436,9 +451,9 @@ void* messageReceiver(void* threadData) {
 					break;
 				}
 				
-			}*/else {
+			}else {
 
-				//CCLOG("read: %s", buffer);
+				CCLOG("read: %s, retVal=%d, bytesRecv=%d", buffer, retVal, bytesRecv);
 				messageReceiverData->buffer+= buffer;
 				//CCLOG("messageReceiverData->buffer: %s", messageReceiverData->buffer.c_str());
 							
@@ -460,20 +475,23 @@ void* messageReceiver(void* threadData) {
 				}
 				
 				numFailedReads = 0;
-			}				
+			}
 			
 		} else if(retVal == 0) {
 			//CCLOGERROR("Read timeout");
 			
 		} else {
 			CCLOGERROR("Error while polling read socket");
-			break;
+
 		}
 		
 	}
 	
+	/*
 	close(*messageReceiverData->sockfd);
+	CCLOG("Set sockfd=0 in messageReceiver");
 	*messageReceiverData->sockfd = 0;
+	*/
 	if(!isParent) {
 		delete messageReceiverData->sockfd;
 	}

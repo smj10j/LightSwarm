@@ -81,44 +81,44 @@ void LobbyScene::onMessage(const Json::Value& message) {
 					//gameScene init with:
 					//	(player:Player, opponent:Opponent, isServer:bool, serverAddess:sockaddr_in)
 					
-				
+
+				_socket->setDelegate((SocketDelegate*)_gameScene);
+				_socket->disconnect(false);
+
 				if(player1["userId"].asString() == _userId) {
 					//we are player1 - connect to player2
-
-					_socket->setDelegate((SocketDelegate*)_gameScene);
-					_socket->disconnect(false);
 
 
 					//try to connect to both public and private ips in a while loop
 					for(int i = 0; i < 50; i++) {
-						
+					
 						CCLOG("Waiting for connection from %s on port %d", player2["publicIP"].asCString(), _localPort);
 
 						if(!_socket->listenOn(_localPort)) {
 							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
-						}
-						usleep(arc4random()%500000);
+						}					
+						usleep(arc4random()%750000);
 						if(_socket->isConnected()) {
 							loadGameScene();
 							break;
 						}
+						CCLOG("-------Manual disconnect");
 						_socket->disconnect(false);
-																								
-						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
-						
-						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt(), 2);
-						
-						usleep(arc4random()%200000);
-						if(_socket->isConnected()) {
-							loadGameScene();
-							break;
-						}
-						
+											
 						CCLOG("Connecting to %s:%d", player2["publicIP"].asCString(), player2["publicPort"].asInt());
 						
 						_socket->connectTo(player2["publicIP"].asString(), player2["publicPort"].asInt(), 2);
 						
-						usleep(arc4random()%200000);
+						usleep(arc4random()%750000);
+						if(_socket->isConnected()) {
+							loadGameScene();
+							break;
+						}																								
+						CCLOG("Connecting to %s:%d", player2["privateIP"].asCString(), player2["privatePort"].asInt());
+						
+						_socket->connectTo(player2["privateIP"].asString(), player2["privatePort"].asInt(), 2);
+						
+						usleep(arc4random()%750000);
 						if(_socket->isConnected()) {
 							loadGameScene();
 							break;
@@ -130,47 +130,47 @@ void LobbyScene::onMessage(const Json::Value& message) {
 				}else {
 					//we are player2 - connect to player1
 
-					_socket->setDelegate((SocketDelegate*)_gameScene);
-					_socket->disconnect(false);
-
 					//try to connect to both public and private ips in a while loop
 
 					for(int i = 0; i < 50; i++) {
-					
-						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
-						
-						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt(), 2);
-						
-						usleep(arc4random()%200000);
-						if(_socket->isConnected()) {
-							loadGameScene();
-							break;
-						}
-						
-						CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
-
-						if(!_socket->listenOn(_localPort)) {
-							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
-						}
-						usleep(arc4random()%500000);
-						if(_socket->isConnected()) {
-							loadGameScene();
-							break;
-						}
-						_socket->disconnect(false);
 						
 						CCLOG("Connecting to %s:%d", player1["publicIP"].asCString(), player1["publicPort"].asInt());
 						
 						_socket->connectTo(player1["publicIP"].asString(), player1["publicPort"].asInt(), 2);
 					
-						usleep(arc4random()%200000);
+						usleep(arc4random()%750000);
 						if(_socket->isConnected()) {
 							loadGameScene();
 							break;
 						}
-					
+						
+												
+						CCLOG("Waiting for connection from %s on port %d", player1["publicIP"].asCString(), _localPort);
+
+						if(!_socket->listenOn(_localPort)) {
+							CCLOGERROR("FAILED to Listen on Game Server port %d", _localPort);
+						}															
+						usleep(arc4random()%750000);
+						if(_socket->isConnected()) {
+							loadGameScene();
+							break;
+						}
+						_socket->disconnect(false);
+						CCLOG("-------Manual disconnect");
+	
+		
+
+						CCLOG("Connecting to %s:%d", player1["privateIP"].asCString(), player1["privatePort"].asInt());
+						
+						_socket->connectTo(player1["privateIP"].asString(), player1["privatePort"].asInt(), 2);
+						
+						usleep(arc4random()%750000);
+						if(_socket->isConnected()) {
+							loadGameScene();
+							break;
+						}					
 					}
-				
+	
 				}
 				
 			}
@@ -197,7 +197,7 @@ void LobbyScene::onConnect() {
 	identifyMessage["privateIP"] = Socket::getLocalIPAddress();
 	identifyMessage["privatePort"] = _socket->getLocalPort();
 		
-	_socket->sendMessage(identifyMessage);
+	_socket->sendMessage(identifyMessage, false);
 	
 	//TEST CODE
 	//set pref that we're creating a game
@@ -209,7 +209,7 @@ void LobbyScene::onConnect() {
 	setPrefsMessage["action"] = "setPrefs";
 	setPrefsMessage["prefs"] = prefs;
 	
-	_socket->sendMessage(setPrefsMessage);
+	_socket->sendMessage(setPrefsMessage, false);
 		
 }
 

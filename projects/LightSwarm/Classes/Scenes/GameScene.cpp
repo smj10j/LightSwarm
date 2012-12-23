@@ -99,16 +99,17 @@ void GameScene::onEnter() {
 	CCLOG("On Enter GameScene");
 	
 	
-	for(int i = 0; i < 15; i++) {
+	for(int i = 0; i < 5; i++) {
 		sleep(3);
 
 		//TODO: test message on connect
 		Json::Value supMessage;
 		supMessage["action"] = "say sup";
-		supMessage["message"] = "sup" + i;
+		supMessage["message"] = "sup";
 		
 		//TODO: WHY IS THIS NEVER RECEIVED???
 		((NetworkedOpponent*)_opponent)->_socket->sendMessage(supMessage);
+		CCLOG("Trying to send a sup message to peer");
 	}
 }
 

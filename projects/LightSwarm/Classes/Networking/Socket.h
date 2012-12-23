@@ -85,6 +85,7 @@ public:
 	bool connectTo(const string& hostname, const int& port, int timeout);
 	void disconnect(bool notifyDelegate);
 	void disconnectChild(MessageReceiverData* messageReceiverData);
+	void sendMessage(const Json::Value& message, bool addTerminator);
 	void sendMessage(const Json::Value& message);
 	void sendMessage(const string& message);
 	
