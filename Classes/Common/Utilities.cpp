@@ -15,13 +15,13 @@ int NEARBY_DISTANCE = 0;
 float SCALE_FACTOR = 1;
 
 void Utilities::init() {
-	CCSize frameSize = CCDirector::sharedDirector()->getOpenGLView()->getFrameSize();
+	Size frameSize = CCDirector::getInstance()->getOpenGLView()->getFrameSize();
 
 	NEARBY_DISTANCE = MAX(frameSize.width, frameSize.height)/10.0;
 	IMMEDIATE_VINCINITY_DISTANCE = MAX(frameSize.width, frameSize.height)/15.0;
 	DIRECT_TOUCH_DISTANCE = MAX(20, MAX(frameSize.width, frameSize.height)/50.0);
 	
-	SCALE_FACTOR = CCDirector::sharedDirector()->getContentScaleFactor();
+	SCALE_FACTOR = CCDirector::getInstance()->getContentScaleFactor();
 	CCLOG("Screen size = %fx%f - scale factor = %f", frameSize.width, frameSize.height, SCALE_FACTOR);
 }
 
@@ -31,22 +31,22 @@ double Utilities::getMillis() {
 	return ((double)time.tv_sec*1000.0) + ((double)time.tv_usec / 1000.0);
 }
 
-bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2) {
+bool Utilities::isNear(const Point& p1, const Point& p2) {
 	return Utilities::isNear(p1, p2, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(const CCPoint& p1, const CCPoint& p2, const int threshold) {
+bool Utilities::isNear(const Point& p1, const Point& p2, const int threshold) {
 	float x = p2.x-p1.x;
 	float y = p2.y-p1.y;
 	return (x*x + y*y) <= (threshold*threshold);
 }
 
-bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points) {
+bool Utilities::isNear(const Point& point, const list<Point>& points) {
 	return Utilities::isNear(point, points, IMMEDIATE_VINCINITY_DISTANCE);
 }
 
-bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points, const int threshold) {
-	for(list<CCPoint>::const_iterator pointsIterator = points.begin();
+bool Utilities::isNear(const Point& point, const list<Point>& points, const int threshold) {
+	for(list<Point>::const_iterator pointsIterator = points.begin();
 		pointsIterator != points.end();
 		pointsIterator++) {
 		if(Utilities::isNear(point, *pointsIterator, threshold)) {
@@ -56,13 +56,13 @@ bool Utilities::isNear(const CCPoint& point, const list<CCPoint>& points, const 
 	return false;
 }
 
-float Utilities::getDistance(const CCPoint& p1, const CCPoint& p2) {
+float Utilities::getDistance(const Point& p1, const Point& p2) {
 	float x = p2.x-p1.x;
 	float y = p2.y-p1.y;
 	return sqrt(x*x + y*y);
 }
 
-bool Utilities::isPointInShape(const CCPoint& point, const list<CCPoint>& shape) {
+bool Utilities::isPointInShape(const Point& point, const list<Point>& shape) {
 
 	//special cases
 	if(shape.empty()) {
@@ -75,12 +75,12 @@ bool Utilities::isPointInShape(const CCPoint& point, const list<CCPoint>& shape)
 	float x = point.x;
     float y = point.y;
 
-    CCPoint prev;
-    CCPoint current;
+    Point prev;
+    Point current;
     bool isIn = false;
 
-	list<CCPoint>::const_iterator prevShapeIterator = --shape.end();
-	for(list<CCPoint>::const_iterator shapeIterator = shape.begin();
+	list<Point>::const_iterator prevShapeIterator = --shape.end();
+	for(list<Point>::const_iterator shapeIterator = shape.begin();
 		shapeIterator != shape.end();
 		prevShapeIterator = shapeIterator++) {
 		

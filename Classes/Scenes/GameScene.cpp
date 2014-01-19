@@ -41,7 +41,7 @@ bool GameScene::init() {
 	_gameLayer = CCLayer::create();
 	this->addChild(_gameLayer);
 
-	CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+	CCSize winSize = CCDirector::getInstance()->getWinSize();
 	
 	_prevViewporCenter = _gameLayer->getPosition();
 	_isManipulatingViewport = false;
@@ -52,9 +52,9 @@ bool GameScene::init() {
 	_currentFrame = 0;
 	
 	//create a batch node
-	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
+	_batchNode = CCSpriteBatchNode::create("Sprites.png");
 	_gameLayer->addChild(_batchNode);
-	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
+	CCSpriteFrameCache::getInstance()->addSpriteFramesWithFile("Sprites.plist");
 	
 	
 	//TODO: create a clientSocket or serverSocket depending on isServer variable
@@ -384,16 +384,14 @@ void GameScene::draw() {
 	if(_currentTouches.size() >= 2) {
 		//draw a line as we drag our finger
 		glLineWidth(5);
-		ccDrawColor4B(255, 255, 255, 255);
-		CCPoint offset = _gameLayer->convertToWorldSpace(CCPointZero);
-		list<CCPoint>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
-		for(list<CCPoint>::iterator currentTouchesIterator = prevcurrentTouchesIterator;
+		DrawPrimitives::setDrawColor4B(255, 255, 255, 255);
+        Point offset = _gameLayer->convertToWorldSpace(Point::ZERO);
+		list<Point>::iterator prevcurrentTouchesIterator = _currentTouches.begin();
+		for(list<Point>::iterator currentTouchesIterator = prevcurrentTouchesIterator;
 			currentTouchesIterator != _currentTouches.end();
 			prevcurrentTouchesIterator = currentTouchesIterator++) {
 				
-			ccDrawLine(ccpAdd(*prevcurrentTouchesIterator, offset),
-						ccpAdd(*currentTouchesIterator, offset)
-			);
+			DrawPrimitives::drawLine(*prevcurrentTouchesIterator + offset, *currentTouchesIterator + offset);
 		}
 	}
 	

@@ -57,6 +57,11 @@ void Config::init() {
 	ifstream is;
 	string filepath = CCFileUtils::getInstance()->fullPathForFilename("GameConfig.json");
 	is.open(filepath);
+    
+    if(MODIFYING_GAME_CONFIG) {
+		//editing
+		CCLOG("Open file: %s to modify game config", filepath.c_str());
+	}
 	
 	if (is.is_open()) {
 		root.clear();

@@ -11,24 +11,24 @@ using namespace std;
 class GameStateSnapshot;
 class Command;
 
-class GameScene : public CCLayer, public SocketDelegate
+class GameScene : public Layer, public SocketDelegate
 {
 public:
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();  
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static CCScene* scene(Player* player, Opponent* opponent);
-    static CCScene* scene(GameScene *layer);
+    static Scene* scene(Player* player, Opponent* opponent);
+    static Scene* scene(GameScene *layer);
 
     // implement the "static node()" method manually
     CREATE_FUNC(GameScene);
 	
 	
 	//touch handlers
-	virtual void touchesMoved(CCSet* touches, CCEvent* event);
-	virtual void touchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
-	virtual void touchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
+	virtual void touchesMoved(Set* touches, Event* event);
+	virtual void touchesBegan(cocos2d::Set* touches, cocos2d::Event* event);
+	virtual void touchesEnded(cocos2d::Set* touches, cocos2d::Event* event);
 		
 	virtual void onEnter();
 	virtual void onExit();
@@ -53,23 +53,23 @@ public:
 protected:
 		
 private:
-	CCSpriteBatchNode* _batchNode;
+	SpriteBatchNode* _batchNode;
 			
 	bool _isManipulatingViewport;
 	bool _isManipulatingSparks;
-	CCPoint _prevViewporCenter;
-	CCPoint _viewportDragVelocity;
+	Point _prevViewporCenter;
+	Point _viewportDragVelocity;
 	double _lastTouchBeganMillis;
 	double _lastTouchEndedMillis;
 	
-	list<CCPoint> _prevTouches;
-	list<CCPoint> _currentTouches;
+	list<Point> _prevTouches;
+	list<Point> _currentTouches;
 	
 	list<PingLocation*> _pingLocations;
 	set<Spark*> _selectedSparks;
 	void deselectSpark(Spark* spark);
 	
-	CCLayer* _gameLayer;
+	Layer* _gameLayer;
 	
 	void updateSparkSelectionEffects();
 	void clearSelectedSparksIfNoAction(float dt);

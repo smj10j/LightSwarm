@@ -65,10 +65,7 @@
 		AA5B0D91188C1FDE00908CCB /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D68188C1FDE00908CCB /* json_value.cpp */; };
 		AA5B0D92188C1FDE00908CCB /* json_valueiterator.inl in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0D69188C1FDE00908CCB /* json_valueiterator.inl */; };
 		AA5B0D93188C1FDE00908CCB /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D6A188C1FDE00908CCB /* json_writer.cpp */; };
-		AA5B0D94188C1FDE00908CCB /* sconscript in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0D6B188C1FDE00908CCB /* sconscript */; };
 		AA5B0D95188C1FDE00908CCB /* mtrand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D6D188C1FDE00908CCB /* mtrand.cpp */; };
-		AA5B0D96188C1FDE00908CCB /* mtreadme.txt in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0D6F188C1FDE00908CCB /* mtreadme.txt */; };
-		AA5B0D98188C1FDE00908CCB /* mttest.out in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0D71188C1FDE00908CCB /* mttest.out */; };
 		AA5B0D99188C1FDE00908CCB /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D73188C1FDE00908CCB /* Command.cpp */; };
 		AA5B0D9A188C1FDE00908CCB /* GameStateSnapshot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D75188C1FDE00908CCB /* GameStateSnapshot.cpp */; };
 		AA5B0D9C188C1FDE00908CCB /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D79188C1FDE00908CCB /* Socket.cpp */; };
@@ -80,7 +77,7 @@
 		AA5B0DA2188C1FDE00908CCB /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA5B0D87188C1FDE00908CCB /* LobbyScene.cpp */; };
 		AA5B0DA6188C1FFE00908CCB /* GameConfig.json in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0DA3188C1FFE00908CCB /* GameConfig.json */; };
 		AA5B0DA7188C1FFE00908CCB /* Sprites.plist in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0DA4188C1FFE00908CCB /* Sprites.plist */; };
-		AA5B0DA8188C1FFE00908CCB /* Sprites.pvr.ccz in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0DA5188C1FFE00908CCB /* Sprites.pvr.ccz */; };
+		AA5B0DAA188C2ED900908CCB /* Sprites.png in Resources */ = {isa = PBXBuildFile; fileRef = AA5B0DA9188C2ED900908CCB /* Sprites.png */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -357,7 +354,7 @@
 		AA5B0D88188C1FDE00908CCB /* LobbyScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyScene.h; sourceTree = "<group>"; };
 		AA5B0DA3188C1FFE00908CCB /* GameConfig.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = GameConfig.json; sourceTree = "<group>"; };
 		AA5B0DA4188C1FFE00908CCB /* Sprites.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Sprites.plist; sourceTree = "<group>"; };
-		AA5B0DA5188C1FFE00908CCB /* Sprites.pvr.ccz */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sprites.pvr.ccz; sourceTree = "<group>"; };
+		AA5B0DA9188C2ED900908CCB /* Sprites.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Sprites.png; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -565,7 +562,7 @@
 			children = (
 				AA5B0DA3188C1FFE00908CCB /* GameConfig.json */,
 				AA5B0DA4188C1FFE00908CCB /* Sprites.plist */,
-				AA5B0DA5188C1FFE00908CCB /* Sprites.pvr.ccz */,
+				AA5B0DA9188C2ED900908CCB /* Sprites.png */,
 			);
 			name = Resources;
 			path = ../Resources;
@@ -904,9 +901,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5087E78117EB970100C73F5D /* Icon-120.png in Resources */,
-				AA5B0DA8188C1FFE00908CCB /* Sprites.pvr.ccz in Resources */,
-				AA5B0D96188C1FDE00908CCB /* mtreadme.txt in Resources */,
 				5087E78617EB970100C73F5D /* Icon-76.png in Resources */,
+				AA5B0DAA188C2ED900908CCB /* Sprites.png in Resources */,
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
@@ -916,9 +912,7 @@
 				AA5B0D92188C1FDE00908CCB /* json_valueiterator.inl in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
 				5087E78017EB970100C73F5D /* Icon-114.png in Resources */,
-				AA5B0D98188C1FDE00908CCB /* mttest.out in Resources */,
 				50EF62A217ECD613001EB2F8 /* Icon-29.png in Resources */,
-				AA5B0D94188C1FDE00908CCB /* sconscript in Resources */,
 				50EF629617ECD46A001EB2F8 /* Icon-40.png in Resources */,
 				5087E78217EB970100C73F5D /* Icon-144.png in Resources */,
 				50EF629817ECD46A001EB2F8 /* Icon-80.png in Resources */,
@@ -1060,7 +1054,7 @@
 					"$(SRCROOT)/../cocos2d/cocos/2d/platform/ios/Simulation",
 				);
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -1091,7 +1085,7 @@
 					"$(SRCROOT)/../cocos2d/cocos/2d/platform/ios/Simulation",
 				);
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;

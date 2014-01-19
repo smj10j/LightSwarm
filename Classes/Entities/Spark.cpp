@@ -212,6 +212,7 @@ void Spark::loadSprite() {
 	_sprite = CCSprite::createWithSpriteFrameName("SpaceFlier_sm_1.png");
 	_sprite->setPosition(_position);
 	_sprite->setScale(SCALE_FACTOR*_scaleMultiplier);
+    CCLOG("Scale: %f,%f", _sprite->getBoundingBox().size.width, _sprite->getBoundingBox().size.height);
 	
 	_sprite->retain();
 	_isModifyingState = false;

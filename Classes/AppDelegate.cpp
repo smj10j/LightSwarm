@@ -19,9 +19,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto eglView = EGLView::getInstance();
     
     director->setOpenGLView(eglView);
-	
-    // turn on display FPS
-    director->setDisplayStats(true);
     
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / TARGET_FPS);
@@ -37,11 +34,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	//setup commonly used utils
 	Utilities::init();
 	Config::init();
-	if(MODIFYING_GAME_CONFIG) {
-		//editing
-		string filepath = CCFileUtils::getInstance()->fullPathForFilename("GameConfig.json");
-		CCLOG("Open file: %s to modify game config", filepath.c_str());
-	}
     
     // create a scene. it's an autorelease object
     auto scene = LobbyScene::scene();
