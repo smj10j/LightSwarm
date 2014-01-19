@@ -32,7 +32,7 @@ bool LobbyScene::init() {
 	CCSize winSize = CCDirector::sharedDirector()->getWinSize();	
 
 	//create a batch node
-	_batchNode = CCSpriteBatchNode::create("Sprites.pvr.ccz");
+	_batchNode = CCSpriteBatchNode::create("Sprites.png");
 	this->addChild(_batchNode);
 	CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("Sprites.plist");
 	
